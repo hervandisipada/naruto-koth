@@ -521,6 +521,21 @@
         <div id="queue-list-container"></div>
       </div>
 
+      <!-- BACKUP & RESTORE DATA -->
+      <div class="card full-width">
+        <div class="card-title">
+          <span>💾 Backup & Restore Data Pemain</span>
+        </div>
+        <p class="instructions" style="margin-bottom: 12px;">Simpan cadangan data pemain dan sisa tiket ke file di HP agar aman saat ganti HP atau ganti browser.</p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-blue" onclick="exportDataBackup()">📥 Download File Backup (.json)</button>
+          <label class="btn btn-primary" style="margin-bottom: 0; cursor: pointer;">
+            📤 Restore dari File Backup
+            <input type="file" accept=".json" style="display: none;" onchange="importDataBackup(event)">
+          </label>
+        </div>
+      </div>
+
       <!-- RESET ALL SESSION -->
       <div class="card full-width" style="text-align: center; border-color: rgba(239, 68, 68, 0.4);">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
@@ -957,6 +972,44 @@
         };
         saveState();
       }
+    }
+
+    // Backup & Restore Functions
+    function exportDataBackup() {
+      const dataStr = JSON.stringify(state, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const dateStr = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `naruto_koth_backup_${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importDataBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && typeof imported === 'object') {
+            state = imported;
+            saveState();
+            alert("✅ Data berhasil dipulihkan dari file backup!");
+          } else {
+            alert("❌ Format file backup tidak valid!");
+          }
+        } catch(err) {
+          alert("❌ Gagal membaca file backup: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
     }
 
     // Modal Character Editor

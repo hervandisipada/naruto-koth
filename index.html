@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Naruto Storm Connections - KotH Queue & Overlay System</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --panel-bg: #1e293b;
+      --accent-orange: #f97316;
+      --accent-gold: #eab308;
+      --accent-blue: #3b82f6;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+    }
+
+    /* Tab Switcher */
+    .view-switcher {
+      display: flex;
+      background-color: #090d16;
+      border-bottom: 2px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      color: var(--accent-orange);
+      background-color: var(--panel-bg);
+      border-bottom: 3px solid var(--accent-orange);
+    }
+
+    .view-container {
+      display: none;
+      padding: 20px;
+    }
+
+    .view-container.active {
+      display: block;
+    }
+
+    /* Layout Admin Panel */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 900px) {
+      .admin-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .full-width {
+        grid-column: span 2;
+      }
+    }
+
+    .card {
+      background-color: var(--panel-bg);
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--accent-gold);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: #0f172a;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-orange);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary { background-color: var(--accent-orange); color: #000; }
+    .btn-primary:hover { background-color: #ea580c; }
+    .btn-success { background-color: var(--accent-green); color: #000; }
+    .btn-danger { background-color: var(--accent-red); color: #fff; }
+    .btn-blue { background-color: var(--accent-blue); color: #fff; }
+    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+    .btn-block { width: 100%; }
+
+    /* Match Arena View (Admin) */
+    .arena-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      border: 2px solid var(--accent-gold);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    @media (min-width: 600px) {
+      .arena-container {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+
+    .player-slot {
+      flex: 1;
+      background: rgba(30, 41, 59, 0.8);
+      border-radius: 8px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .player-slot.king { border-color: var(--accent-gold); }
+    .player-slot.challenger { border-color: var(--accent-blue); }
+
+    .role-badge {
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .king .role-badge { background-color: var(--accent-gold); color: #000; }
+    .challenger .role-badge { background-color: var(--accent-blue); color: #fff; }
+
+    .player-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      word-break: break-word;
+    }
+
+    .player-char {
+      font-size: 0.9rem;
+      color: var(--accent-orange);
+      margin-top: 2px;
+      font-style: italic;
+    }
+
+    .player-stats {
+      margin-top: 10px;
+      display: flex;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .stat-val {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .vs-divider {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--accent-red);
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Queue & Saved Lists */
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background-color: #0f172a;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border-left: 4px solid var(--border-color);
+    }
+
+    .list-item.vip { border-left-color: var(--accent-gold); }
+    .list-item.free { border-left-color: var(--accent-blue); }
+    .list-item.save { border-left-color: var(--accent-orange); }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .item-char {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .item-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-right: 10px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .badge-vip { background-color: var(--accent-gold); color: #000; }
+    .badge-free { background-color: var(--accent-blue); color: #fff; }
+    .badge-save { background-color: var(--accent-orange); color: #000; }
+
+    /* Overlay Mode Styles */
+    #overlay-view {
+      background-color: transparent;
+      padding: 0;
+    }
+
+    .overlay-container {
+      width: 450px;
+      background: rgba(15, 23, 42, 0.92);
+      border-radius: 12px;
+      padding: 16px;
+      color: #fff;
+      border: 2px solid rgba(249, 115, 22, 0.5);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      margin: 20px;
+    }
+
+    .overlay-header {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed rgba(255,255,255,0.2);
+      padding-bottom: 6px;
+    }
+
+    .overlay-match {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(0,0,0,0.4);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+
+    .overlay-player {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .overlay-player.p1 { background: linear-gradient(90deg, rgba(234, 179, 8, 0.25) 0%, transparent 100%); border-left: 3px solid var(--accent-gold); }
+    .overlay-player.p2 { background: linear-gradient(90deg, rgba(59, 130, 246, 0.25) 0%, transparent 100%); border-left: 3px solid var(--accent-blue); }
+
+    .overlay-pname { font-weight: 800; font-size: 1.05rem; }
+    .overlay-pchar { font-size: 0.8rem; color: var(--accent-orange); font-style: italic; }
+    .overlay-ws { font-weight: 900; color: var(--accent-gold); font-size: 0.9rem; }
+    .free-streak-badge { font-size: 0.65rem; background: var(--accent-green); color: #000; padding: 2px 4px; border-radius: 3px; margin-left: 4px; font-weight: bold; }
+
+    .overlay-queue-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: bold;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .overlay-qitem {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 8px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Modal Dialog */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: var(--panel-bg);
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 400px;
+      width: 100%;
+      border: 1px solid var(--border-color);
+    }
+
+    .instructions {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Switcher Tab -->
+  <div class="view-switcher">
+    <button class="tab-btn active" onclick="switchTab('admin')">📱 Panel Admin (HP Control)</button>
+    <button class="tab-btn" onclick="switchTab('overlay')">🎬 TikTok Overlay Source</button>
+  </div>
+
+  <!-- VIEW 1: ADMIN PANEL -->
+  <div id="admin-view" class="view-container active">
+    <div class="admin-grid">
+
+      <!-- ARENA MATCH CONTROLLER -->
+      <div class="card full-width">
+        <div class="card-title">
+          <span>⚔️ ARENA PERTANDINGAN (1 VS 1)</span>
+          <button class="btn btn-sm btn-danger" onclick="resetArena()">Clear Arena</button>
+        </div>
+
+        <div class="arena-container">
+          <!-- KING / PLAYER 1 -->
+          <div class="player-slot king">
+            <span class="role-badge">👑 KING (JUARA)</span>
+            <div id="p1-name" class="player-name">Belum Ada Pemain</div>
+            <div id="p1-char" class="player-char">-</div>
+            <div class="player-stats">
+              <span>WS: <span id="p1-ws" class="stat-val">0</span></span>
+              <span>Tiket Sisa: <span id="p1-matches" class="stat-val">0</span></span>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
+              <button class="btn btn-sm btn-success" onclick="triggerWin('p1')">🏆 P1 WIN</button>
+              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p1')">✏️ Set Char</button>
+            </div>
+          </div>
+
+          <div class="vs-divider">VS</div>
+
+          <!-- CHALLENGER / PLAYER 2 -->
+          <div class="player-slot challenger">
+            <span class="role-badge">⚔️ PENANTANG</span>
+            <div id="p2-name" class="player-name">Belum Ada Pemain</div>
+            <div id="p2-char" class="player-char">-</div>
+            <div class="player-stats">
+              <span>WS: <span id="p2-ws" class="stat-val">0</span></span>
+              <span>Tiket Sisa: <span id="p2-matches" class="stat-val">0</span></span>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
+              <button class="btn btn-sm btn-success" onclick="triggerWin('p2')">🏆 P2 WIN</button>
+              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p2')">✏️ Set Char</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM TAMBAH PEMAIN -->
+      <div class="card">
+        <div class="card-title">➕ Tambah Pemain Baru</div>
+        <form id="add-player-form" onsubmit="handleAddPlayer(event)">
+          <div class="form-group">
+            <label>Username TikTok / Game *</label>
+            <input type="text" id="input-username" class="form-control" placeholder="cth: NarutoFan99" required>
+          </div>
+          <div class="form-group">
+            <label>Karakter Pilihan (Opsional - Bisa Diisi Nanti)</label>
+            <input type="text" id="input-char" class="form-control" placeholder="cth: Sasuke (EMS) / kosongkan dulu">
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+              <label>Jumlah Match (Tiket) *</label>
+              <input type="number" id="input-matches" class="form-control" value="3" min="1" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label>Kategori Antrean *</label>
+              <select id="input-type" class="form-control">
+                <option value="FREE">FREE (Biasa)</option>
+                <option value="VIP">VIP (Prioritas Top)</option>
+                <option value="SAVE">SAVE (Simpan Dulu)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Masukkan Ke Daftar</button>
+        </form>
+      </div>
+
+      <!-- DAFTAR SAVED PLAYERS -->
+      <div class="card">
+        <div class="card-title">
+          <span>💾 SAVED PLAYERS (Belum Main)</span>
+          <span id="save-count" style="font-size: 0.8rem; color: var(--text-muted);">0 Pemain</span>
+        </div>
+        <p class="instructions" style="margin-bottom: 10px;">Pemain di sini tidak tampil di antrean live. Klik "Masuk Antrean" saat orangnya datang.</p>
+        <div id="saved-list-container"></div>
+      </div>
+
+      <!-- ANTREAN AKTIF LIVE -->
+      <div class="card full-width">
+        <div class="card-title">
+          <span>📋 ANTREAN AKTIF LIVE (VIP & FREE)</span>
+          <span id="queue-count" style="font-size: 0.8rem; color: var(--text-muted);">0 Pemain</span>
+        </div>
+        <div id="queue-list-container"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- VIEW 2: TIKTOK LIVE OVERLAY SOURCE -->
+  <div id="overlay-view" class="view-container">
+    <div class="overlay-container">
+      <div class="overlay-header">👑 KING OF THE HILL 👑</div>
+      
+      <div class="overlay-match">
+        <div class="overlay-player p1">
+          <div>
+            <div id="ov-p1-name" class="overlay-pname">Waiting...</div>
+            <div id="ov-p1-char" class="overlay-pchar">-</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="overlay-ws">WS: <span id="ov-p1-ws">0</span> <span id="ov-p1-free" class="free-streak-badge" style="display:none;">🔥 FREE MATCH</span></div>
+            <div style="font-size:0.75rem; color:#aaa;">Tiket: <span id="ov-p1-m">0</span></div>
+          </div>
+        </div>
+
+        <div style="text-align: center; font-size: 0.75rem; font-weight:bold; color:var(--accent-red);">— VS —</div>
+
+        <div class="overlay-player p2">
+          <div>
+            <div id="ov-p2-name" class="overlay-pname">Waiting...</div>
+            <div id="ov-p2-char" class="overlay-pchar">-</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="overlay-ws">WS: <span id="ov-p2-ws">0</span> <span id="ov-p2-free" class="free-streak-badge" style="display:none;">🔥 FREE MATCH</span></div>
+            <div style="font-size:0.75rem; color:#aaa;">Tiket: <span id="ov-p2-m">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay-queue-title">NEXT QUEUE / ANTREAN:</div>
+      <div id="ov-queue-list"></div>
+    </div>
+  </div>
+
+  <!-- MODAL EDIT CHAR -->
+  <div id="modal-char" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="margin-bottom: 10px; color: var(--accent-gold);">Pilih / Ubah Karakter</h3>
+      <div class="form-group">
+        <label id="modal-target-label">Masukkan Karakter:</label>
+        <input type="text" id="modal-char-input" class="form-control" placeholder="cth: Kakashi (DMS)">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="saveModalChar()">Simpan</button>
+        <button class="btn btn-danger" style="flex:1;" onclick="closeModal()">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State Aplikasi
+    let state = {
+      p1: null, // { name, char, ws, matchesLeft, type }
+      p2: null,
+      queue: [],
+      saved: []
+    };
+
+    let editingTarget = null; // for modal
+
+    // Load Data
+    function loadState() {
+      const data = localStorage.getItem('koth_naruto_state');
+      if (data) {
+        try { state = JSON.parse(data); } catch(e){}
+      }
+      renderAll();
+    }
+
+    function saveState() {
+      localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+      renderAll();
+    }
+
+    // Switch View Tab
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+
+      if (tabName === 'admin') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('admin-view').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('overlay-view').classList.add('active');
+      }
+    }
+
+    // Handle Tambah Pemain
+    function handleAddPlayer(e) {
+      e.preventDefault();
+      const name = document.getElementById('input-username').value.trim();
+      const char = document.getElementById('input-char').value.trim() || 'Belum Pilih / TBA';
+      const matchesLeft = parseInt(document.getElementById('input-matches').value) || 1;
+      const type = document.getElementById('input-type').value;
+
+      if (!name) return;
+
+      const newPlayer = { id: Date.now().toString(), name, char, matchesLeft, ws: 0, type };
+
+      if (type === 'SAVE') {
+        state.saved.push(newPlayer);
+      } else {
+        state.queue.push(newPlayer);
+        sortQueue();
+      }
+
+      // Reset form
+      document.getElementById('input-username').value = '';
+      document.getElementById('input-char').value = '';
+
+      saveState();
+      checkAutoFillArena();
+    }
+
+    function sortQueue() {
+      state.queue.sort((a, b) => {
+        if (a.type === 'VIP' && b.type !== 'VIP') return -1;
+        if (a.type !== 'VIP' && b.type === 'VIP') return 1;
+        return 0; // FIFO
+      });
+    }
+
+    // Move Saved to Active Queue
+    function moveSavedToQueue(id, targetType) {
+      const index = state.saved.findIndex(p => p.id === id);
+      if (index !== -1) {
+        const player = state.saved.splice(index, 1)[0];
+        player.type = targetType;
+        state.queue.push(player);
+        sortQueue();
+        saveState();
+        checkAutoFillArena();
+      }
+    }
+
+    // Move Active Queue to Save
+    function moveQueueToSave(id) {
+      const index = state.queue.findIndex(p => p.id === id);
+      if (index !== -1) {
+        const player = state.queue.splice(index, 1)[0];
+        player.type = 'SAVE';
+        state.saved.push(player);
+        saveState();
+      }
+    }
+
+    function deletePlayer(listType, id) {
+      if (listType === 'queue') {
+        state.queue = state.queue.filter(p => p.id !== id);
+      } else if (listType === 'saved') {
+        state.saved = state.saved.filter(p => p.id !== id);
+      }
+      saveState();
+    }
+
+    // Fill Arena Slot otomatis dari Queue
+    function checkAutoFillArena() {
+      let changed = false;
+      if (!state.p1 && state.queue.length > 0) {
+        state.p1 = state.queue.shift();
+        // Potong tiket untuk MATCH PERTAMA
+        state.p1.matchesLeft = Math.max(0, state.p1.matchesLeft - 1);
+        changed = true;
+      }
+      if (!state.p2 && state.queue.length > 0) {
+        state.p2 = state.queue.shift();
+        // Potong tiket untuk MATCH PERTAMA
+        state.p2.matchesLeft = Math.max(0, state.p2.matchesLeft - 1);
+        changed = true;
+      }
+      if (changed) saveState();
+    }
+
+    // Trigger Win Logika Pertandingan
+    function triggerWin(winnerRole) {
+      const winner = winnerRole === 'p1' ? state.p1 : state.p2;
+      const loser = winnerRole === 'p1' ? state.p2 : state.p1;
+
+      if (!winner || !loser) {
+        alert("Pemain di arena belum lengkap!");
+        return;
+      }
+
+      // 1. UPDATE WINNER
+      winner.ws += 1; // Win streak bertambah
+      // ATURAN BARU: Karena dia WS (ws >= 1), Tiket TIDAK DIKURANGI lagi di match ke-2 dst!
+
+      // 2. UPDATE LOSER
+      loser.ws = 0; // WS reset ke 0
+
+      // Penanganan Pemain Kalah:
+      if (loser.matchesLeft > 0) {
+        const backToQueue = confirm(
+          `Pemain [ ${loser.name} ] KALAH!\nSisa Tiket: ${loser.matchesLeft}.\n\nApakah ingin memasukkan ${loser.name} kembali ke ANTREAN AKTIF?`
+        );
+
+        if (backToQueue) {
+          const newChar = prompt(`Ubah Karakter untuk antrean berikutnya (biarkan jika tetap sama):`, loser.char);
+          if (newChar !== null) loser.char = newChar.trim() || loser.char;
+          state.queue.push(loser);
+          sortQueue();
+        } else {
+          const saveDulu = confirm(`Simpan [ ${loser.name} ] ke daftar SAVED PLAYERS?`);
+          if (saveDulu) {
+            loser.type = 'SAVE';
+            state.saved.push(loser);
+          }
+        }
+      } else {
+        alert(`Pemain [ ${loser.name} ] KALAH dan Tiket sudah HABIS! Keluar dari sistem.`);
+      }
+
+      // Winner Tetap di P1 (King Slot)
+      state.p1 = winner;
+      state.p2 = null;
+
+      saveState();
+      checkAutoFillArena();
+    }
+
+    function resetArena() {
+      if (confirm("Kosongkan arena pertandingan? Pemain di arena akan dihapus.")) {
+        state.p1 = null;
+        state.p2 = null;
+        saveState();
+      }
+    }
+
+    // Modal Character Editor
+    function promptEditChar(target) {
+      editingTarget = target;
+      let name = "";
+      let curChar = "";
+
+      if (target === 'p1' && state.p1) { name = state.p1.name; curChar = state.p1.char; }
+      else if (target === 'p2' && state.p2) { name = state.p2.name; curChar = state.p2.char; }
+      else if (typeof target === 'object') { name = target.name; curChar = target.char; }
+
+      document.getElementById('modal-target-label').innerText = `Ubah Karakter ${name}:`;
+      document.getElementById('modal-char-input').value = curChar === 'Belum Pilih / TBA' ? '' : curChar;
+      document.getElementById('modal-char').classList.add('active');
+    }
+
+    function saveModalChar() {
+      const val = document.getElementById('modal-char-input').value.trim() || 'Belum Pilih / TBA';
+
+      if (editingTarget === 'p1' && state.p1) state.p1.char = val;
+      else if (editingTarget === 'p2' && state.p2) state.p2.char = val;
+      else if (typeof editingTarget === 'object') editingTarget.char = val;
+
+      closeModal();
+      saveState();
+    }
+
+    function closeModal() {
+      document.getElementById('modal-char').classList.remove('active');
+      editingTarget = null;
+    }
+
+    // RENDER FUNCTIONS
+    function renderAll() {
+      renderArena();
+      renderQueue();
+      renderSaved();
+      renderOverlay();
+    }
+
+    function renderArena() {
+      // P1
+      if (state.p1) {
+        document.getElementById('p1-name').innerText = state.p1.name;
+        document.getElementById('p1-char').innerText = state.p1.char;
+        document.getElementById('p1-ws').innerText = state.p1.ws;
+        document.getElementById('p1-matches').innerText = state.p1.matchesLeft;
+      } else {
+        document.getElementById('p1-name').innerText = "Belum Ada Pemain";
+        document.getElementById('p1-char').innerText = "-";
+        document.getElementById('p1-ws').innerText = "0";
+        document.getElementById('p1-matches').innerText = "0";
+      }
+
+      // P2
+      if (state.p2) {
+        document.getElementById('p2-name').innerText = state.p2.name;
+        document.getElementById('p2-char').innerText = state.p2.char;
+        document.getElementById('p2-ws').innerText = state.p2.ws;
+        document.getElementById('p2-matches').innerText = state.p2.matchesLeft;
+      } else {
+        document.getElementById('p2-name').innerText = "Belum Ada Pemain";
+        document.getElementById('p2-char').innerText = "-";
+        document.getElementById('p2-ws').innerText = "0";
+        document.getElementById('p2-matches').innerText = "0";
+      }
+    }
+
+    function renderQueue() {
+      const container = document.getElementById('queue-list-container');
+      document.getElementById('queue-count').innerText = `${state.queue.length} Pemain`;
+      container.innerHTML = '';
+
+      if (state.queue.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">Antrean kosong.</div>';
+        return;
+      }
+
+      state.queue.forEach((p, index) => {
+        const item = document.createElement('div');
+        item.className = `list-item ${p.type.toLowerCase()}`;
+        item.innerHTML = `
+          <div class="item-info">
+            <div class="item-name">#${index+1} ${p.name} <span class="badge badge-${p.type.toLowerCase()}">${p.type}</span></div>
+            <div class="item-char">Char: ${p.char} | Tiket Sisa: ${p.matchesLeft}</div>
+          </div>
+          <div class="item-meta">
+            <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${index}])">Char</button>
+            <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')">Save</button>
+            <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')">✕</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderSaved() {
+      const container = document.getElementById('saved-list-container');
+      document.getElementById('save-count').innerText = `${state.saved.length} Pemain`;
+      container.innerHTML = '';
+
+      if (state.saved.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">Tidak ada simpanan pemain.</div>';
+        return;
+      }
+
+      state.saved.forEach((p, index) => {
+        const item = document.createElement('div');
+        item.className = 'list-item save';
+        item.innerHTML = `
+          <div class="item-info">
+            <div class="item-name">${p.name}</div>
+            <div class="item-char">Char: ${p.char} | Tiket Sisa: ${p.matchesLeft}</div>
+          </div>
+          <div class="item-meta">
+            <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}', 'FREE')">+ Antrean FREE</button>
+            <button class="btn btn-sm btn-primary" onclick="moveSavedToQueue('${p.id}', 'VIP')">+ VIP</button>
+            <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')">✕</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderOverlay() {
+      // P1
+      if (state.p1) {
+        document.getElementById('ov-p1-name').innerText = state.p1.name;
+        document.getElementById('ov-p1-char').innerText = state.p1.char;
+        document.getElementById('ov-p1-ws').innerText = state.p1.ws;
+        document.getElementById('ov-p1-m').innerText = state.p1.matchesLeft;
+        document.getElementById('ov-p1-free').style.display = state.p1.ws >= 1 ? 'inline-block' : 'none';
+      } else {
+        document.getElementById('ov-p1-name').innerText = "Waiting Player...";
+        document.getElementById('ov-p1-char').innerText = "-";
+        document.getElementById('ov-p1-ws').innerText = "0";
+        document.getElementById('ov-p1-m').innerText = "0";
+        document.getElementById('ov-p1-free').style.display = 'none';
+      }
+
+      // P2
+      if (state.p2) {
+        document.getElementById('ov-p2-name').innerText = state.p2.name;
+        document.getElementById('ov-p2-char').innerText = state.p2.char;
+        document.getElementById('ov-p2-ws').innerText = state.p2.ws;
+        document.getElementById('ov-p2-m').innerText = state.p2.matchesLeft;
+        document.getElementById('ov-p2-free').style.display = state.p2.ws >= 1 ? 'inline-block' : 'none';
+      } else {
+        document.getElementById('ov-p2-name').innerText = "Waiting Player...";
+        document.getElementById('ov-p2-char').innerText = "-";
+        document.getElementById('ov-p2-ws').innerText = "0";
+        document.getElementById('ov-p2-m').innerText = "0";
+        document.getElementById('ov-p2-free').style.display = 'none';
+      }
+
+      // Queue List Overlay (Max 5)
+      const qContainer = document.getElementById('ov-queue-list');
+      qContainer.innerHTML = '';
+      if (state.queue.length === 0) {
+        qContainer.innerHTML = '<div style="font-size:0.8rem; color:#aaa;">(Antrean Kosong)</div>';
+      } else {
+        state.queue.slice(0, 5).forEach((p, i) => {
+          const qEl = document.createElement('div');
+          qEl.className = 'overlay-qitem';
+          qEl.innerHTML = `
+            <span>#${i+1} <b>${p.name}</b> (${p.char})</span>
+            <span style="color:var(--accent-gold);">${p.type}</span>
+          `;
+          qContainer.appendChild(qEl);
+        });
+      }
+    }
+
+    // Inisialisasi
+    loadState();
+  </script>
+</body>
+</html>

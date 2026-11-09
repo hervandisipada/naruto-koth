@@ -586,7 +586,55 @@
           `;
           qContainer.appendChild(row);
         });
+
+        // Trigger smart auto-scroll if content overflows
+        startSmartAutoScroll();
       }
+    }
+
+    // Smart Auto-Scroll for Live Streaming
+    let autoScrollTimer = null;
+    let isUserInteracting = false;
+
+    function startSmartAutoScroll() {
+      const container = document.getElementById('queue-list');
+      if (!container) return;
+
+      clearInterval(autoScrollTimer);
+
+      let direction = 1; // 1 = down, -1 = up
+      let pauseCount = 0;
+
+      autoScrollTimer = setInterval(() => {
+        if (isUserInteracting) return;
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        if (maxScroll <= 8) return; // Fits on screen, no need to scroll
+
+        if (pauseCount > 0) {
+          pauseCount--;
+          return;
+        }
+
+        if (direction === 1) {
+          container.scrollTop += 1;
+          if (container.scrollTop >= maxScroll - 2) {
+            direction = -1;
+            pauseCount = 60; // Pause 3 seconds at bottom
+          }
+        } else {
+          container.scrollTop -= 1.5;
+          if (container.scrollTop <= 2) {
+            direction = 1;
+            pauseCount = 40; // Pause 2 seconds at top
+          }
+        }
+      }, 50);
+
+      // Pause when user touches or hovers
+      container.onmouseenter = () => { isUserInteracting = true; };
+      container.onmouseleave = () => { isUserInteracting = false; };
+      container.ontouchstart = () => { isUserInteracting = true; };
+      container.ontouchend = () => { setTimeout(() => { isUserInteracting = false; }, 2000); };
     }
 
     function escapeHtml(str) {

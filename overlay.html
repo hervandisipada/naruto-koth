@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KotH Live Overlay</title>
+  <title>KotH Live Overlay - Mobile Portrait</title>
   <!-- MQTT.js for Realtime Cloud Sync on GitHub Pages -->
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
@@ -14,6 +14,7 @@
       --accent-green: #22c55e;
       --accent-red: #ef4444;
       --border-glow: rgba(249, 115, 22, 0.4);
+      --bg-glass: rgba(15, 23, 42, 0.94);
     }
 
     * {
@@ -23,29 +24,43 @@
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     }
 
-    body {
-      background-color: transparent;
+    html, body {
+      height: 100%;
       margin: 0;
-      padding: 16px;
+      padding: 0;
+      background-color: transparent;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       color: #fff;
     }
 
-    .overlay-card {
-      width: 440px;
-      background: rgba(15, 23, 42, 0.90);
-      border-radius: 14px;
-      padding: 16px 18px;
+    /* MOBILE PORTRAIT CONTAINER (9:16 Ratio Frame) */
+    .mobile-frame {
+      width: 100%;
+      max-width: 410px;
+      height: 100vh;
+      max-height: 780px;
+      background: var(--bg-glass);
+      border-radius: 24px;
+      padding: 16px 14px;
       border: 2px solid var(--border-glow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(249, 115, 22, 0.2);
-      animation: fadeIn 0.4s ease-out;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(249, 115, 22, 0.25);
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* TOP NOTCH PILL (SMARTPHONE ACCENT) */
+    .mobile-notch {
+      width: 80px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      margin: -6px auto 10px auto;
     }
 
     /* HEADER */
@@ -55,13 +70,13 @@
       justify-content: space-between;
       border-bottom: 2px solid rgba(255, 255, 255, 0.1);
       padding-bottom: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .overlay-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 900;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
       background: linear-gradient(90deg, #f97316, #eab308);
       -webkit-background-clip: text;
@@ -75,8 +90,8 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      font-size: 0.7rem;
-      font-weight: 700;
+      font-size: 0.68rem;
+      font-weight: 800;
       color: #ef4444;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -96,23 +111,51 @@
       100% { transform: scale(0.9); opacity: 0.8; }
     }
 
-    /* MATCH SLOTS */
+    /* TICKER / NOTE */
+    .overlay-ticker {
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 6px;
+      padding: 5px 8px;
+      margin-bottom: 10px;
+      font-size: 0.74rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      color: #f8fafc;
+      overflow: hidden;
+    }
+    .ticker-label {
+      color: var(--accent-orange);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .ticker-content {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #fde047;
+      font-weight: 600;
+    }
+
+    /* MATCH ARENA (1 VS 1) */
     .match-box {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       background: rgba(0, 0, 0, 0.45);
       border-radius: 10px;
-      padding: 10px;
+      padding: 8px;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      flex-shrink: 0;
     }
 
     .player-slot {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-radius: 8px;
       transition: all 0.3s ease;
     }
@@ -122,13 +165,19 @@
       border-left: 4px solid var(--accent-gold);
     }
 
+    .player-slot.king.on-fire {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.35) 0%, rgba(234, 179, 8, 0.15) 100%);
+      border-left: 4px solid #ef4444;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.5);
+    }
+
     .player-slot.challenger {
       background: linear-gradient(90deg, rgba(56, 189, 248, 0.22) 0%, rgba(56, 189, 248, 0.04) 100%);
       border-left: 4px solid var(--accent-blue);
     }
 
     .p-role-tag {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 800;
       text-transform: uppercase;
       padding: 2px 6px;
@@ -137,34 +186,27 @@
       margin-bottom: 2px;
     }
 
-    .king .p-role-tag {
-      background-color: var(--accent-gold);
-      color: #000;
-    }
-
-    .challenger .p-role-tag {
-      background-color: var(--accent-blue);
-      color: #000;
-    }
+    .king .p-role-tag { background-color: var(--accent-gold); color: #000; }
+    .challenger .p-role-tag { background-color: var(--accent-blue); color: #000; }
 
     .p-name {
       font-weight: 800;
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 210px;
+      max-width: 190px;
     }
 
     .p-char {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--accent-orange);
       font-style: italic;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 210px;
+      max-width: 190px;
     }
 
     .p-right {
@@ -177,7 +219,7 @@
 
     .p-ws {
       font-weight: 900;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--accent-gold);
       display: flex;
       align-items: center;
@@ -185,7 +227,7 @@
     }
 
     .free-streak {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       background: var(--accent-green);
       color: #000;
       padding: 1px 5px;
@@ -193,8 +235,18 @@
       font-weight: 900;
     }
 
+    .fire-badge {
+      font-size: 0.62rem;
+      background: linear-gradient(90deg, #ef4444, #f97316);
+      color: #fff;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 900;
+      animation: pulse 1.2s infinite;
+    }
+
     .p-ticket {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #94a3b8;
     }
 
@@ -204,23 +256,28 @@
 
     .vs-tag {
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 900;
       color: var(--accent-red);
       letter-spacing: 2px;
       margin: -2px 0;
     }
 
-    /* QUEUE SECTION */
+    /* SCROLLABLE QUEUE SECTION */
     .queue-section {
       background: rgba(0, 0, 0, 0.35);
-      border-radius: 8px;
-      padding: 10px 12px;
+      border-radius: 10px;
+      padding: 10px 10px;
       border: 1px solid rgba(255, 255, 255, 0.05);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0; /* Important for flex-child scrolling */
+      overflow: hidden;
     }
 
     .queue-title {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 800;
       color: #94a3b8;
       text-transform: uppercase;
@@ -228,28 +285,55 @@
       margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
     }
 
+    /* SCROLLABLE LIST WITH CUSTOM STYLED SCROLLBAR */
     .queue-list {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 4px;
+      scroll-behavior: smooth;
+    }
+
+    .queue-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .queue-list::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+
+    .queue-list::-webkit-scrollbar-thumb {
+      background: var(--accent-orange);
+      border-radius: 4px;
+    }
+
+    .queue-list::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-gold);
     }
 
     .queue-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.82rem;
-      padding: 5px 8px;
+      font-size: 0.8rem;
+      padding: 6px 8px;
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.03);
       border-left: 3px solid #64748b;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
     }
 
     .queue-row.vip {
       border-left-color: var(--accent-gold);
-      background: rgba(234, 179, 8, 0.08);
+      background: rgba(234, 179, 8, 0.1);
     }
 
     .queue-row.free {
@@ -263,13 +347,13 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 320px;
+      max-width: 280px;
     }
 
     .q-idx {
       font-weight: 800;
       color: #94a3b8;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
     }
 
     .q-name {
@@ -278,13 +362,13 @@
     }
 
     .q-char {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #fdba74;
       font-style: italic;
     }
 
     .q-badge {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 800;
       padding: 1px 6px;
       border-radius: 4px;
@@ -305,28 +389,46 @@
       color: #64748b;
       font-size: 0.78rem;
       text-align: center;
-      padding: 8px 0;
+      padding: 20px 0;
       font-style: italic;
+    }
+
+    /* SCROLL HINT BADGE */
+    .scroll-hint {
+      font-size: 0.65rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 3px;
     }
   </style>
 </head>
 <body>
 
-  <div class="overlay-card">
+  <div class="mobile-frame">
+    <!-- Smartphone Top Notch Accent -->
+    <div class="mobile-notch"></div>
+
     <!-- Header -->
     <div class="overlay-header">
       <div class="overlay-title">
         <span>⚔️ KING OF THE HILL</span>
       </div>
       <div class="live-dot">
-        <span></span> LIVE MATCH
+        <span></span> LIVE
       </div>
     </div>
 
-    <!-- Match Arena -->
+    <!-- Announcement Ticker -->
+    <div id="overlay-ticker" class="overlay-ticker" style="display:none;">
+      <span class="ticker-label">📢</span>
+      <span id="ticker-text" class="ticker-content"></span>
+    </div>
+
+    <!-- Match Arena (1 VS 1) -->
     <div class="match-box">
-      <!-- King -->
-      <div class="player-slot king">
+      <!-- King Slot -->
+      <div class="player-slot king" id="king-slot">
         <div>
           <span class="p-role-tag">👑 KING</span>
           <div id="p1-name" class="p-name">Menunggu Pemain...</div>
@@ -335,7 +437,8 @@
         <div class="p-right">
           <div class="p-ws">
             WS: <span id="p1-ws">0</span>
-            <span id="p1-free" class="free-streak" style="display:none;">FREE MATCH</span>
+            <span id="p1-free" class="free-streak" style="display:none;">FREE</span>
+            <span id="p1-fire" class="fire-badge" style="display:none;">🔥 ON FIRE</span>
           </div>
           <div class="p-ticket">Tiket: <b id="p1-tickets">0</b></div>
         </div>
@@ -343,7 +446,7 @@
 
       <div class="vs-tag">— VS —</div>
 
-      <!-- Challenger -->
+      <!-- Challenger Slot -->
       <div class="player-slot challenger">
         <div>
           <span class="p-role-tag">⚔️ PENANTANG</span>
@@ -353,19 +456,24 @@
         <div class="p-right">
           <div class="p-ws">
             WS: <span id="p2-ws">0</span>
-            <span id="p2-free" class="free-streak" style="display:none;">FREE MATCH</span>
+            <span id="p2-free" class="free-streak" style="display:none;">FREE</span>
           </div>
           <div class="p-ticket">Tiket: <b id="p2-tickets">0</b></div>
         </div>
       </div>
     </div>
 
-    <!-- Queue List -->
+    <!-- Scrollable Queue Section -->
     <div class="queue-section">
       <div class="queue-title">
         <span>📋 Antrean Berikutnya:</span>
-        <span id="queue-total-count" style="color:var(--accent-orange);">0 Pemain</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="queue-scroll-indicator" class="scroll-hint" style="display:none;">↕ Scrollable</span>
+          <span id="queue-total-count" style="color:var(--accent-orange); font-weight:800;">0 Pemain</span>
+        </div>
       </div>
+      
+      <!-- ALL QUEUE ITEMS RENDERED HERE WITH SMOOTH SCROLL -->
       <div id="queue-list" class="queue-list">
         <div class="empty-queue">(Antrean Kosong)</div>
       </div>
@@ -377,12 +485,23 @@
       p1: null,
       p2: null,
       queue: [],
-      saved: []
+      saved: [],
+      announcement: ''
     };
 
     function render(data) {
       if (!data) return;
       state = data;
+
+      // Announcement Ticker
+      const tickerEl = document.getElementById('overlay-ticker');
+      const tickerText = document.getElementById('ticker-text');
+      if (state.announcement && state.announcement.trim()) {
+        tickerText.innerText = state.announcement.trim();
+        tickerEl.style.display = 'flex';
+      } else {
+        tickerEl.style.display = 'none';
+      }
 
       // P1 (King)
       const p1Name = document.getElementById('p1-name');
@@ -390,6 +509,8 @@
       const p1Ws = document.getElementById('p1-ws');
       const p1Tickets = document.getElementById('p1-tickets');
       const p1Free = document.getElementById('p1-free');
+      const p1Fire = document.getElementById('p1-fire');
+      const kingSlot = document.getElementById('king-slot');
 
       if (state.p1) {
         p1Name.innerText = state.p1.name;
@@ -397,12 +518,23 @@
         p1Ws.innerText = state.p1.ws || 0;
         p1Tickets.innerText = state.p1.matchesLeft || 0;
         p1Free.style.display = (state.p1.ws >= 1) ? 'inline-block' : 'none';
+        
+        // Fire streak effect if ws >= 3
+        if (state.p1.ws >= 3) {
+          kingSlot.classList.add('on-fire');
+          p1Fire.style.display = 'inline-block';
+        } else {
+          kingSlot.classList.remove('on-fire');
+          p1Fire.style.display = 'none';
+        }
       } else {
         p1Name.innerText = "Menunggu Pemain...";
         p1Char.innerText = "-";
         p1Ws.innerText = "0";
         p1Tickets.innerText = "0";
         p1Free.style.display = 'none';
+        p1Fire.style.display = 'none';
+        kingSlot.classList.remove('on-fire');
       }
 
       // P2 (Challenger)
@@ -426,17 +558,21 @@
         p2Free.style.display = 'none';
       }
 
-      // Queue List (Show top 5)
+      // Queue List (RENDER ALL PLAYERS - SCROLLABLE)
       const qContainer = document.getElementById('queue-list');
       const qTotal = document.getElementById('queue-total-count');
+      const scrollHint = document.getElementById('queue-scroll-indicator');
       const qList = state.queue || [];
       qTotal.innerText = `${qList.length} Pemain`;
 
       if (qList.length === 0) {
         qContainer.innerHTML = '<div class="empty-queue">(Antrean Kosong)</div>';
+        scrollHint.style.display = 'none';
       } else {
         qContainer.innerHTML = '';
-        qList.slice(0, 5).forEach((p, idx) => {
+        scrollHint.style.display = (qList.length > 5) ? 'inline-block' : 'none';
+
+        qList.forEach((p, idx) => {
           const row = document.createElement('div');
           const isVip = p.type === 'VIP';
           row.className = `queue-row ${isVip ? 'vip' : 'free'}`;
@@ -458,28 +594,20 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Connect to Server SSE
+    // Connect Local SSE
     function connectSSE() {
-      // Check if running on server or local file
       if (window.location.protocol.startsWith('http')) {
         const evtSource = new EventSource('/api/events');
-
         evtSource.onmessage = function(e) {
           try {
-            const data = JSON.parse(e.data);
-            render(data);
-          } catch(err) {
-            console.error("SSE parse error", err);
-          }
+            render(JSON.parse(e.data));
+          } catch(err) {}
         };
-
         evtSource.onerror = function() {
-          console.warn("SSE disconnected, retrying in 3s...");
           evtSource.close();
           setTimeout(connectSSE, 3000);
         };
       } else {
-        // Fallback for file:/// protocol
         loadFromLocalStorage();
         window.addEventListener('storage', loadFromLocalStorage);
         setInterval(loadFromLocalStorage, 1000);
@@ -493,7 +621,7 @@
       } catch(e) {}
     }
 
-    // Cloud Realtime Sync (MQTT over WebSockets for GitHub Pages)
+    // Cloud Realtime Sync (MQTT over WebSockets)
     const urlParams = new URLSearchParams(window.location.search);
     const STREAM_KEY = urlParams.get('room') || urlParams.get('key') || 'hervandisipada';
     const MQTT_TOPIC = `koth/naruto/${STREAM_KEY}`;
@@ -515,19 +643,14 @@
           try {
             const data = JSON.parse(payload.toString());
             render(data);
-          } catch(err) {
-            console.error("MQTT message parse error", err);
-          }
+          } catch(err) {}
         });
-      } catch(err) {
-        console.warn("MQTT connection error", err);
-      }
+      } catch(err) {}
     }
 
-    // Initialize both Cloud MQTT and Local SSE
+    // Initialize
     connectCloudMQTT();
     connectSSE();
   </script>
 </body>
 </html>
-

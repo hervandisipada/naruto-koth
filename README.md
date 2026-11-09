@@ -28,7 +28,8 @@ Sistem Antrean & Overlay Interaktif untuk Live Streaming TikTok / YouTube / Twit
 1. Buka TikTok Live Studio.
 2. Klik **Tambah Sumber (Add Source)** $\rightarrow$ **Tautan / Web (Browser Source)**.
 3. Masukkan URL: `https://hervandisipada.github.io/naruto-koth/overlay.html`
-4. Atur Resolusi:
-   - **Lebar (Width):** `480`
-   - **Tinggi (Height):** `480`
-5. Buka link Admin di HP (`https://hervandisipada.github.io/naruto-koth/`) untuk mengontrol jalannya pertandingan sambil live stream.
+4. Atur Resolusi Portrait (Format HP 9:16):
+   - **Lebar (Width):** `400`
+   - **Tinggi (Height):** `740` (atau `720` - `780`)
+5. Daftar antrean dapat di-scroll (smooth scroll) jika pemain antrean banyak melebihi tinggi layar.
+6. Buka link Admin di HP (`https://hervandisipada.github.io/naruto-koth/`) untuk mengontrol jalannya pertandingan sambil live stream.

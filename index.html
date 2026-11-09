@@ -464,7 +464,7 @@
           </div>
           <div class="form-group">
             <label>Karakter Pilihan (Opsional - Bisa Diisi Nanti)</label>
-            <input type="text" id="input-char" class="form-control" placeholder="cth: Sasuke (EMS) / kosongkan dulu">
+            <input type="text" id="input-char" class="form-control" placeholder="cth: Sasuke (EMS) / kosongkan dulu" list="storm-characters">
           </div>
           <div class="form-row">
             <div class="form-group" style="flex: 1;">
@@ -482,6 +482,18 @@
           </div>
           <button type="submit" class="btn btn-primary btn-block">Masukkan Ke Daftar</button>
         </form>
+      </div>
+
+      <!-- PENGUMUMAN / NOTE RUNNING TEXT OVERLAY -->
+      <div class="card">
+        <div class="card-title">
+          <span>📢 Pengumuman / Note di Overlay</span>
+        </div>
+        <p class="instructions" style="margin-bottom: 8px;">Teks ini akan muncul berjalan di bagian atas overlay live stream.</p>
+        <div class="form-group">
+          <input type="text" id="input-announcement" class="form-control" placeholder="cth: 1 Mawar = Antrean VIP | King WS dapat Free Match">
+        </div>
+        <button class="btn btn-primary btn-block" onclick="saveAnnouncement()">Update Pengumuman Overlay</button>
       </div>
 
       <!-- DAFTAR SAVED PLAYERS -->
@@ -565,7 +577,7 @@
       <h3 style="margin-bottom: 10px; color: var(--accent-gold);">Pilih / Ubah Karakter</h3>
       <div class="form-group">
         <label id="modal-target-label">Masukkan Karakter:</label>
-        <input type="text" id="modal-char-input" class="form-control" placeholder="cth: Kakashi (DMS)">
+        <input type="text" id="modal-char-input" class="form-control" placeholder="cth: Kakashi (DMS)" list="storm-characters">
       </div>
       <div style="display: flex; gap: 10px; margin-top: 15px;">
         <button class="btn btn-primary" style="flex:1;" onclick="saveModalChar()">Simpan</button>
@@ -574,13 +586,59 @@
     </div>
   </div>
 
+  <!-- DATALIST KARAKTER NARUTO STORM CONNECTIONS -->
+  <datalist id="storm-characters">
+    <option value="Naruto (Baryon Mode)">
+    <option value="Naruto (Six Paths Sage)">
+    <option value="Naruto (Kurama Link)">
+    <option value="Naruto (Sage Mode)">
+    <option value="Sasuke (Supporting Kage)">
+    <option value="Sasuke (Rinnegan / Six Paths)">
+    <option value="Sasuke (EMS)">
+    <option value="Sasuke (Hebi / Akatsuki)">
+    <option value="Isshiki Otsutsuki">
+    <option value="Jigen">
+    <option value="Kawaki (Karma)">
+    <option value="Boruto (Karma)">
+    <option value="Minato (Reanimation)">
+    <option value="Minato (Jonin)">
+    <option value="Itachi (Reanimation)">
+    <option value="Itachi (Anbu)">
+    <option value="Madara (Six Paths)">
+    <option value="Madara (Reanimation)">
+    <option value="Obito (Six Paths)">
+    <option value="Obito (Masked Man / Tobi)">
+    <option value="Kakashi (DMS)">
+    <option value="Kakashi (Double Sharingan)">
+    <option value="Pain">
+    <option value="Nagato (Reanimation)">
+    <option value="Might Guy (Eight Gates)">
+    <option value="Rock Lee">
+    <option value="Neji Hyuga">
+    <option value="Hinata Hyuga">
+    <option value="Gaara">
+    <option value="Kushina Uzumaki">
+    <option value="Hashirama Senju (Sage Mode)">
+    <option value="Tobirama Senju">
+    <option value="Sarutobi Hiruzen">
+    <option value="Shisui Uchiha">
+    <option value="Jiraiya">
+    <option value="Tsunade">
+    <option value="Orochimaru">
+    <option value="Killer Bee">
+    <option value="Kaguya Otsutsuki">
+    <option value="Ashura Otsutsuki">
+    <option value="Indra Otsutsuki">
+  </datalist>
+
   <script>
     // State Aplikasi
     let state = {
       p1: null, // { name, char, ws, matchesLeft, type }
       p2: null,
       queue: [],
-      saved: []
+      saved: [],
+      announcement: ''
     };
 
     let editingTarget = null; // for modal
@@ -938,6 +996,20 @@
       renderQueue();
       renderSaved();
       renderOverlay();
+
+      const annInput = document.getElementById('input-announcement');
+      if (annInput && state.announcement !== undefined) {
+        if (document.activeElement !== annInput) {
+          annInput.value = state.announcement;
+        }
+      }
+    }
+
+    function saveAnnouncement() {
+      const val = document.getElementById('input-announcement').value.trim();
+      state.announcement = val;
+      saveState();
+      alert("✅ Pengumuman overlay berhasil diperbarui!");
     }
 
     function renderArena() {

@@ -3,25 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KotH Live Overlay - Stream Optimized</title>
+  <title>KotH Live Overlay</title>
   <!-- MQTT.js for Realtime Cloud Sync on GitHub Pages -->
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
     :root {
-      --accent-orange: #f97316;
-      --accent-gold: #facc15;
+      --bg-dark: rgba(11, 15, 25, 0.95);
+      --border-subtle: rgba(255, 255, 255, 0.12);
+      --accent-gold: #f59e0b;
       --accent-blue: #38bdf8;
       --accent-green: #22c55e;
       --accent-red: #ef4444;
-      --border-glow: rgba(249, 115, 22, 0.7);
-      --bg-glass: rgba(10, 15, 29, 0.96);
+      --accent-purple: #a855f7;
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     html, body {
@@ -33,22 +35,22 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #fff;
+      color: var(--text-main);
     }
 
     /* COMPACT & HIGH-READABILITY MOBILE FRAME */
     .mobile-frame {
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       height: 100vh;
-      max-height: 750px;
-      background: var(--bg-glass);
-      border-radius: 18px;
-      padding: 14px 12px;
-      border: 2px solid var(--border-glow);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(249, 115, 22, 0.3);
+      max-height: 720px;
+      background: var(--bg-dark);
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
       display: flex;
       flex-direction: column;
       position: relative;
@@ -59,92 +61,82 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.15);
-      padding-bottom: 8px;
-      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 6px;
+      margin-bottom: 6px;
       flex-shrink: 0;
     }
 
     .overlay-title {
-      font-size: 1.15rem;
-      font-weight: 900;
-      letter-spacing: 1px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
-      background: linear-gradient(90deg, #f97316, #facc15);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      color: #ffffff;
     }
 
     .live-dot {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      font-weight: 900;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 800;
       color: #ef4444;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      background: rgba(239, 68, 68, 0.15);
-      padding: 3px 8px;
-      border-radius: 6px;
-      border: 1px solid rgba(239, 68, 68, 0.4);
+      letter-spacing: 0.5px;
+      background: rgba(239, 68, 68, 0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
     .live-dot span {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background-color: #ef4444;
       border-radius: 50%;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(0.9); opacity: 0.8; }
-      50% { transform: scale(1.3); opacity: 1; }
-      100% { transform: scale(0.9); opacity: 0.8; }
     }
 
     /* ANNOUNCEMENT TICKER */
     .overlay-ticker {
-      background: rgba(0, 0, 0, 0.65);
+      background: rgba(0, 0, 0, 0.5);
       border-radius: 6px;
-      padding: 6px 10px;
-      margin-bottom: 8px;
-      font-size: 0.85rem;
+      padding: 4px 8px;
+      margin-bottom: 6px;
+      font-size: 0.78rem;
       display: flex;
       align-items: center;
       gap: 6px;
-      border-left: 3px solid var(--accent-orange);
+      border-left: 3px solid var(--accent-gold);
       color: #f8fafc;
       overflow: hidden;
       flex-shrink: 0;
     }
+
     .ticker-label {
-      color: var(--accent-orange);
-      font-weight: 900;
+      color: var(--accent-gold);
+      font-weight: 800;
+      font-size: 0.72rem;
       white-space: nowrap;
     }
+
     .ticker-content {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: #fde047;
-      font-weight: 700;
+      color: #f8fafc;
+      font-weight: 600;
     }
 
-    /* MATCH ARENA (1 VS 1) - HIGH CONTRAST & LARGE TEXT */
+    /* MATCH ARENA (1 VS 1) - COMPACT & HIGH CONTRAST */
     .match-box {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      background: rgba(0, 0, 0, 0.55);
-      border-radius: 12px;
-      padding: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      margin-bottom: 8px;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 8px;
+      padding: 6px;
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 6px;
       flex-shrink: 0;
     }
 
@@ -152,36 +144,30 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 12px;
-      border-radius: 10px;
-      transition: all 0.2s ease;
+      padding: 8px 10px;
+      border-radius: 6px;
+      transition: background 0.15s ease;
     }
 
     .player-slot.king {
-      background: linear-gradient(90deg, rgba(234, 179, 8, 0.28) 0%, rgba(15, 23, 42, 0.8) 100%);
-      border-left: 5px solid var(--accent-gold);
-    }
-
-    .player-slot.king.on-fire {
-      background: linear-gradient(90deg, rgba(239, 68, 68, 0.45) 0%, rgba(234, 179, 8, 0.2) 100%);
-      border-left: 5px solid #ef4444;
-      box-shadow: 0 0 18px rgba(239, 68, 68, 0.6);
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 3px solid var(--accent-gold);
     }
 
     .player-slot.challenger {
-      background: linear-gradient(90deg, rgba(56, 189, 248, 0.28) 0%, rgba(15, 23, 42, 0.8) 100%);
-      border-left: 5px solid var(--accent-blue);
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 3px solid var(--accent-blue);
     }
 
     /* ROLE BADGE */
     .p-role-tag {
-      font-size: 0.72rem;
-      font-weight: 900;
+      font-size: 0.65rem;
+      font-weight: 800;
       text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 5px;
+      padding: 2px 6px;
+      border-radius: 3px;
       display: inline-block;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       letter-spacing: 0.5px;
     }
 
@@ -197,28 +183,26 @@
 
     /* LARGE PLAYER NAME */
     .p-name {
-      font-weight: 900;
-      font-size: 1.35rem;
+      font-weight: 800;
+      font-size: 1.22rem;
       color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 200px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      max-width: 195px;
       line-height: 1.2;
     }
 
     /* LARGE CHARACTER NAME */
     .p-char {
-      font-size: 0.95rem;
-      color: #fdba74;
-      font-weight: 700;
-      font-style: italic;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 200px;
-      margin-top: 2px;
+      max-width: 195px;
+      margin-top: 1px;
     }
 
     .p-right {
@@ -226,68 +210,67 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 4px;
+      gap: 3px;
+      flex-shrink: 0;
     }
 
     /* PROMINENT WIN STREAK */
     .p-ws {
-      font-weight: 900;
-      font-size: 1.15rem;
+      font-weight: 800;
+      font-size: 1.05rem;
       color: var(--accent-gold);
       display: flex;
       align-items: center;
-      gap: 5px;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      gap: 4px;
     }
 
     .free-streak {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       background: var(--accent-green);
       color: #000;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 800;
       letter-spacing: 0.5px;
     }
 
-    .fire-badge {
-      font-size: 0.7rem;
-      background: linear-gradient(90deg, #ef4444, #f97316);
+    .bonus-badge {
+      font-size: 0.65rem;
+      background: var(--accent-purple);
       color: #fff;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 900;
-      animation: pulse 1.2s infinite;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
     }
 
     .p-ticket {
-      font-size: 0.88rem;
-      color: #cbd5e1;
+      font-size: 0.8rem;
+      color: var(--text-muted);
       font-weight: 600;
     }
 
     .p-ticket b {
-      color: #38bdf8;
-      font-size: 1.05rem;
-      font-weight: 900;
+      color: var(--accent-blue);
+      font-size: 0.95rem;
+      font-weight: 800;
     }
 
     .vs-tag {
       text-align: center;
-      font-size: 0.85rem;
-      font-weight: 900;
-      color: var(--accent-red);
-      letter-spacing: 3px;
-      margin: -2px 0;
-      text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 1px;
+      margin: 1px 0;
     }
 
     /* SCROLLABLE QUEUE SECTION */
     .queue-section {
-      background: rgba(0, 0, 0, 0.45);
-      border-radius: 12px;
-      padding: 10px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -296,111 +279,128 @@
     }
 
     .queue-title {
-      font-size: 0.85rem;
-      font-weight: 900;
-      color: #cbd5e1;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 4px;
     }
 
-    /* SCROLLABLE LIST WITH SLIM SCROLLBAR */
+    /* SCROLLABLE LIST */
     .queue-list {
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 5px;
       overflow-y: auto;
       flex: 1;
-      padding-right: 4px;
+      padding-right: 2px;
       scroll-behavior: smooth;
     }
 
     .queue-list::-webkit-scrollbar {
-      width: 5px;
+      width: 4px;
     }
 
     .queue-list::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 2px;
     }
 
     .queue-list::-webkit-scrollbar-thumb {
-      background: var(--accent-orange);
-      border-radius: 4px;
+      background: #475569;
+      border-radius: 2px;
     }
 
-    /* LARGE & LEGIBLE QUEUE ROWS */
+    /* CLEAN QUEUE ROW WITH TICKET DISPLAY */
     .queue-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 10px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.06);
-      border-left: 4px solid #64748b;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid #334155;
       flex-shrink: 0;
-      transition: background 0.2s ease;
     }
 
     .queue-row.vip {
       border-left-color: var(--accent-gold);
-      background: rgba(234, 179, 8, 0.16);
+      background: rgba(245, 158, 11, 0.06);
     }
 
     .queue-row.free {
-      border-left-color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.1);
+      border-left-color: #475569;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .queue-row.saved {
+      border-left-color: #f97316;
+      background: rgba(249, 115, 22, 0.06);
     }
 
     .q-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 290px;
+      max-width: 250px;
     }
 
     .q-idx {
-      font-weight: 900;
-      color: #94a3b8;
-      font-size: 0.95rem;
-      min-width: 24px;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      min-width: 18px;
     }
 
     .queue-row.vip .q-idx {
       color: var(--accent-gold);
     }
 
-    .queue-row.free .q-idx {
-      color: var(--accent-blue);
-    }
-
     .q-name {
-      font-weight: 800;
+      font-weight: 700;
       color: #ffffff;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
     }
 
     .q-char {
-      font-size: 0.88rem;
-      color: #fde047;
-      font-style: italic;
-      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .q-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    /* USER TICKET DISPLAY IN QUEUE */
+    .q-ticket {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
     }
 
     .q-badge {
-      font-size: 0.72rem;
-      font-weight: 900;
-      padding: 3px 8px;
-      border-radius: 5px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 5px;
+      border-radius: 3px;
       letter-spacing: 0.5px;
       flex-shrink: 0;
     }
@@ -408,30 +408,24 @@
     .q-badge.vip {
       background-color: var(--accent-gold);
       color: #000;
-      box-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
     }
 
-    .q-badge.free {
-      background-color: var(--accent-blue);
+    .q-badge.saved {
+      background-color: #f97316;
       color: #000;
     }
 
     .empty-queue {
-      color: #94a3b8;
-      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
       text-align: center;
-      padding: 30px 0;
-      font-style: italic;
+      padding: 24px 0;
     }
 
-    /* SCROLL HINT BADGE */
     .scroll-hint {
-      font-size: 0.72rem;
-      color: #94a3b8;
+      font-size: 0.68rem;
+      color: var(--text-muted);
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 3px;
     }
   </style>
 </head>
@@ -440,9 +434,7 @@
   <div class="mobile-frame">
     <!-- Header -->
     <div class="overlay-header">
-      <div class="overlay-title">
-        <span>👑 KING OF THE HILL</span>
-      </div>
+      <div class="overlay-title">KING OF THE HILL</div>
       <div class="live-dot">
         <span></span> LIVE
       </div>
@@ -450,16 +442,16 @@
 
     <!-- Announcement Ticker -->
     <div id="overlay-ticker" class="overlay-ticker" style="display:none;">
-      <span class="ticker-label">📢</span>
+      <span class="ticker-label">NOTE:</span>
       <span id="ticker-text" class="ticker-content"></span>
     </div>
 
     <!-- Match Arena (1 VS 1) -->
     <div class="match-box">
-      <!-- King Slot -->
-      <div class="player-slot king" id="king-slot">
+      <!-- Player 1 Slot -->
+      <div class="player-slot king" id="slot-p1">
         <div>
-          <span class="p-role-tag">👑 KING</span>
+          <span class="p-role-tag" id="p1-role-tag">KING</span>
           <div id="p1-name" class="p-name">Menunggu...</div>
           <div id="p1-char" class="p-char">-</div>
         </div>
@@ -467,18 +459,18 @@
           <div class="p-ws">
             WS: <span id="p1-ws">0</span>
             <span id="p1-free" class="free-streak" style="display:none;">FREE</span>
-            <span id="p1-fire" class="fire-badge" style="display:none;">🔥 ON FIRE</span>
+            <span id="p1-bonus" class="bonus-badge" style="display:none;">+1 TIKET</span>
           </div>
           <div class="p-ticket">Tiket: <b id="p1-tickets">0</b></div>
         </div>
       </div>
 
-      <div class="vs-tag">— VS —</div>
+      <div class="vs-tag">VS</div>
 
-      <!-- Challenger Slot -->
-      <div class="player-slot challenger">
+      <!-- Player 2 Slot -->
+      <div class="player-slot challenger" id="slot-p2">
         <div>
-          <span class="p-role-tag">⚔️ PENANTANG</span>
+          <span class="p-role-tag" id="p2-role-tag">PENANTANG</span>
           <div id="p2-name" class="p-name">Menunggu...</div>
           <div id="p2-char" class="p-char">-</div>
         </div>
@@ -486,6 +478,7 @@
           <div class="p-ws">
             WS: <span id="p2-ws">0</span>
             <span id="p2-free" class="free-streak" style="display:none;">FREE</span>
+            <span id="p2-bonus" class="bonus-badge" style="display:none;">+1 TIKET</span>
           </div>
           <div class="p-ticket">Tiket: <b id="p2-tickets">0</b></div>
         </div>
@@ -495,14 +488,14 @@
     <!-- Scrollable Queue Section -->
     <div class="queue-section">
       <div class="queue-title">
-        <span>📋 ANTREAN</span>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span id="queue-scroll-indicator" class="scroll-hint" style="display:none;">↕ Scroll</span>
-          <span id="queue-total-count" style="color:var(--accent-orange); font-weight:900; font-size:0.95rem;">0 Pemain</span>
+        <span id="queue-section-title">ANTREAN BERIKUTNYA</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span id="queue-scroll-indicator" class="scroll-hint" style="display:none;">Auto-Scroll</span>
+          <span id="queue-total-count" style="color:#ffffff; font-weight:800; font-size:0.85rem;">0 Pemain</span>
         </div>
       </div>
       
-      <!-- ALL QUEUE ITEMS RENDERED HERE WITH SMOOTH SCROLL -->
+      <!-- ALL QUEUE OR SAVED ITEMS RENDERED HERE WITH TICKETS -->
       <div id="queue-list" class="queue-list">
         <div class="empty-queue">(Antrean Kosong)</div>
       </div>
@@ -515,8 +508,20 @@
       p2: null,
       queue: [],
       saved: [],
-      announcement: ''
+      announcement: '',
+      overlayListMode: 'queue'
     };
+
+    // Helper deteksi peran King vs Penantang
+    function getArenaRoles(st) {
+      const s = st || state;
+      if (s.p2 && (s.p2.ws > 0 || !s.p1)) {
+        if (!s.p1 || (s.p1.ws === 0 && s.p2.ws > 0)) {
+          return { kingSlot: 'p2', challengerSlot: 'p1' };
+        }
+      }
+      return { kingSlot: 'p1', challengerSlot: 'p2' };
+    }
 
     function render(data) {
       if (!data) return;
@@ -532,92 +537,166 @@
         tickerEl.style.display = 'none';
       }
 
-      // P1 (King)
+      // Deteksi Posisi Dinamis (Alternating King & Challenger)
+      const roles = getArenaRoles(state);
+      const isP1King = (roles.kingSlot === 'p1');
+
+      // Slot 1 (P1)
+      const slot1 = document.getElementById('slot-p1');
+      const p1RoleTag = document.getElementById('p1-role-tag');
       const p1Name = document.getElementById('p1-name');
       const p1Char = document.getElementById('p1-char');
       const p1Ws = document.getElementById('p1-ws');
       const p1Tickets = document.getElementById('p1-tickets');
       const p1Free = document.getElementById('p1-free');
-      const p1Fire = document.getElementById('p1-fire');
-      const kingSlot = document.getElementById('king-slot');
+      const p1Bonus = document.getElementById('p1-bonus');
+
+      if (isP1King) {
+        slot1.className = 'player-slot king';
+        p1RoleTag.innerText = 'KING';
+      } else {
+        slot1.className = 'player-slot challenger';
+        p1RoleTag.innerText = 'PENANTANG';
+      }
 
       if (state.p1) {
         p1Name.innerText = state.p1.name;
-        p1Char.innerText = state.p1.char || 'Belum Pilih / TBA';
+        p1Char.innerText = state.p1.char || 'TBA';
         p1Ws.innerText = state.p1.ws || 0;
         p1Tickets.innerText = state.p1.matchesLeft || 0;
         p1Free.style.display = (state.p1.ws >= 1) ? 'inline-block' : 'none';
-        
-        // Fire streak effect if ws >= 3
-        if (state.p1.ws >= 3) {
-          kingSlot.classList.add('on-fire');
-          p1Fire.style.display = 'inline-block';
-        } else {
-          kingSlot.classList.remove('on-fire');
-          p1Fire.style.display = 'none';
+
+        // Streak Bonus (+1 Tiket setiap kelipatan 5 WS)
+        if (p1Bonus) {
+          if ((state.p1.ws || 0) >= 5) {
+            p1Bonus.innerText = '+1 TIKET';
+            p1Bonus.style.display = 'inline-block';
+          } else {
+            p1Bonus.style.display = 'none';
+          }
         }
       } else {
-        p1Name.innerText = "Menunggu...";
-        p1Char.innerText = "-";
+        p1Name.innerText = isP1King ? "Menunggu King..." : "Menunggu Lawan...";
+        p1Char.innerText = isP1King ? "Belum Ada Juara" : "Admin memilih penantang";
         p1Ws.innerText = "0";
-        p1Tickets.innerText = "0";
+        p1Tickets.innerText = "-";
         p1Free.style.display = 'none';
-        p1Fire.style.display = 'none';
-        kingSlot.classList.remove('on-fire');
+        if (p1Bonus) p1Bonus.style.display = 'none';
       }
 
-      // P2 (Challenger)
+      // Slot 2 (P2)
+      const slot2 = document.getElementById('slot-p2');
+      const p2RoleTag = document.getElementById('p2-role-tag');
       const p2Name = document.getElementById('p2-name');
       const p2Char = document.getElementById('p2-char');
       const p2Ws = document.getElementById('p2-ws');
       const p2Tickets = document.getElementById('p2-tickets');
       const p2Free = document.getElementById('p2-free');
+      const p2Bonus = document.getElementById('p2-bonus');
+
+      if (!isP1King) {
+        slot2.className = 'player-slot king';
+        p2RoleTag.innerText = 'KING';
+      } else {
+        slot2.className = 'player-slot challenger';
+        p2RoleTag.innerText = 'PENANTANG';
+      }
 
       if (state.p2) {
         p2Name.innerText = state.p2.name;
-        p2Char.innerText = state.p2.char || 'Belum Pilih / TBA';
+        p2Char.innerText = state.p2.char || 'TBA';
         p2Ws.innerText = state.p2.ws || 0;
         p2Tickets.innerText = state.p2.matchesLeft || 0;
         p2Free.style.display = (state.p2.ws >= 1) ? 'inline-block' : 'none';
+
+        // Streak Bonus (+1 Tiket setiap kelipatan 5 WS)
+        if (p2Bonus) {
+          if ((state.p2.ws || 0) >= 5) {
+            p2Bonus.innerText = '+1 TIKET';
+            p2Bonus.style.display = 'inline-block';
+          } else {
+            p2Bonus.style.display = 'none';
+          }
+        }
       } else {
-        p2Name.innerText = "Menunggu...";
-        p2Char.innerText = "-";
+        p2Name.innerText = !isP1King ? "Menunggu King..." : "Menunggu Lawan...";
+        p2Char.innerText = !isP1King ? "Belum Ada Juara" : "Admin memilih penantang";
         p2Ws.innerText = "0";
-        p2Tickets.innerText = "0";
+        p2Tickets.innerText = "-";
         p2Free.style.display = 'none';
+        if (p2Bonus) p2Bonus.style.display = 'none';
       }
 
-      // Queue List (RENDER ALL PLAYERS - SCROLLABLE)
+      // Render Queue or Saved list with Ticket Count
+      const isSavedMode = (state.overlayListMode === 'saved');
+      const qSectionTitle = document.getElementById('queue-section-title');
       const qContainer = document.getElementById('queue-list');
       const qTotal = document.getElementById('queue-total-count');
       const scrollHint = document.getElementById('queue-scroll-indicator');
-      const qList = state.queue || [];
-      qTotal.innerText = `${qList.length} Pemain`;
 
-      if (qList.length === 0) {
-        qContainer.innerHTML = '<div class="empty-queue">(Antrean Kosong)</div>';
-        scrollHint.style.display = 'none';
+      if (isSavedMode) {
+        if (qSectionTitle) qSectionTitle.innerText = 'SLOT DISIMPAN (SAVED)';
+        const sList = state.saved || [];
+        qTotal.innerText = `${sList.length} Pemain`;
+
+        if (sList.length === 0) {
+          qContainer.innerHTML = '<div class="empty-queue">(Belum ada pemain yang disimpan)</div>';
+          scrollHint.style.display = 'none';
+        } else {
+          qContainer.innerHTML = '';
+          scrollHint.style.display = (sList.length > 5) ? 'inline-block' : 'none';
+
+          sList.forEach((p, idx) => {
+            const row = document.createElement('div');
+            row.className = 'queue-row saved';
+            row.innerHTML = `
+              <div class="q-left">
+                <span class="q-idx">#${idx + 1}</span>
+                <span class="q-name">${escapeHtml(p.name)}</span>
+                <span class="q-char">(${escapeHtml(p.char || 'TBA')})</span>
+              </div>
+              <div class="q-right">
+                <span class="q-ticket">${p.matchesLeft} Tiket</span>
+                <span class="q-badge saved">SAVE</span>
+              </div>
+            `;
+            qContainer.appendChild(row);
+          });
+
+          startSmartAutoScroll();
+        }
       } else {
-        qContainer.innerHTML = '';
-        scrollHint.style.display = (qList.length > 5) ? 'inline-block' : 'none';
+        if (qSectionTitle) qSectionTitle.innerText = 'ANTREAN BERIKUTNYA';
+        const qList = state.queue || [];
+        qTotal.innerText = `${qList.length} Pemain`;
 
-        qList.forEach((p, idx) => {
-          const row = document.createElement('div');
-          const isVip = p.type === 'VIP';
-          row.className = `queue-row ${isVip ? 'vip' : 'free'}`;
-          row.innerHTML = `
-            <div class="q-left">
-              <span class="q-idx">#${idx + 1}</span>
-              <span class="q-name">${escapeHtml(p.name)}</span>
-              <span class="q-char">(${escapeHtml(p.char || 'TBA')})</span>
-            </div>
-            <span class="q-badge ${isVip ? 'vip' : 'free'}">${p.type}</span>
-          `;
-          qContainer.appendChild(row);
-        });
+        if (qList.length === 0) {
+          qContainer.innerHTML = '<div class="empty-queue">(Antrean Kosong)</div>';
+          scrollHint.style.display = 'none';
+        } else {
+          qContainer.innerHTML = '';
+          scrollHint.style.display = (qList.length > 5) ? 'inline-block' : 'none';
 
-        // Trigger smart auto-scroll if content overflows
-        startSmartAutoScroll();
+          qList.forEach((p, idx) => {
+            const row = document.createElement('div');
+            const isVip = p.type === 'VIP';
+            row.className = `queue-row ${isVip ? 'vip' : 'free'}`;
+            row.innerHTML = `
+              <div class="q-left">
+                <span class="q-idx">#${idx + 1}</span>
+                <span class="q-name">${escapeHtml(p.name)}</span>
+                <span class="q-char">(${escapeHtml(p.char || 'TBA')})</span>
+              </div>
+              <div class="q-right">
+                <span class="q-ticket">${p.matchesLeft} Tiket</span>
+                ${isVip ? '<span class="q-badge vip">VIP</span>' : ''}
+              </div>
+            `;
+            qContainer.appendChild(row);
+          });
+
+          startSmartAutoScroll();
+        }
       }
     }
 
@@ -642,7 +721,7 @@
       autoScrollTimer = setInterval(() => {
         if (isUserInteracting) return;
         const maxScroll = container.scrollHeight - container.clientHeight;
-        if (maxScroll <= 8) return; // Fits on screen, no need to scroll
+        if (maxScroll <= 8) return;
 
         if (pauseCount > 0) {
           pauseCount--;
@@ -653,18 +732,17 @@
           container.scrollTop += 1;
           if (container.scrollTop >= maxScroll - 2) {
             direction = -1;
-            pauseCount = 60; // Pause 3 seconds at bottom
+            pauseCount = 60; // Pause 3s at bottom
           }
         } else {
           container.scrollTop -= 1.5;
           if (container.scrollTop <= 2) {
             direction = 1;
-            pauseCount = 40; // Pause 2 seconds at top
+            pauseCount = 40; // Pause 2s at top
           }
         }
       }, 50);
 
-      // Pause when user touches or hovers
       container.onmouseenter = () => { isUserInteracting = true; };
       container.onmouseleave = () => { isUserInteracting = false; };
       container.ontouchstart = () => { isUserInteracting = true; };

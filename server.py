@@ -54,17 +54,26 @@ def broadcast_state():
             if dead in sse_clients:
                 sse_clients.remove(dead)
 
-def get_local_ip():
+def get_all_ips():
+    ips = []
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
+        hostname = socket.gethostname()
+        for ip in socket.gethostbyname_ex(hostname)[2]:
+            if not ip.startswith("127."):
+                ips.append(ip)
     except Exception:
-        return "127.0.0.1"
+        pass
+    if not ips:
+        ips.append("127.0.0.1")
+    return ips
 
 class KotHHandler(http.server.SimpleHTTPRequestHandler):
+    def handle(self):
+        try:
+            super().handle()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
+
     def end_headers(self):
         # Enable CORS for local dev
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -148,23 +157,26 @@ class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 def run():
     load_initial_state()
-    local_ip = get_local_ip()
+    local_ips = get_all_ips()
     server_address = ('0.0.0.0', PORT)
     httpd = ThreadingHTTPServer(server_address, KotHHandler)
 
     print("=" * 65)
     print("  👑 NARUTO STORM KOTH - LIVE OVERLAY & CONTROLLER SYSTEM")
     print("=" * 65)
-    print(f"🎬 LINK OVERLAY TIKTOK LIVE STUDIO:")
+    print("🎬 LINK OVERLAY UNTUK TIKTOK LIVE STUDIO (DI PC):")
     print(f"   http://localhost:{PORT}/overlay.html")
     print()
-    print(f"💻 LINK PANEL ADMIN (PC / LAPTOP):")
+    print("💻 LINK PANEL ADMIN DI PC (BROWSER PC):")
     print(f"   http://localhost:{PORT}")
     print()
-    print(f"📱 LINK PANEL ADMIN (HP / SMARTPHONE - Wi-Fi Sama):")
-    print(f"   http://{local_ip}:{PORT}")
+    print("📱 LINK PANEL ADMIN DI HP (Pilih salah satu sesuai koneksi HP):")
+    for ip in local_ips:
+        print(f"   👉 http://{ip}:{PORT}")
     print("=" * 65)
-    print("Server berjalan... Tekan Ctrl+C untuk menghentikan.")
+    print("STATUS: SERVER BERJALAN AKTIF")
+    print("PENTING: Jangan tutup jendela hitam ini selama live stream berlangsung!")
+    print("=" * 65)
 
     try:
         httpd.serve_forever()

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Naruto Storm Connections - KotH Queue & Overlay System</title>
+  <!-- MQTT.js for Realtime Cloud Sync across HP & TikTok Live Studio -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
     :root {
       --bg-dark: #0f172a;
@@ -389,8 +391,21 @@
 
   <!-- Switcher Tab -->
   <div class="view-switcher">
-    <button class="tab-btn active" onclick="switchTab('admin')">📱 Panel Admin (HP Control)</button>
-    <button class="tab-btn" onclick="switchTab('overlay')">🎬 TikTok Overlay Source</button>
+    <button class="tab-btn active" onclick="switchTab('admin')">📱 Panel Admin (HP / PC Control)</button>
+    <a href="overlay.html" target="_blank" class="tab-btn" style="text-decoration:none; text-align:center;">🎬 Buka Overlay Source ↗</a>
+  </div>
+
+  <!-- Quick Link Banner for Streamer -->
+  <div style="background: #1e1b4b; border-bottom: 2px solid var(--accent-orange); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; font-size: 0.88rem;">
+    <div>
+      <span style="color: var(--accent-gold); font-weight: bold;">🎬 Link Overlay TikTok Live Studio:</span>
+      <code id="tiktok-link-display" style="background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 4px; color: #38bdf8; margin: 0 6px;">https://hervandisipada.github.io/naruto-koth/overlay.html</code>
+      <button class="btn btn-sm btn-primary" onclick="copyOverlayLink()">📋 Salin Link</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 14px; font-size: 0.82rem;">
+      <span id="cloud-sync-badge" style="color: #22c55e; font-weight: bold;">🟢 Cloud Sync: <b>Aktif</b></span>
+      <span style="color: var(--text-muted);">📱 Link HP: <b id="hp-link-display" style="color: #22c55e;">https://hervandisipada.github.io/naruto-koth/</b></span>
+    </div>
   </div>
 
   <!-- VIEW 1: ADMIN PANEL -->
@@ -473,7 +488,10 @@
       <div class="card">
         <div class="card-title">
           <span>💾 SAVED PLAYERS (Belum Main)</span>
-          <span id="save-count" style="font-size: 0.8rem; color: var(--text-muted);">0 Pemain</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="save-count" style="font-size: 0.8rem; color: var(--text-muted);">0 Pemain</span>
+            <button class="btn btn-sm btn-danger" onclick="clearSaved()">Hapus Semua</button>
+          </div>
         </div>
         <p class="instructions" style="margin-bottom: 10px;">Pemain di sini tidak tampil di antrean live. Klik "Masuk Antrean" saat orangnya datang.</p>
         <div id="saved-list-container"></div>
@@ -483,9 +501,23 @@
       <div class="card full-width">
         <div class="card-title">
           <span>📋 ANTREAN AKTIF LIVE (VIP & FREE)</span>
-          <span id="queue-count" style="font-size: 0.8rem; color: var(--text-muted);">0 Pemain</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="queue-count" style="font-size: 0.8rem; color: var(--text-muted);">0 Pemain</span>
+            <button class="btn btn-sm btn-danger" onclick="clearQueue()">Kosongkan Antrean</button>
+          </div>
         </div>
         <div id="queue-list-container"></div>
+      </div>
+
+      <!-- RESET ALL SESSION -->
+      <div class="card full-width" style="text-align: center; border-color: rgba(239, 68, 68, 0.4);">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+          <div style="text-align: left;">
+            <span style="font-weight: bold; color: var(--accent-red);">⚠️ Reset Total Sesi Live</span>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Hapus semua data arena, antrean, dan simpanan untuk memulai live streaming baru.</div>
+          </div>
+          <button class="btn btn-sm btn-danger" onclick="resetAllData()">🔄 Reset Total Semua Data</button>
+        </div>
       </div>
 
     </div>
@@ -553,18 +585,139 @@
 
     let editingTarget = null; // for modal
 
-    // Load Data
+    let cloudMqttClient = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    let streamKey = urlParams.get('room') || urlParams.get('key') || localStorage.getItem('koth_stream_key') || 'hervandisipada';
+    const MQTT_TOPIC = `koth/naruto/${streamKey}`;
+
+    // Load Data & Server Sync
     function loadState() {
       const data = localStorage.getItem('koth_naruto_state');
       if (data) {
         try { state = JSON.parse(data); } catch(e){}
       }
       renderAll();
+      setupSync();
     }
 
     function saveState() {
       localStorage.setItem('koth_naruto_state', JSON.stringify(state));
       renderAll();
+
+      // Cloud MQTT Sync (Real-time across Internet / TikTok Live Studio)
+      if (cloudMqttClient && cloudMqttClient.connected) {
+        try {
+          cloudMqttClient.publish(MQTT_TOPIC, JSON.stringify(state), { retain: true, qos: 0 });
+        } catch(e) {
+          console.warn('MQTT publish error', e);
+        }
+      }
+
+      // Local Python Server Sync (If running via start.bat)
+      if (window.location.protocol.startsWith('http') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))) {
+        fetch('/api/state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state)
+        }).catch(err => console.warn('Local sync server error:', err));
+      }
+    }
+
+    function setupSync() {
+      const isOnline = window.location.hostname.includes('github.io');
+      let overlayUrl = '';
+      let adminUrl = '';
+
+      if (isOnline) {
+        overlayUrl = `https://hervandisipada.github.io/naruto-koth/overlay.html`;
+        adminUrl = `https://hervandisipada.github.io/naruto-koth/`;
+      } else {
+        const currentHost = window.location.hostname || 'localhost';
+        const currentPort = window.location.port ? `:${window.location.port}` : ':8000';
+        overlayUrl = `http://${currentHost === '' ? 'localhost' : currentHost}${currentPort}/overlay.html`;
+        adminUrl = `http://${currentHost === '' ? 'localhost' : currentHost}${currentPort}`;
+      }
+
+      const linkEl = document.getElementById('tiktok-link-display');
+      if (linkEl) linkEl.innerText = overlayUrl;
+      const hpEl = document.getElementById('hp-link-display');
+      if (hpEl) hpEl.innerText = adminUrl;
+
+      // 1. MQTT Cloud Realtime Sync
+      if (typeof mqtt !== 'undefined') {
+        try {
+          cloudMqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+            clientId: 'adm_' + Math.random().toString(16).substring(2, 8),
+            clean: true,
+            reconnectPeriod: 2500
+          });
+
+          cloudMqttClient.on('connect', () => {
+            console.log('Connected to Cloud Realtime Sync!');
+            const badge = document.getElementById('cloud-sync-badge');
+            if (badge) {
+              badge.innerHTML = '🟢 Cloud Sync: <b>Aktif</b>';
+              badge.style.color = '#22c55e';
+            }
+            cloudMqttClient.subscribe(MQTT_TOPIC, { qos: 0 });
+          });
+
+          cloudMqttClient.on('message', (topic, payload) => {
+            try {
+              const remoteData = JSON.parse(payload.toString());
+              if (JSON.stringify(remoteData) !== JSON.stringify(state)) {
+                state = remoteData;
+                localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+                renderAll();
+              }
+            } catch(e) {}
+          });
+
+          cloudMqttClient.on('close', () => {
+            const badge = document.getElementById('cloud-sync-badge');
+            if (badge) {
+              badge.innerHTML = '🟡 Cloud Sync: <b>Menghubungkan...</b>';
+              badge.style.color = '#eab308';
+            }
+          });
+        } catch(e) {
+          console.warn('MQTT init failed:', e);
+        }
+      }
+
+      // 2. Local Python Server SSE (if on localhost)
+      if (window.location.protocol.startsWith('http') && !isOnline) {
+        const evtSource = new EventSource('/api/events');
+        evtSource.onmessage = (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            if (JSON.stringify(data) !== JSON.stringify(state)) {
+              state = data;
+              localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+              renderAll();
+            }
+          } catch(err) {}
+        };
+      } else {
+        window.addEventListener('storage', (e) => {
+          if (e.key === 'koth_naruto_state' && e.newValue) {
+            try {
+              state = JSON.parse(e.newValue);
+              renderAll();
+            } catch(err){}
+          }
+        });
+      }
+    }
+
+    function copyOverlayLink() {
+      const linkEl = document.getElementById('tiktok-link-display');
+      const text = linkEl ? linkEl.innerText : 'http://localhost:8000/overlay.html';
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✅ Link Overlay berhasil disalin!\nTempelkan (Paste) ke Browser Source di TikTok Live Studio:\n' + text);
+      }).catch(() => {
+        prompt('Salin link ini secara manual:', text);
+      });
     }
 
     // Switch View Tab
@@ -715,9 +868,35 @@
     }
 
     function resetArena() {
-      if (confirm("Kosongkan arena pertandingan? Pemain di arena akan dihapus.")) {
+      if (confirm("Kosongkan arena pertandingan? Pemain di arena saat ini akan dikosongkan.")) {
         state.p1 = null;
         state.p2 = null;
+        saveState();
+      }
+    }
+
+    function clearQueue() {
+      if (confirm("Kosongkan semua daftar antrean aktif?")) {
+        state.queue = [];
+        saveState();
+      }
+    }
+
+    function clearSaved() {
+      if (confirm("Hapus semua daftar pemain yang disimpan di tab Saved?")) {
+        state.saved = [];
+        saveState();
+      }
+    }
+
+    function resetAllData() {
+      if (confirm("⚠️ PERINGATAN: Yakin ingin mereset SEMUA data (Arena, Antrean, dan Simpanan) untuk memulai sesi streaming baru?")) {
+        state = {
+          p1: null,
+          p2: null,
+          queue: [],
+          saved: []
+        };
         saveState();
       }
     }

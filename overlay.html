@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KotH Live Overlay</title>
+  <!-- MQTT.js for Realtime Cloud Sync on GitHub Pages -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    :root {
+      --accent-orange: #f97316;
+      --accent-gold: #eab308;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --border-glow: rgba(249, 115, 22, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: transparent;
+      margin: 0;
+      padding: 16px;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    .overlay-card {
+      width: 440px;
+      background: rgba(15, 23, 42, 0.90);
+      border-radius: 14px;
+      padding: 16px 18px;
+      border: 2px solid var(--border-glow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(249, 115, 22, 0.2);
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* HEADER */
+    .overlay-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+
+    .overlay-title {
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #f97316, #eab308);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .live-dot {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #ef4444;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .live-dot span {
+      width: 8px;
+      height: 8px;
+      background-color: #ef4444;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+
+    /* MATCH SLOTS */
+    .match-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 12px;
+    }
+
+    .player-slot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .player-slot.king {
+      background: linear-gradient(90deg, rgba(234, 179, 8, 0.22) 0%, rgba(234, 179, 8, 0.04) 100%);
+      border-left: 4px solid var(--accent-gold);
+    }
+
+    .player-slot.challenger {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.22) 0%, rgba(56, 189, 248, 0.04) 100%);
+      border-left: 4px solid var(--accent-blue);
+    }
+
+    .p-role-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+
+    .king .p-role-tag {
+      background-color: var(--accent-gold);
+      color: #000;
+    }
+
+    .challenger .p-role-tag {
+      background-color: var(--accent-blue);
+      color: #000;
+    }
+
+    .p-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 210px;
+    }
+
+    .p-char {
+      font-size: 0.8rem;
+      color: var(--accent-orange);
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 210px;
+    }
+
+    .p-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+
+    .p-ws {
+      font-weight: 900;
+      font-size: 0.95rem;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .free-streak {
+      font-size: 0.65rem;
+      background: var(--accent-green);
+      color: #000;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 900;
+    }
+
+    .p-ticket {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .p-ticket b {
+      color: #fff;
+    }
+
+    .vs-tag {
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: var(--accent-red);
+      letter-spacing: 2px;
+      margin: -2px 0;
+    }
+
+    /* QUEUE SECTION */
+    .queue-section {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .queue-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .queue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .queue-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid #64748b;
+    }
+
+    .queue-row.vip {
+      border-left-color: var(--accent-gold);
+      background: rgba(234, 179, 8, 0.08);
+    }
+
+    .queue-row.free {
+      border-left-color: var(--accent-blue);
+    }
+
+    .q-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+
+    .q-idx {
+      font-weight: 800;
+      color: #94a3b8;
+      font-size: 0.75rem;
+    }
+
+    .q-name {
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .q-char {
+      font-size: 0.75rem;
+      color: #fdba74;
+      font-style: italic;
+    }
+
+    .q-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .q-badge.vip {
+      background-color: var(--accent-gold);
+      color: #000;
+    }
+
+    .q-badge.free {
+      background-color: rgba(56, 189, 248, 0.2);
+      color: var(--accent-blue);
+      border: 1px solid var(--accent-blue);
+    }
+
+    .empty-queue {
+      color: #64748b;
+      font-size: 0.78rem;
+      text-align: center;
+      padding: 8px 0;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="overlay-card">
+    <!-- Header -->
+    <div class="overlay-header">
+      <div class="overlay-title">
+        <span>⚔️ KING OF THE HILL</span>
+      </div>
+      <div class="live-dot">
+        <span></span> LIVE MATCH
+      </div>
+    </div>
+
+    <!-- Match Arena -->
+    <div class="match-box">
+      <!-- King -->
+      <div class="player-slot king">
+        <div>
+          <span class="p-role-tag">👑 KING</span>
+          <div id="p1-name" class="p-name">Menunggu Pemain...</div>
+          <div id="p1-char" class="p-char">-</div>
+        </div>
+        <div class="p-right">
+          <div class="p-ws">
+            WS: <span id="p1-ws">0</span>
+            <span id="p1-free" class="free-streak" style="display:none;">FREE MATCH</span>
+          </div>
+          <div class="p-ticket">Tiket: <b id="p1-tickets">0</b></div>
+        </div>
+      </div>
+
+      <div class="vs-tag">— VS —</div>
+
+      <!-- Challenger -->
+      <div class="player-slot challenger">
+        <div>
+          <span class="p-role-tag">⚔️ PENANTANG</span>
+          <div id="p2-name" class="p-name">Menunggu Pemain...</div>
+          <div id="p2-char" class="p-char">-</div>
+        </div>
+        <div class="p-right">
+          <div class="p-ws">
+            WS: <span id="p2-ws">0</span>
+            <span id="p2-free" class="free-streak" style="display:none;">FREE MATCH</span>
+          </div>
+          <div class="p-ticket">Tiket: <b id="p2-tickets">0</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Queue List -->
+    <div class="queue-section">
+      <div class="queue-title">
+        <span>📋 Antrean Berikutnya:</span>
+        <span id="queue-total-count" style="color:var(--accent-orange);">0 Pemain</span>
+      </div>
+      <div id="queue-list" class="queue-list">
+        <div class="empty-queue">(Antrean Kosong)</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let state = {
+      p1: null,
+      p2: null,
+      queue: [],
+      saved: []
+    };
+
+    function render(data) {
+      if (!data) return;
+      state = data;
+
+      // P1 (King)
+      const p1Name = document.getElementById('p1-name');
+      const p1Char = document.getElementById('p1-char');
+      const p1Ws = document.getElementById('p1-ws');
+      const p1Tickets = document.getElementById('p1-tickets');
+      const p1Free = document.getElementById('p1-free');
+
+      if (state.p1) {
+        p1Name.innerText = state.p1.name;
+        p1Char.innerText = state.p1.char || 'Belum Pilih / TBA';
+        p1Ws.innerText = state.p1.ws || 0;
+        p1Tickets.innerText = state.p1.matchesLeft || 0;
+        p1Free.style.display = (state.p1.ws >= 1) ? 'inline-block' : 'none';
+      } else {
+        p1Name.innerText = "Menunggu Pemain...";
+        p1Char.innerText = "-";
+        p1Ws.innerText = "0";
+        p1Tickets.innerText = "0";
+        p1Free.style.display = 'none';
+      }
+
+      // P2 (Challenger)
+      const p2Name = document.getElementById('p2-name');
+      const p2Char = document.getElementById('p2-char');
+      const p2Ws = document.getElementById('p2-ws');
+      const p2Tickets = document.getElementById('p2-tickets');
+      const p2Free = document.getElementById('p2-free');
+
+      if (state.p2) {
+        p2Name.innerText = state.p2.name;
+        p2Char.innerText = state.p2.char || 'Belum Pilih / TBA';
+        p2Ws.innerText = state.p2.ws || 0;
+        p2Tickets.innerText = state.p2.matchesLeft || 0;
+        p2Free.style.display = (state.p2.ws >= 1) ? 'inline-block' : 'none';
+      } else {
+        p2Name.innerText = "Menunggu Pemain...";
+        p2Char.innerText = "-";
+        p2Ws.innerText = "0";
+        p2Tickets.innerText = "0";
+        p2Free.style.display = 'none';
+      }
+
+      // Queue List (Show top 5)
+      const qContainer = document.getElementById('queue-list');
+      const qTotal = document.getElementById('queue-total-count');
+      const qList = state.queue || [];
+      qTotal.innerText = `${qList.length} Pemain`;
+
+      if (qList.length === 0) {
+        qContainer.innerHTML = '<div class="empty-queue">(Antrean Kosong)</div>';
+      } else {
+        qContainer.innerHTML = '';
+        qList.slice(0, 5).forEach((p, idx) => {
+          const row = document.createElement('div');
+          const isVip = p.type === 'VIP';
+          row.className = `queue-row ${isVip ? 'vip' : 'free'}`;
+          row.innerHTML = `
+            <div class="q-left">
+              <span class="q-idx">#${idx + 1}</span>
+              <span class="q-name">${escapeHtml(p.name)}</span>
+              <span class="q-char">(${escapeHtml(p.char || 'TBA')})</span>
+            </div>
+            <span class="q-badge ${isVip ? 'vip' : 'free'}">${p.type}</span>
+          `;
+          qContainer.appendChild(row);
+        });
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Connect to Server SSE
+    function connectSSE() {
+      // Check if running on server or local file
+      if (window.location.protocol.startsWith('http')) {
+        const evtSource = new EventSource('/api/events');
+
+        evtSource.onmessage = function(e) {
+          try {
+            const data = JSON.parse(e.data);
+            render(data);
+          } catch(err) {
+            console.error("SSE parse error", err);
+          }
+        };
+
+        evtSource.onerror = function() {
+          console.warn("SSE disconnected, retrying in 3s...");
+          evtSource.close();
+          setTimeout(connectSSE, 3000);
+        };
+      } else {
+        // Fallback for file:/// protocol
+        loadFromLocalStorage();
+        window.addEventListener('storage', loadFromLocalStorage);
+        setInterval(loadFromLocalStorage, 1000);
+      }
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem('koth_naruto_state');
+        if (raw) render(JSON.parse(raw));
+      } catch(e) {}
+    }
+
+    // Cloud Realtime Sync (MQTT over WebSockets for GitHub Pages)
+    const urlParams = new URLSearchParams(window.location.search);
+    const STREAM_KEY = urlParams.get('room') || urlParams.get('key') || 'hervandisipada';
+    const MQTT_TOPIC = `koth/naruto/${STREAM_KEY}`;
+
+    function connectCloudMQTT() {
+      if (typeof mqtt === 'undefined') return;
+      try {
+        const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+          clientId: 'ov_' + Math.random().toString(16).substring(2, 8),
+          clean: true,
+          reconnectPeriod: 2500
+        });
+
+        client.on('connect', () => {
+          client.subscribe(MQTT_TOPIC, { qos: 0 });
+        });
+
+        client.on('message', (topic, payload) => {
+          try {
+            const data = JSON.parse(payload.toString());
+            render(data);
+          } catch(err) {
+            console.error("MQTT message parse error", err);
+          }
+        });
+      } catch(err) {
+        console.warn("MQTT connection error", err);
+      }
+    }
+
+    // Initialize both Cloud MQTT and Local SSE
+    connectCloudMQTT();
+    connectSSE();
+  </script>
+</body>
+</html>
+

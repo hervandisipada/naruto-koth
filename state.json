@@ -1,25 +1,57 @@
 {
   "p1": {
-    "id": "1794248297982",
-    "name": "Tes 5",
-    "char": "Tes 5",
-    "matchesLeft": 2,
-    "ws": 0,
-    "type": "FREE"
+    "id": "1794248230120",
+    "name": "Tes 3",
+    "char": "Tes 3",
+    "matchesLeft": 1,
+    "ws": 1,
+    "type": "VIP"
   },
   "p2": {
     "id": "1794248261448",
     "name": "Tes 4",
     "char": "Tes 4",
     "matchesLeft": 1,
-    "ws": 2,
+    "ws": 0,
     "type": "VIP"
   },
   "queue": [
     {
+      "id": "1794255299999",
+      "name": "Madara_VVIP",
+      "char": "Madara (Six Paths)",
+      "matchesLeft": 5,
+      "ws": 0,
+      "type": "VVIP"
+    },
+    {
+      "id": "1794255226297",
+      "name": "Hh",
+      "char": "Huh",
+      "matchesLeft": 3,
+      "ws": 0,
+      "type": "VIP"
+    },
+    {
+      "id": "1794248297982",
+      "name": "Tes 5",
+      "char": "Tes 5",
+      "matchesLeft": 3,
+      "ws": 0,
+      "type": "FREE"
+    },
+    {
       "id": "1794248330034",
       "name": "Tes 2",
       "char": "Tes 2",
+      "matchesLeft": 3,
+      "ws": 0,
+      "type": "FREE"
+    },
+    {
+      "id": "1794255245641",
+      "name": "Ddd",
+      "char": "Rrrr",
       "matchesLeft": 3,
       "ws": 0,
       "type": "FREE"
@@ -32,8 +64,16 @@
       "char": "Gggg",
       "matchesLeft": 1,
       "ws": 0,
-      "type": "SAVE"
+      "type": "FREE"
+    },
+    {
+      "id": "1794255269035",
+      "name": "Ghhhh",
+      "char": "Hhhh",
+      "matchesLeft": 66,
+      "ws": 0,
+      "type": "VIP"
     }
   ],
-  "overlayListMode": "queue"
+  "overlayListMode": "saved"
 }

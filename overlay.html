@@ -8,22 +8,32 @@
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
     :root {
-      --bg-dark: rgba(11, 15, 25, 0.95);
-      --border-subtle: rgba(255, 255, 255, 0.12);
-      --accent-gold: #f59e0b;
-      --accent-blue: #38bdf8;
-      --accent-green: #22c55e;
-      --accent-red: #ef4444;
-      --accent-purple: #a855f7;
-      --text-main: #ffffff;
-      --text-muted: #94a3b8;
+      /* User's Exact 4-Color Palette: #F7F7F7, #EEEEEE, #393E46, #929AAB */
+      --c-white: #F7F7F7;
+      --c-light: #EEEEEE;
+      --c-dark: #393E46;
+      --c-slate: #929AAB;
+
+      --bg-dark: rgba(57, 62, 70, 0.96);
+      --border-subtle: #929AAB;
+      --accent-gold: #F7F7F7;
+      --accent-blue: #929AAB;
+      --accent-green: #EEEEEE;
+      --accent-red: #929AAB;
+      --accent-purple: #929AAB;
+      --text-main: #F7F7F7;
+      --text-muted: #EEEEEE;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
+    }
+
+    button, input, select, textarea {
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
     }
 
     html, body {
@@ -36,13 +46,16 @@
       justify-content: center;
       align-items: center;
       color: var(--text-main);
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
     }
 
-    /* COMPACT & HIGH-READABILITY MOBILE FRAME */
+    /* LOCKED RESOLUTION STREAM OVERLAY (400x720) */
     .mobile-frame {
-      width: 100%;
+      width: 400px;
+      min-width: 400px;
       max-width: 400px;
-      height: 100vh;
+      height: 720px;
+      min-height: 720px;
       max-height: 720px;
       background: var(--bg-dark);
       border-radius: 12px;
@@ -50,55 +63,16 @@
       border: 1px solid var(--border-subtle);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
       display: flex;
       flex-direction: column;
       position: relative;
-    }
-
-    /* HEADER */
-    .overlay-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 6px;
-      margin-bottom: 6px;
-      flex-shrink: 0;
-    }
-
-    .overlay-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: #ffffff;
-    }
-
-    .live-dot {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: #ef4444;
-      letter-spacing: 0.5px;
-      background: rgba(239, 68, 68, 0.12);
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .live-dot span {
-      width: 6px;
-      height: 6px;
-      background-color: #ef4444;
-      border-radius: 50%;
+      overflow: hidden;
     }
 
     /* ANNOUNCEMENT TICKER */
     .overlay-ticker {
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.25);
       border-radius: 6px;
       padding: 4px 8px;
       margin-bottom: 6px;
@@ -106,14 +80,17 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      border-left: 3px solid var(--accent-gold);
-      color: #f8fafc;
+      border-left: 3px solid var(--c-white);
+      color: var(--c-white);
       overflow: hidden;
       flex-shrink: 0;
+      border-top: 1px solid rgba(146, 154, 171, 0.2);
+      border-right: 1px solid rgba(146, 154, 171, 0.2);
+      border-bottom: 1px solid rgba(146, 154, 171, 0.2);
     }
 
     .ticker-label {
-      color: var(--accent-gold);
+      color: var(--c-slate);
       font-weight: 800;
       font-size: 0.72rem;
       white-space: nowrap;
@@ -123,7 +100,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: #f8fafc;
+      color: var(--c-white);
       font-weight: 600;
     }
 
@@ -132,7 +109,7 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.25);
       border-radius: 8px;
       padding: 6px;
       border: 1px solid var(--border-subtle);
@@ -147,19 +124,26 @@
       padding: 8px 10px;
       border-radius: 6px;
       transition: background 0.15s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--c-slate);
     }
 
-    .player-slot.king {
-      background: rgba(245, 158, 11, 0.08);
-      border-left: 3px solid var(--accent-gold);
+    .player-slot.vvip {
+      background: rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--c-white);
     }
 
-    .player-slot.challenger {
-      background: rgba(56, 189, 248, 0.08);
-      border-left: 3px solid var(--accent-blue);
+    .player-slot.vip {
+      background: rgba(255, 255, 255, 0.06);
+      border-left: 3px solid var(--c-slate);
     }
 
-    /* ROLE BADGE */
+    .player-slot.free {
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 3px solid rgba(146, 154, 171, 0.35);
+    }
+
+    /* ROLE BADGE = TIER BADGE IN ARENA */
     .p-role-tag {
       font-size: 0.65rem;
       font-weight: 800;
@@ -169,23 +153,35 @@
       display: inline-block;
       margin-bottom: 2px;
       letter-spacing: 0.5px;
+      background: var(--c-slate);
+      color: var(--c-white);
     }
 
-    .king .p-role-tag {
-      background-color: var(--accent-gold);
-      color: #000;
+    .p-role-tag.vvip {
+      background-color: var(--c-white);
+      color: var(--c-dark);
+      font-weight: 900;
+      letter-spacing: 0.8px;
     }
 
-    .challenger .p-role-tag {
-      background-color: var(--accent-blue);
-      color: #000;
+    .p-role-tag.vip {
+      background-color: var(--c-slate);
+      color: var(--c-white);
+      font-weight: 800;
+    }
+
+    .p-role-tag.free {
+      background-color: transparent;
+      color: var(--c-slate);
+      border: 1px solid var(--c-slate);
+      font-weight: 700;
     }
 
     /* LARGE PLAYER NAME */
     .p-name {
       font-weight: 800;
       font-size: 1.22rem;
-      color: #ffffff;
+      color: var(--c-white);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -196,7 +192,7 @@
     /* LARGE CHARACTER NAME */
     .p-char {
       font-size: 0.85rem;
-      color: #cbd5e1;
+      color: var(--c-slate);
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
@@ -218,7 +214,7 @@
     .p-ws {
       font-weight: 800;
       font-size: 1.05rem;
-      color: var(--accent-gold);
+      color: var(--c-white);
       display: flex;
       align-items: center;
       gap: 4px;
@@ -226,8 +222,8 @@
 
     .free-streak {
       font-size: 0.65rem;
-      background: var(--accent-green);
-      color: #000;
+      background: var(--c-light);
+      color: var(--c-dark);
       padding: 1px 5px;
       border-radius: 3px;
       font-weight: 800;
@@ -236,8 +232,8 @@
 
     .bonus-badge {
       font-size: 0.65rem;
-      background: var(--accent-purple);
-      color: #fff;
+      background: var(--c-slate);
+      color: var(--c-white);
       padding: 1px 5px;
       border-radius: 3px;
       font-weight: 800;
@@ -246,12 +242,12 @@
 
     .p-ticket {
       font-size: 0.8rem;
-      color: var(--text-muted);
+      color: var(--c-light);
       font-weight: 600;
     }
 
     .p-ticket b {
-      color: var(--accent-blue);
+      color: var(--c-white);
       font-size: 0.95rem;
       font-weight: 800;
     }
@@ -259,18 +255,18 @@
     .vs-tag {
       text-align: center;
       font-size: 0.72rem;
-      font-weight: 800;
-      color: #64748b;
+      font-weight: 900;
+      color: var(--c-slate);
       letter-spacing: 1px;
       margin: 1px 0;
     }
 
     /* SCROLLABLE QUEUE SECTION */
     .queue-section {
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.2);
       border-radius: 8px;
       padding: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(146, 154, 171, 0.25);
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -281,7 +277,7 @@
     .queue-title {
       font-size: 0.78rem;
       font-weight: 800;
-      color: var(--text-muted);
+      color: var(--c-slate);
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 6px;
@@ -289,7 +285,7 @@
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(146, 154, 171, 0.25);
       padding-bottom: 4px;
     }
 
@@ -314,8 +310,54 @@
     }
 
     .queue-list::-webkit-scrollbar-thumb {
-      background: #475569;
+      background: var(--c-slate);
       border-radius: 2px;
+    }
+
+    /* VERTICAL TIER SECTIONS */
+    .tier-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    .tier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .tier-header.vvip {
+      background: rgba(247, 247, 247, 0.16);
+      color: var(--c-white);
+      border-left: 3px solid var(--c-white);
+    }
+
+    .tier-header.vip {
+      background: rgba(146, 154, 171, 0.16);
+      color: var(--c-slate);
+      border-left: 3px solid var(--c-slate);
+    }
+
+    .tier-header.free {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--c-slate);
+      border-left: 3px solid rgba(146, 154, 171, 0.35);
+      font-weight: 700;
+    }
+
+    .tier-empty {
+      font-size: 0.72rem;
+      color: var(--c-slate);
+      padding: 3px 8px;
+      font-style: italic;
     }
 
     /* CLEAN QUEUE ROW WITH TICKET DISPLAY */
@@ -325,57 +367,97 @@
       justify-content: space-between;
       padding: 6px 8px;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.03);
-      border-left: 3px solid #334155;
+      background: rgba(255, 255, 255, 0.04);
+      border-left: 3px solid var(--c-slate);
       flex-shrink: 0;
     }
 
+    .queue-row.vvip {
+      border-left-color: var(--c-white);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
     .queue-row.vip {
-      border-left-color: var(--accent-gold);
-      background: rgba(245, 158, 11, 0.06);
+      border-left-color: var(--c-slate);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .queue-row.free {
-      border-left-color: #475569;
-      background: rgba(255, 255, 255, 0.03);
+      border-left-color: rgba(146, 154, 171, 0.35);
+      background: rgba(255, 255, 255, 0.02);
     }
 
     .queue-row.saved {
-      border-left-color: #f97316;
-      background: rgba(249, 115, 22, 0.06);
+      border-left-color: var(--c-light);
+      background: rgba(255, 255, 255, 0.03);
     }
 
+    /* HORIZONTAL SCROLL / MARQUEE FOR LONG NAMES */
     .q-left {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 250px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex: 1;
+      min-width: 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .q-left::-webkit-scrollbar {
+      display: none;
+    }
+
+    .q-text-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      will-change: transform;
+    }
+
+    .q-sep {
+      color: var(--c-slate);
+      font-weight: 800;
+      opacity: 0.7;
+      margin: 0 1px;
+    }
+
+    @keyframes marqueeH {
+      0%, 20% { transform: translateX(0); }
+      80%, 100% { transform: translateX(var(--marquee-dist, -50px)); }
+    }
+
+    .marquee-active {
+      animation: marqueeH 7s ease-in-out infinite alternate;
     }
 
     .q-idx {
       font-weight: 700;
-      color: var(--text-muted);
+      color: var(--c-slate);
       font-size: 0.82rem;
       min-width: 18px;
     }
 
+    .queue-row.vvip .q-idx {
+      color: var(--c-white);
+    }
+
     .queue-row.vip .q-idx {
-      color: var(--accent-gold);
+      color: var(--c-slate);
     }
 
     .q-name {
       font-weight: 700;
-      color: #ffffff;
-      font-size: 0.95rem;
+      color: var(--c-white);
+      font-size: 0.92rem;
     }
 
     .q-char {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 500;
+      font-size: 0.82rem;
+      color: var(--c-slate);
+      font-weight: 600;
     }
 
     .q-right {
@@ -383,14 +465,16 @@
       align-items: center;
       gap: 5px;
       flex-shrink: 0;
+      margin-left: 8px;
     }
 
     /* USER TICKET DISPLAY IN QUEUE */
     .q-ticket {
       font-size: 0.78rem;
       font-weight: 700;
-      color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.12);
+      color: var(--c-white);
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid var(--c-slate);
       padding: 2px 6px;
       border-radius: 4px;
       white-space: nowrap;
@@ -405,18 +489,34 @@
       flex-shrink: 0;
     }
 
+    .q-badge.vvip {
+      background-color: var(--c-white);
+      color: var(--c-dark);
+      font-weight: 900;
+      letter-spacing: 0.8px;
+    }
+
     .q-badge.vip {
-      background-color: var(--accent-gold);
-      color: #000;
+      background-color: var(--c-slate);
+      color: var(--c-white);
+      font-weight: 800;
+    }
+
+    .q-badge.free {
+      background-color: transparent;
+      color: var(--c-slate);
+      border: 1px solid var(--c-slate);
+      font-weight: 700;
     }
 
     .q-badge.saved {
-      background-color: #f97316;
-      color: #000;
+      background-color: var(--c-light);
+      color: var(--c-dark);
+      font-weight: 800;
     }
 
     .empty-queue {
-      color: var(--text-muted);
+      color: var(--c-slate);
       font-size: 0.85rem;
       text-align: center;
       padding: 24px 0;
@@ -424,7 +524,7 @@
 
     .scroll-hint {
       font-size: 0.68rem;
-      color: var(--text-muted);
+      color: var(--c-slate);
       font-weight: 700;
     }
   </style>
@@ -432,14 +532,6 @@
 <body>
 
   <div class="mobile-frame">
-    <!-- Header -->
-    <div class="overlay-header">
-      <div class="overlay-title">KING OF THE HILL</div>
-      <div class="live-dot">
-        <span></span> LIVE
-      </div>
-    </div>
-
     <!-- Announcement Ticker -->
     <div id="overlay-ticker" class="overlay-ticker" style="display:none;">
       <span class="ticker-label">NOTE:</span>
@@ -449,16 +541,15 @@
     <!-- Match Arena (1 VS 1) -->
     <div class="match-box">
       <!-- Player 1 Slot -->
-      <div class="player-slot king" id="slot-p1">
+      <div class="player-slot" id="slot-p1">
         <div>
-          <span class="p-role-tag" id="p1-role-tag">KING</span>
+          <span class="p-role-tag" id="p1-role-tag">P1</span>
           <div id="p1-name" class="p-name">Menunggu...</div>
           <div id="p1-char" class="p-char">-</div>
         </div>
         <div class="p-right">
           <div class="p-ws">
             WS: <span id="p1-ws">0</span>
-            <span id="p1-free" class="free-streak" style="display:none;">FREE</span>
             <span id="p1-bonus" class="bonus-badge" style="display:none;">+1 TIKET</span>
           </div>
           <div class="p-ticket">Tiket: <b id="p1-tickets">0</b></div>
@@ -468,16 +559,15 @@
       <div class="vs-tag">VS</div>
 
       <!-- Player 2 Slot -->
-      <div class="player-slot challenger" id="slot-p2">
+      <div class="player-slot" id="slot-p2">
         <div>
-          <span class="p-role-tag" id="p2-role-tag">PENANTANG</span>
+          <span class="p-role-tag" id="p2-role-tag">P2</span>
           <div id="p2-name" class="p-name">Menunggu...</div>
           <div id="p2-char" class="p-char">-</div>
         </div>
         <div class="p-right">
           <div class="p-ws">
             WS: <span id="p2-ws">0</span>
-            <span id="p2-free" class="free-streak" style="display:none;">FREE</span>
             <span id="p2-bonus" class="bonus-badge" style="display:none;">+1 TIKET</span>
           </div>
           <div class="p-ticket">Tiket: <b id="p2-tickets">0</b></div>
@@ -490,7 +580,6 @@
       <div class="queue-title">
         <span id="queue-section-title">ANTREAN BERIKUTNYA</span>
         <div style="display:flex; align-items:center; gap:6px;">
-          <span id="queue-scroll-indicator" class="scroll-hint" style="display:none;">Auto-Scroll</span>
           <span id="queue-total-count" style="color:#ffffff; font-weight:800; font-size:0.85rem;">0 Pemain</span>
         </div>
       </div>
@@ -523,6 +612,15 @@
       return { kingSlot: 'p1', challengerSlot: 'p2' };
     }
 
+    function formatChar(char) {
+      if (!char) return '-';
+      const c = String(char).trim();
+      if (!c || c === 'TBA' || c === 'Belum Pilih' || c === 'Belum Pilih / TBA' || c.toLowerCase() === 'tba') {
+        return '-';
+      }
+      return c;
+    }
+
     function render(data) {
       if (!data) return;
       state = data;
@@ -537,38 +635,36 @@
         tickerEl.style.display = 'none';
       }
 
-      // Deteksi Posisi Dinamis (Alternating King & Challenger)
-      const roles = getArenaRoles(state);
-      const isP1King = (roles.kingSlot === 'p1');
-
-      // Slot 1 (P1)
+      // Slot 1 (P1) - Menggunakan Label Tier (Bukan King/Penantang)
       const slot1 = document.getElementById('slot-p1');
       const p1RoleTag = document.getElementById('p1-role-tag');
       const p1Name = document.getElementById('p1-name');
       const p1Char = document.getElementById('p1-char');
       const p1Ws = document.getElementById('p1-ws');
       const p1Tickets = document.getElementById('p1-tickets');
-      const p1Free = document.getElementById('p1-free');
       const p1Bonus = document.getElementById('p1-bonus');
 
-      if (isP1King) {
-        slot1.className = 'player-slot king';
-        p1RoleTag.innerText = 'KING';
-      } else {
-        slot1.className = 'player-slot challenger';
-        p1RoleTag.innerText = 'PENANTANG';
-      }
-
       if (state.p1) {
-        p1Name.innerText = state.p1.name;
-        p1Char.innerText = state.p1.char || 'TBA';
-        p1Ws.innerText = state.p1.ws || 0;
-        p1Tickets.innerText = state.p1.matchesLeft || 0;
-        p1Free.style.display = (state.p1.ws >= 1) ? 'inline-block' : 'none';
+        const t1 = (state.p1.type || 'FREE').toUpperCase();
+        slot1.className = 'player-slot ' + t1.toLowerCase();
+        p1RoleTag.className = 'p-role-tag ' + t1.toLowerCase();
+        p1RoleTag.innerText = t1;
 
-        // Streak Bonus (+1 Tiket setiap kelipatan 5 WS)
+        p1Name.innerText = state.p1.name;
+        p1Char.innerText = formatChar(state.p1.char);
+        p1Ws.innerText = state.p1.ws || 0;
+
+        // Tiket: 1+1 lalu 5 detik otomatis terjumlah jadi 2
+        let p1TicketText = state.p1.matchesLeft;
+        if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
+          p1TicketText = `${state.p1.bonusBase}+1`;
+          const msLeft = state.p1.bonusAnimUntil - Date.now();
+          setTimeout(() => render(state), msLeft + 50);
+        }
+        p1Tickets.innerText = p1TicketText;
+
         if (p1Bonus) {
-          if ((state.p1.ws || 0) >= 5) {
+          if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
             p1Bonus.innerText = '+1 TIKET';
             p1Bonus.style.display = 'inline-block';
           } else {
@@ -576,42 +672,47 @@
           }
         }
       } else {
-        p1Name.innerText = isP1King ? "Menunggu King..." : "Menunggu Lawan...";
-        p1Char.innerText = isP1King ? "Belum Ada Juara" : "Admin memilih penantang";
+        slot1.className = 'player-slot';
+        p1RoleTag.className = 'p-role-tag';
+        p1RoleTag.innerText = 'P1';
+
+        p1Name.innerText = "Menunggu...";
+        p1Char.innerText = "-";
         p1Ws.innerText = "0";
         p1Tickets.innerText = "-";
-        p1Free.style.display = 'none';
         if (p1Bonus) p1Bonus.style.display = 'none';
       }
 
-      // Slot 2 (P2)
+      // Slot 2 (P2) - Menggunakan Label Tier (Bukan King/Penantang)
       const slot2 = document.getElementById('slot-p2');
       const p2RoleTag = document.getElementById('p2-role-tag');
       const p2Name = document.getElementById('p2-name');
       const p2Char = document.getElementById('p2-char');
       const p2Ws = document.getElementById('p2-ws');
       const p2Tickets = document.getElementById('p2-tickets');
-      const p2Free = document.getElementById('p2-free');
       const p2Bonus = document.getElementById('p2-bonus');
 
-      if (!isP1King) {
-        slot2.className = 'player-slot king';
-        p2RoleTag.innerText = 'KING';
-      } else {
-        slot2.className = 'player-slot challenger';
-        p2RoleTag.innerText = 'PENANTANG';
-      }
-
       if (state.p2) {
-        p2Name.innerText = state.p2.name;
-        p2Char.innerText = state.p2.char || 'TBA';
-        p2Ws.innerText = state.p2.ws || 0;
-        p2Tickets.innerText = state.p2.matchesLeft || 0;
-        p2Free.style.display = (state.p2.ws >= 1) ? 'inline-block' : 'none';
+        const t2 = (state.p2.type || 'FREE').toUpperCase();
+        slot2.className = 'player-slot ' + t2.toLowerCase();
+        p2RoleTag.className = 'p-role-tag ' + t2.toLowerCase();
+        p2RoleTag.innerText = t2;
 
-        // Streak Bonus (+1 Tiket setiap kelipatan 5 WS)
+        p2Name.innerText = state.p2.name;
+        p2Char.innerText = formatChar(state.p2.char);
+        p2Ws.innerText = state.p2.ws || 0;
+
+        // Tiket: 1+1 lalu 5 detik otomatis terjumlah jadi 2
+        let p2TicketText = state.p2.matchesLeft;
+        if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
+          p2TicketText = `${state.p2.bonusBase}+1`;
+          const msLeft = state.p2.bonusAnimUntil - Date.now();
+          setTimeout(() => render(state), msLeft + 50);
+        }
+        p2Tickets.innerText = p2TicketText;
+
         if (p2Bonus) {
-          if ((state.p2.ws || 0) >= 5) {
+          if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
             p2Bonus.innerText = '+1 TIKET';
             p2Bonus.style.display = 'inline-block';
           } else {
@@ -619,80 +720,174 @@
           }
         }
       } else {
-        p2Name.innerText = !isP1King ? "Menunggu King..." : "Menunggu Lawan...";
-        p2Char.innerText = !isP1King ? "Belum Ada Juara" : "Admin memilih penantang";
+        slot2.className = 'player-slot';
+        p2RoleTag.className = 'p-role-tag';
+        p2RoleTag.innerText = 'P2';
+
+        p2Name.innerText = "Menunggu...";
+        p2Char.innerText = "-";
         p2Ws.innerText = "0";
         p2Tickets.innerText = "-";
-        p2Free.style.display = 'none';
         if (p2Bonus) p2Bonus.style.display = 'none';
       }
 
-      // Render Queue or Saved list with Ticket Count
+      // Render Queue or Saved list with Ticket Count & 3 Vertical Tiers (VVIP, VIP, FREE)
       const isSavedMode = (state.overlayListMode === 'saved');
       const qSectionTitle = document.getElementById('queue-section-title');
       const qContainer = document.getElementById('queue-list');
       const qTotal = document.getElementById('queue-total-count');
-      const scrollHint = document.getElementById('queue-scroll-indicator');
+
+      const tierRank = { 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
+      const tiers = [
+        { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
+        { key: 'VIP', label: 'VIP', cls: 'vip' },
+        { key: 'FREE', label: 'FREE', cls: 'free' }
+      ];
 
       if (isSavedMode) {
-        if (qSectionTitle) qSectionTitle.innerText = 'SLOT DISIMPAN (SAVED)';
-        const sList = state.saved || [];
+        if (qSectionTitle) qSectionTitle.innerText = 'DAFTAR SAVED';
+        const sList = (state.saved || []).slice();
+        sList.sort((a, b) => {
+          const rankA = tierRank[a.type] || 3;
+          const rankB = tierRank[b.type] || 3;
+          if (rankA !== rankB) return rankA - rankB;
+          return 0;
+        });
+
         qTotal.innerText = `${sList.length} Pemain`;
 
         if (sList.length === 0) {
-          qContainer.innerHTML = '<div class="empty-queue">(Belum ada pemain yang disimpan)</div>';
-          scrollHint.style.display = 'none';
+          qContainer.innerHTML = '<div class="empty-queue">(Saved Kosong)</div>';
         } else {
           qContainer.innerHTML = '';
-          scrollHint.style.display = (sList.length > 5) ? 'inline-block' : 'none';
+          let globalSavedIdx = 0;
+          tiers.forEach(tier => {
+            const players = sList.filter(p => ((p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE') === tier.key);
 
-          sList.forEach((p, idx) => {
-            const row = document.createElement('div');
-            row.className = 'queue-row saved';
-            row.innerHTML = `
-              <div class="q-left">
-                <span class="q-idx">#${idx + 1}</span>
-                <span class="q-name">${escapeHtml(p.name)}</span>
-                <span class="q-char">(${escapeHtml(p.char || 'TBA')})</span>
-              </div>
-              <div class="q-right">
-                <span class="q-ticket">${p.matchesLeft} Tiket</span>
-                <span class="q-badge saved">SAVE</span>
+            const tierDiv = document.createElement('div');
+            tierDiv.className = `tier-section ${tier.cls}`;
+            tierDiv.innerHTML = `
+              <div class="tier-header ${tier.cls}">
+                <span>${tier.label}</span>
+                <span>${players.length}</span>
               </div>
             `;
-            qContainer.appendChild(row);
+
+            if (players.length === 0) {
+              const emptyDiv = document.createElement('div');
+              emptyDiv.className = 'tier-empty';
+              emptyDiv.innerText = '(Kosong)';
+              tierDiv.appendChild(emptyDiv);
+            } else {
+              players.forEach(p => {
+                globalSavedIdx++;
+                const row = document.createElement('div');
+                row.className = `queue-row ${tier.cls}`;
+                row.innerHTML = `
+                  <div class="q-left">
+                    <div class="q-text-wrap">
+                      <span class="q-idx">#${globalSavedIdx}</span>
+                      <span class="q-name">${escapeHtml(p.name)}</span>
+                      <span class="q-sep">|</span>
+                      <span class="q-char">${escapeHtml(formatChar(p.char))}</span>
+                    </div>
+                  </div>
+                  <div class="q-right">
+                    <span class="q-ticket">${p.matchesLeft} Tiket</span>
+                    <span class="q-badge ${tier.cls}">${p.type || 'FREE'}</span>
+                  </div>
+                `;
+                tierDiv.appendChild(row);
+              });
+            }
+
+            qContainer.appendChild(tierDiv);
+          });
+
+          // Horizontal scroll animation jika teks panjang
+          document.querySelectorAll('.q-left').forEach(el => {
+            const wrap = el.querySelector('.q-text-wrap');
+            if (wrap && el.scrollWidth > el.clientWidth) {
+              const diff = el.scrollWidth - el.clientWidth;
+              wrap.style.setProperty('--marquee-dist', `-${diff + 14}px`);
+              wrap.classList.add('marquee-active');
+            }
           });
 
           startSmartAutoScroll();
         }
       } else {
-        if (qSectionTitle) qSectionTitle.innerText = 'ANTREAN BERIKUTNYA';
-        const qList = state.queue || [];
+        if (qSectionTitle) qSectionTitle.innerText = 'ANTREAN LIVE';
+        const qList = (state.queue || []).slice();
+        qList.sort((a, b) => {
+          const rankA = tierRank[a.type] || 3;
+          const rankB = tierRank[b.type] || 3;
+          if (rankA !== rankB) return rankA - rankB;
+          return 0;
+        });
+
         qTotal.innerText = `${qList.length} Pemain`;
 
         if (qList.length === 0) {
           qContainer.innerHTML = '<div class="empty-queue">(Antrean Kosong)</div>';
-          scrollHint.style.display = 'none';
         } else {
           qContainer.innerHTML = '';
-          scrollHint.style.display = (qList.length > 5) ? 'inline-block' : 'none';
+          tiers.forEach(tier => {
+            const players = [];
+            qList.forEach((p, idx) => {
+              const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
+              if (pTier === tier.key) {
+                players.push({ player: p, globalIdx: idx + 1 });
+              }
+            });
 
-          qList.forEach((p, idx) => {
-            const row = document.createElement('div');
-            const isVip = p.type === 'VIP';
-            row.className = `queue-row ${isVip ? 'vip' : 'free'}`;
-            row.innerHTML = `
-              <div class="q-left">
-                <span class="q-idx">#${idx + 1}</span>
-                <span class="q-name">${escapeHtml(p.name)}</span>
-                <span class="q-char">(${escapeHtml(p.char || 'TBA')})</span>
-              </div>
-              <div class="q-right">
-                <span class="q-ticket">${p.matchesLeft} Tiket</span>
-                ${isVip ? '<span class="q-badge vip">VIP</span>' : ''}
+            const tierDiv = document.createElement('div');
+            tierDiv.className = `tier-section ${tier.cls}`;
+            tierDiv.innerHTML = `
+              <div class="tier-header ${tier.cls}">
+                <span>${tier.label}</span>
+                <span>${players.length}</span>
               </div>
             `;
-            qContainer.appendChild(row);
+
+            if (players.length === 0) {
+              const emptyDiv = document.createElement('div');
+              emptyDiv.className = 'tier-empty';
+              emptyDiv.innerText = '(Kosong)';
+              tierDiv.appendChild(emptyDiv);
+            } else {
+              players.forEach(({ player: p, globalIdx }) => {
+                const row = document.createElement('div');
+                row.className = `queue-row ${tier.cls}`;
+                row.innerHTML = `
+                  <div class="q-left">
+                    <div class="q-text-wrap">
+                      <span class="q-idx">#${globalIdx}</span>
+                      <span class="q-name">${escapeHtml(p.name)}</span>
+                      <span class="q-sep">|</span>
+                      <span class="q-char">${escapeHtml(formatChar(p.char))}</span>
+                    </div>
+                  </div>
+                  <div class="q-right">
+                    <span class="q-ticket">${p.matchesLeft} Tiket</span>
+                    <span class="q-badge ${tier.cls}">${p.type || 'FREE'}</span>
+                  </div>
+                `;
+                tierDiv.appendChild(row);
+              });
+            }
+
+            qContainer.appendChild(tierDiv);
+          });
+
+          // Horizontal scroll animation jika teks panjang
+          document.querySelectorAll('.q-left').forEach(el => {
+            const wrap = el.querySelector('.q-text-wrap');
+            if (wrap && el.scrollWidth > el.clientWidth) {
+              const diff = el.scrollWidth - el.clientWidth;
+              wrap.style.setProperty('--marquee-dist', `-${diff + 14}px`);
+              wrap.classList.add('marquee-active');
+            }
           });
 
           startSmartAutoScroll();
@@ -705,7 +900,7 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Smart Auto-Scroll for Live Streaming
+    // Auto-Scroll: Scroll ke bawah -> Berhenti 3 dtk -> Langsung JUMP kembali ke paling atas
     let autoScrollTimer = null;
     let isUserInteracting = false;
 
@@ -715,30 +910,34 @@
 
       clearInterval(autoScrollTimer);
 
-      let direction = 1; // 1 = down, -1 = up
-      let pauseCount = 0;
+      let stateMode = 'scrolling'; // 'scrolling', 'paused_at_bottom', 'paused_at_top'
+      let pauseTicks = 40; // 2 detik awal di posisi atas
 
       autoScrollTimer = setInterval(() => {
         if (isUserInteracting) return;
         const maxScroll = container.scrollHeight - container.clientHeight;
         if (maxScroll <= 8) return;
 
-        if (pauseCount > 0) {
-          pauseCount--;
+        if (pauseTicks > 0) {
+          pauseTicks--;
+          if (pauseTicks === 0) {
+            if (stateMode === 'paused_at_bottom') {
+              // LANGSUNG JUMP KE ATAS! BUKAN SCROLL KE ATAS!
+              container.scrollTop = 0;
+              stateMode = 'paused_at_top';
+              pauseTicks = 40; // Berhenti 2 detik di paling atas
+            } else if (stateMode === 'paused_at_top') {
+              stateMode = 'scrolling';
+            }
+          }
           return;
         }
 
-        if (direction === 1) {
+        if (stateMode === 'scrolling') {
           container.scrollTop += 1;
           if (container.scrollTop >= maxScroll - 2) {
-            direction = -1;
-            pauseCount = 60; // Pause 3s at bottom
-          }
-        } else {
-          container.scrollTop -= 1.5;
-          if (container.scrollTop <= 2) {
-            direction = 1;
-            pauseCount = 40; // Pause 2s at top
+            stateMode = 'paused_at_bottom';
+            pauseTicks = 60; // Berhenti 3 detik di bawah (60 * 50ms = 3000ms = 3 detik)
           }
         }
       }, 50);

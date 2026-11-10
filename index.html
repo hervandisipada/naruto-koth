@@ -8,36 +8,72 @@
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
     :root {
-      --bg-dark: #0f172a;
-      --panel-bg: #1e293b;
-      --accent-orange: #f97316;
-      --accent-gold: #eab308;
-      --accent-blue: #3b82f6;
-      --accent-green: #22c55e;
-      --accent-red: #ef4444;
-      --text-light: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #334155;
+      /* User's Exact 4-Color Palette: #F7F7F7, #EEEEEE, #393E46, #929AAB */
+      --c-white: #F7F7F7;
+      --c-light: #EEEEEE;
+      --c-dark: #393E46;
+      --c-slate: #929AAB;
+
+      /* Semantic tokens for Light Theme (Default) */
+      --bg-dark: #F7F7F7;
+      --panel-bg: #FFFFFF;
+      --panel-subtle: #EEEEEE;
+      --border-color: #E2E6EC;
+      --border-strong: #929AAB;
+      --text-light: #393E46;
+      --text-muted: #929AAB;
+      --header-bg: #393E46;
+
+      /* Button & Accent tokens */
+      --accent-orange: #393E46;
+      --accent-gold: #393E46;
+      --accent-blue: #929AAB;
+      --accent-green: #393E46;
+      --accent-red: #596170;
+    }
+
+    [data-theme="dark"] {
+      --bg-dark: #272B30;
+      --panel-bg: #393E46;
+      --panel-subtle: #2F343C;
+      --border-color: #4C5462;
+      --border-strong: #929AAB;
+      --text-light: #F7F7F7;
+      --text-muted: #929AAB;
+      --header-bg: #1E2125;
+
+      --accent-orange: #EEEEEE;
+      --accent-gold: #F7F7F7;
+      --accent-blue: #929AAB;
+      --accent-green: #EEEEEE;
+      --accent-red: #929AAB;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
+    }
+
+    button, input, select, textarea {
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
     }
 
     body {
       background-color: var(--bg-dark);
       color: var(--text-light);
       min-height: 100vh;
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     /* Tab Switcher */
     .view-switcher {
       display: flex;
-      background-color: #090d16;
-      border-bottom: 2px solid var(--border-color);
+      align-items: center;
+      background-color: var(--c-dark);
+      border-bottom: 2px solid var(--c-slate);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -45,25 +81,27 @@
 
     .tab-btn {
       flex: 1;
-      padding: 14px;
+      padding: 13px;
       border: none;
       background: transparent;
-      color: var(--text-muted);
-      font-weight: bold;
-      font-size: 1rem;
+      color: var(--c-slate);
+      font-weight: 700;
+      font-size: 0.95rem;
       cursor: pointer;
       transition: all 0.2s ease;
+      text-decoration: none;
+      text-align: center;
     }
 
     .tab-btn.active {
-      color: var(--accent-orange);
-      background-color: var(--panel-bg);
-      border-bottom: 3px solid var(--accent-orange);
+      color: var(--c-white);
+      background-color: rgba(255, 255, 255, 0.08);
+      border-bottom: 3px solid var(--c-white);
     }
 
     .view-container {
       display: none;
-      padding: 20px;
+      padding: 18px;
     }
 
     .view-container.active {
@@ -74,7 +112,7 @@
     .admin-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 16px;
       max-width: 1200px;
       margin: 0 auto;
     }
@@ -90,22 +128,23 @@
 
     .card {
       background-color: var(--panel-bg);
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 18px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 8px rgba(57, 62, 70, 0.06);
     }
 
     .card-title {
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1.15rem;
+      font-weight: 800;
       margin-bottom: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: var(--accent-gold);
+      color: var(--text-light);
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 8px;
+      letter-spacing: 0.3px;
     }
 
     /* Form Inputs */
@@ -118,21 +157,24 @@
       font-size: 0.85rem;
       color: var(--text-muted);
       margin-bottom: 4px;
+      font-weight: 600;
     }
 
     .form-control {
       width: 100%;
-      padding: 10px 12px;
+      padding: 9px 12px;
       border-radius: 6px;
-      border: 1px solid var(--border-color);
-      background-color: #0f172a;
+      border: 1px solid var(--border-strong);
+      background-color: var(--panel-bg);
       color: var(--text-light);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+      transition: border-color 0.2s ease;
     }
 
     .form-control:focus {
       outline: none;
-      border-color: var(--accent-orange);
+      border-color: var(--c-dark);
+      box-shadow: 0 0 0 2px rgba(57, 62, 70, 0.15);
     }
 
     .form-row {
@@ -141,35 +183,71 @@
     }
 
     .btn {
-      padding: 10px 16px;
+      padding: 8px 14px;
       border: none;
       border-radius: 6px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      font-size: 0.88rem;
     }
 
-    .btn-primary { background-color: var(--accent-orange); color: #000; }
-    .btn-primary:hover { background-color: #ea580c; }
-    .btn-success { background-color: var(--accent-green); color: #000; }
-    .btn-danger { background-color: var(--accent-red); color: #fff; }
-    .btn-blue { background-color: var(--accent-blue); color: #fff; }
-    .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
-    .btn-block { width: 100%; }
+    .btn-primary {
+      background-color: var(--c-dark);
+      color: var(--c-white);
+    }
+    .btn-primary:hover {
+      opacity: 0.92;
+    }
+
+    .btn-success {
+      background-color: var(--c-dark);
+      color: var(--c-white);
+    }
+    .btn-success:hover {
+      opacity: 0.92;
+    }
+
+    .btn-danger {
+      background-color: var(--c-light);
+      color: var(--c-dark);
+      border: 1px solid var(--c-slate);
+    }
+    .btn-danger:hover {
+      background-color: var(--c-slate);
+      color: var(--c-white);
+    }
+
+    .btn-blue {
+      background-color: var(--c-slate);
+      color: var(--c-white);
+    }
+    .btn-blue:hover {
+      opacity: 0.92;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.8rem;
+    }
+    .btn-block {
+      width: 100%;
+    }
 
     /* Match Arena View (Admin) */
     .arena-container {
       display: flex;
       flex-direction: column;
       gap: 15px;
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-      border: 2px solid var(--accent-gold);
+      background: var(--panel-subtle);
+      border: 2px solid var(--c-dark);
       border-radius: 12px;
       padding: 16px;
+      box-shadow: 0 4px 16px rgba(57, 62, 70, 0.08);
     }
 
     @media (min-width: 600px) {
@@ -181,41 +259,93 @@
 
     .player-slot {
       flex: 1;
-      background: rgba(30, 41, 59, 0.8);
+      background: var(--panel-bg);
       border-radius: 8px;
       padding: 14px;
       border: 1px solid var(--border-color);
       position: relative;
     }
 
-    .player-slot.king { border-color: var(--accent-gold); }
-    .player-slot.challenger { border-color: var(--accent-blue); }
+    .player-slot.vvip {
+      border: 2px solid var(--c-dark);
+      background: var(--panel-subtle);
+    }
+    .player-slot.vip {
+      border: 2px solid var(--c-slate);
+    }
+    .player-slot.free {
+      border: 2px solid var(--border-color);
+    }
+    [data-theme="dark"] .player-slot.vvip {
+      border: 2px solid var(--c-white);
+    }
 
     .role-badge {
       font-size: 0.75rem;
-      font-weight: bold;
+      font-weight: 800;
       padding: 3px 8px;
       border-radius: 4px;
       text-transform: uppercase;
       display: inline-block;
       margin-bottom: 6px;
+      letter-spacing: 0.5px;
+      background-color: var(--c-slate);
+      color: var(--c-white);
     }
 
-    .king .role-badge { background-color: var(--accent-gold); color: #000; }
-    .challenger .role-badge { background-color: var(--accent-blue); color: #fff; }
+    .role-badge.vvip, .role-badge.badge-vvip {
+      background-color: var(--c-dark);
+      color: var(--c-white);
+      font-weight: 900;
+      border: 1px solid var(--c-white);
+    }
+    [data-theme="dark"] .role-badge.vvip, [data-theme="dark"] .role-badge.badge-vvip {
+      background-color: var(--c-white);
+      color: var(--c-dark);
+      border: none;
+    }
+    .role-badge.vip, .role-badge.badge-vip {
+      background-color: var(--c-slate);
+      color: var(--c-white);
+      font-weight: 800;
+    }
+    .role-badge.free, .role-badge.badge-free {
+      background-color: var(--panel-subtle);
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+      font-weight: 700;
+    }
+
+    /* DROPDOWN TIER & NOMOR URUTAN */
+    .tier-select, .pos-select {
+      padding: 3px 6px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      border-radius: 4px;
+      background: var(--panel-subtle);
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      outline: none;
+    }
+    .pos-select {
+      font-weight: 900;
+      min-width: 44px;
+      text-align: center;
+    }
 
     .player-name {
       font-size: 1.25rem;
       font-weight: 800;
-      color: #fff;
+      color: var(--text-light);
       word-break: break-word;
     }
 
     .player-char {
       font-size: 0.9rem;
-      color: var(--accent-orange);
+      color: var(--c-slate);
       margin-top: 2px;
-      font-style: italic;
+      font-weight: 500;
     }
 
     .player-stats {
@@ -227,16 +357,17 @@
     }
 
     .stat-val {
-      color: #fff;
+      color: var(--text-light);
       font-weight: bold;
     }
 
     .vs-divider {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 900;
-      color: var(--accent-red);
+      color: var(--c-slate);
       text-align: center;
       padding: 10px;
+      letter-spacing: 1px;
     }
 
     /* Queue & Saved Lists */
@@ -245,23 +376,43 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 12px;
-      background-color: #0f172a;
+      background-color: var(--panel-bg);
       border-radius: 6px;
       margin-bottom: 8px;
-      border-left: 4px solid var(--border-color);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--c-slate);
     }
 
-    .list-item.vip { border-left-color: var(--accent-gold); }
-    .list-item.free { border-left-color: var(--accent-blue); }
-    .list-item.save { border-left-color: var(--accent-orange); }
+    .list-item.vvip {
+      border-left-color: var(--c-dark);
+      background-color: var(--panel-subtle);
+    }
+    .list-item.vip {
+      border-left-color: var(--c-dark);
+    }
+    .list-item.free {
+      border-left-color: var(--c-slate);
+    }
+    .list-item.save {
+      border-left-color: var(--c-slate);
+    }
+
+    [data-theme="dark"] .list-item.vvip {
+      border-left-color: var(--c-white);
+      background-color: var(--panel-subtle);
+    }
+    [data-theme="dark"] .list-item.vip {
+      border-left-color: var(--c-slate);
+    }
 
     .item-info {
       flex: 1;
     }
 
     .item-name {
-      font-weight: bold;
+      font-weight: 700;
       font-size: 0.95rem;
+      color: var(--text-light);
     }
 
     .item-char {
@@ -272,8 +423,8 @@
     .item-meta {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-right: 10px;
+      gap: 6px;
+      margin-right: 6px;
     }
 
     .badge {
@@ -282,37 +433,120 @@
       border-radius: 4px;
       font-weight: bold;
     }
-    .badge-vip { background-color: var(--accent-gold); color: #000; }
-    .badge-free { background-color: var(--accent-blue); color: #fff; }
-    .badge-save { background-color: var(--accent-orange); color: #000; }
+    .badge-vvip {
+      background-color: var(--c-dark);
+      color: var(--c-white);
+      font-weight: 900;
+      border: 1px solid var(--c-white);
+    }
+    [data-theme="dark"] .badge-vvip {
+      background-color: var(--c-white);
+      color: var(--c-dark);
+      font-weight: 900;
+      border: none;
+    }
+    .badge-vip {
+      background-color: var(--c-slate);
+      color: var(--c-white);
+      font-weight: 800;
+    }
+    .badge-free {
+      background-color: var(--c-light);
+      color: var(--c-dark);
+      border: 1px solid var(--c-slate);
+      font-weight: 700;
+    }
+    [data-theme="dark"] .badge-free {
+      background-color: transparent;
+      color: var(--c-slate);
+      border: 1px solid var(--c-slate);
+    }
+    .badge-save {
+      background-color: var(--c-light);
+      color: var(--c-dark);
+      border: 1px solid var(--c-slate);
+    }
 
-    /* Overlay Mode Styles */
+    /* Vertical Tier Sections */
+    .tier-section {
+      margin-bottom: 14px;
+    }
+    .tier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 10px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .tier-header.vvip {
+      background: var(--c-dark);
+      color: var(--c-white);
+      border-left: 3px solid var(--c-white);
+    }
+    [data-theme="dark"] .tier-header.vvip {
+      background: rgba(247, 247, 247, 0.16);
+      color: var(--c-white);
+      border-left: 3px solid var(--c-white);
+    }
+    .tier-header.vip {
+      background: var(--panel-subtle);
+      color: var(--text-light);
+      border-left: 3px solid var(--c-slate);
+    }
+    [data-theme="dark"] .tier-header.vip {
+      background: rgba(146, 154, 171, 0.16);
+      color: var(--c-slate);
+      border-left: 3px solid var(--c-slate);
+    }
+    .tier-header.free {
+      background: var(--panel-subtle);
+      color: var(--text-muted);
+      border-left: 3px solid var(--border-color);
+      font-weight: 700;
+    }
+    [data-theme="dark"] .tier-header.free {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--c-slate);
+      border-left: 3px solid rgba(146, 154, 171, 0.3);
+    }
+    .tier-empty {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-style: italic;
+    }
+
+    /* Overlay Mode Styles in Index Preview */
     #overlay-view {
       background-color: transparent;
       padding: 0;
     }
 
     .overlay-container {
-      width: 450px;
-      background: rgba(15, 23, 42, 0.92);
+      width: 420px;
+      background: var(--c-dark);
       border-radius: 12px;
-      padding: 16px;
-      color: #fff;
-      border: 2px solid rgba(249, 115, 22, 0.5);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      margin: 20px;
+      padding: 14px;
+      color: var(--c-white);
+      border: 1px solid var(--c-slate);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      margin: 20px auto;
     }
 
     .overlay-header {
       text-align: center;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 900;
-      color: var(--accent-gold);
+      color: var(--c-white);
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 12px;
-      border-bottom: 1px dashed rgba(255,255,255,0.2);
+      letter-spacing: 1.2px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--c-slate);
       padding-bottom: 6px;
     }
 
@@ -320,10 +554,11 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.25);
       padding: 10px;
       border-radius: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(146, 154, 171, 0.2);
     }
 
     .overlay-player {
@@ -334,28 +569,55 @@
       border-radius: 6px;
     }
 
-    .overlay-player.p1 { background: linear-gradient(90deg, rgba(234, 179, 8, 0.25) 0%, transparent 100%); border-left: 3px solid var(--accent-gold); }
-    .overlay-player.p2 { background: linear-gradient(90deg, rgba(59, 130, 246, 0.25) 0%, transparent 100%); border-left: 3px solid var(--accent-blue); }
+    .overlay-player.p1 {
+      background: rgba(255, 255, 255, 0.06);
+      border-left: 3px solid var(--c-white);
+    }
+    .overlay-player.p2 {
+      background: rgba(255, 255, 255, 0.04);
+      border-left: 3px solid var(--c-slate);
+    }
 
-    .overlay-pname { font-weight: 800; font-size: 1.05rem; }
-    .overlay-pchar { font-size: 0.8rem; color: var(--accent-orange); font-style: italic; }
-    .overlay-ws { font-weight: 900; color: var(--accent-gold); font-size: 0.9rem; }
-    .free-streak-badge { font-size: 0.65rem; background: var(--accent-green); color: #000; padding: 2px 4px; border-radius: 3px; margin-left: 4px; font-weight: bold; }
+    .overlay-pname {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--c-white);
+    }
+    .overlay-pchar {
+      font-size: 0.8rem;
+      color: var(--c-slate);
+    }
+    .overlay-ws {
+      font-weight: 900;
+      color: var(--c-white);
+      font-size: 0.9rem;
+    }
+    .free-streak-badge {
+      font-size: 0.65rem;
+      background: var(--c-light);
+      color: var(--c-dark);
+      padding: 2px 4px;
+      border-radius: 3px;
+      margin-left: 4px;
+      font-weight: bold;
+    }
 
     .overlay-queue-title {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: bold;
+      font-size: 0.78rem;
+      color: var(--c-slate);
+      font-weight: 800;
       margin-bottom: 6px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .overlay-qitem {
       display: flex;
       justify-content: space-between;
-      padding: 5px 8px;
+      padding: 6px 8px;
       font-size: 0.85rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(146, 154, 171, 0.15);
+      color: var(--c-white);
     }
 
     /* Modal Dialog */
@@ -363,20 +625,24 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
+      background: rgba(57, 62, 70, 0.7);
+      backdrop-filter: blur(4px);
       z-index: 999;
       justify-content: center;
       align-items: center;
       padding: 20px;
     }
-    .modal-overlay.active { display: flex; }
+    .modal-overlay.active {
+      display: flex;
+    }
     .modal-box {
       background: var(--panel-bg);
       border-radius: 10px;
       padding: 20px;
       max-width: 400px;
       width: 100%;
-      border: 1px solid var(--border-color);
+      border: 2px solid var(--c-dark);
+      color: var(--text-light);
     }
 
     .instructions {
@@ -391,20 +657,21 @@
 
   <!-- Switcher Tab -->
   <div class="view-switcher">
-    <button class="tab-btn active" onclick="switchTab('admin')">Panel Admin (HP / PC)</button>
-    <a href="overlay.html" target="_blank" class="tab-btn" style="text-decoration:none; text-align:center;">Buka Overlay ↗</a>
+    <button class="tab-btn active" onclick="switchTab('admin')">Panel Admin</button>
+    <a href="overlay.html" target="_blank" class="tab-btn" style="text-decoration:none; text-align:center;">Overlay ↗</a>
+    <button id="theme-toggle-btn" onclick="toggleTheme()" class="btn btn-sm" style="margin: 0 10px; background: rgba(255,255,255,0.12); color: var(--c-white); border: 1px solid var(--c-slate); font-size: 0.78rem;" title="Ganti mode tema">Tema: Terang</button>
   </div>
 
   <!-- Quick Link Banner for Streamer -->
-  <div style="background: #1e1b4b; border-bottom: 2px solid var(--accent-orange); padding: 8px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; font-size: 0.85rem;">
-    <div>
-      <span style="color: var(--accent-gold); font-weight: bold;">Link Overlay (TikTok Live Studio):</span>
-      <code id="tiktok-link-display" style="background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 4px; color: #38bdf8; margin: 0 6px;">https://hervandisipada.github.io/naruto-koth/overlay.html</code>
-      <button class="btn btn-sm btn-primary" onclick="copyOverlayLink()">Salin Link</button>
+  <div class="streamer-banner">
+    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <span style="font-weight: 700; color: var(--c-dark);">Link Overlay:</span>
+      <code id="tiktok-link-display" style="background: var(--panel-bg); border: 1px solid var(--border-strong); padding: 3px 8px; border-radius: 4px; color: var(--c-dark); font-weight: 600;">http://localhost:8000/overlay.html</code>
+      <button class="btn btn-sm btn-primary" onclick="copyOverlayLink()">Salin</button>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px; font-size: 0.82rem;">
-      <span id="cloud-sync-badge" style="color: #22c55e; font-weight: bold;">Cloud Sync: <b>Aktif</b></span>
-      <span style="color: var(--text-muted);">Link HP: <b id="hp-link-display" style="color: #22c55e;">https://hervandisipada.github.io/naruto-koth/</b></span>
+    <div style="display: flex; align-items: center; gap: 14px; font-size: 0.82rem;">
+      <span id="cloud-sync-badge" style="color: var(--c-dark); font-weight: 700;">Sync: <b>Aktif</b></span>
+      <span style="color: var(--text-muted);">HP: <b id="hp-link-display" style="color: var(--c-dark);">http://localhost:8000</b></span>
     </div>
   </div>
 
@@ -415,28 +682,28 @@
       <!-- ARENA MATCH CONTROLLER -->
       <div class="card full-width">
         <div class="card-title">
-          <span>ARENA PERTANDINGAN (1 VS 1)</span>
-          <button class="btn btn-sm btn-danger" onclick="resetArena()">Clear Arena</button>
+          <span>ARENA (1 VS 1)</span>
+          <button class="btn btn-sm btn-danger" onclick="resetArena()">Reset Arena</button>
         </div>
 
         <div class="arena-container">
           <!-- PLAYER 1 SLOT -->
           <div class="player-slot king" id="p1-slot-card">
             <span class="role-badge" id="p1-role-badge">KING (P1)</span>
-            <div id="p1-name" class="player-name">Belum Ada Pemain</div>
+            <div id="p1-name" class="player-name">Kosong</div>
             <div id="p1-char" class="player-char">-</div>
             <div class="player-stats">
-              <span>WS: <span id="p1-ws" class="stat-val">0</span> <span id="p1-bonus-badge" class="badge" style="display:none; background:#a855f7; color:#fff; font-size:0.72rem;">+1 Tiket</span></span>
-              <span style="cursor:pointer;" onclick="promptEditTickets('p1')" title="Klik untuk edit tiket">Tiket Sisa: <span id="p1-matches" class="stat-val">0</span></span>
+              <span>WS: <span id="p1-ws" class="stat-val">0</span> <span id="p1-bonus-badge" class="badge" style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.72rem; border:1px solid var(--c-slate);">+1 Tiket</span></span>
+              <span style="cursor:pointer;" onclick="promptEditTickets('p1')" title="Klik untuk edit tiket">Tiket: <span id="p1-matches" class="stat-val">0</span></span>
             </div>
             <div id="p1-btn-group" style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
               <button class="btn btn-sm btn-success" onclick="triggerWin('p1')">P1 WIN</button>
-              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p1')">Ubah Char</button>
-              <button class="btn btn-sm btn-danger" id="p1-demote-btn" onclick="removeSlotToQueue('p1')" title="Kembalikan ke antrean tanpa potong tiket">Turunkan</button>
+              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p1')">Char</button>
+              <button class="btn btn-sm btn-danger" id="p1-demote-btn" onclick="removeSlotToQueue('p1')" title="Kembalikan ke antrean">Turunkan</button>
             </div>
-            <div id="p1-empty-notice" style="display:none; margin-top: 10px; font-size: 0.82rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;">
-              <div id="p1-empty-text">Slot Penantang (P1) Kosong (Admin yang memilih).</div>
-              <button id="p1-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p1')">Naikkan Antrean #1 ke P1</button>
+            <div id="p1-empty-notice" style="display:none; margin-top: 10px; font-size: 0.82rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+              <div id="p1-empty-text">Slot P1 Kosong.</div>
+              <button id="p1-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p1')">Naikkan #1 ke P1</button>
             </div>
           </div>
 
@@ -445,20 +712,20 @@
           <!-- PLAYER 2 SLOT -->
           <div class="player-slot challenger" id="p2-slot-card">
             <span class="role-badge" id="p2-role-badge">PENANTANG (P2)</span>
-            <div id="p2-name" class="player-name">Belum Ada Pemain</div>
+            <div id="p2-name" class="player-name">Kosong</div>
             <div id="p2-char" class="player-char">-</div>
             <div class="player-stats">
-              <span>WS: <span id="p2-ws" class="stat-val">0</span> <span id="p2-bonus-badge" class="badge" style="display:none; background:#a855f7; color:#fff; font-size:0.72rem;">+1 Tiket</span></span>
-              <span style="cursor:pointer;" onclick="promptEditTickets('p2')" title="Klik untuk edit tiket">Tiket Sisa: <span id="p2-matches" class="stat-val">0</span></span>
+              <span>WS: <span id="p2-ws" class="stat-val">0</span> <span id="p2-bonus-badge" class="badge" style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.72rem; border:1px solid var(--c-slate);">+1 Tiket</span></span>
+              <span style="cursor:pointer;" onclick="promptEditTickets('p2')" title="Klik untuk edit tiket">Tiket: <span id="p2-matches" class="stat-val">0</span></span>
             </div>
             <div id="p2-btn-group" style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
               <button class="btn btn-sm btn-success" onclick="triggerWin('p2')">P2 WIN</button>
-              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p2')">Ubah Char</button>
-              <button class="btn btn-sm btn-danger" id="p2-demote-btn" onclick="removeSlotToQueue('p2')" title="Kembalikan ke antrean tanpa potong tiket">Turunkan</button>
+              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p2')">Char</button>
+              <button class="btn btn-sm btn-danger" id="p2-demote-btn" onclick="removeSlotToQueue('p2')" title="Kembalikan ke antrean">Turunkan</button>
             </div>
-            <div id="p2-empty-notice" style="display:none; margin-top: 10px; font-size: 0.82rem; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;">
-              <div id="p2-empty-text">Slot Penantang (P2) Kosong (Admin yang memilih).</div>
-              <button id="p2-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p2')">Naikkan Antrean #1 ke P2</button>
+            <div id="p2-empty-notice" style="display:none; margin-top: 10px; font-size: 0.82rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+              <div id="p2-empty-text">Slot P2 Kosong.</div>
+              <button id="p2-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p2')">Naikkan #1 ke P2</button>
             </div>
           </div>
         </div>
@@ -469,85 +736,88 @@
         <div class="card-title">Tambah Pemain</div>
         <form id="add-player-form" onsubmit="handleAddPlayer(event)">
           <div class="form-group">
-            <label>Username TikTok / Game *</label>
-            <input type="text" id="input-username" class="form-control" placeholder="cth: NarutoFan99" required>
+            <label>Username *</label>
+            <input type="text" id="input-username" class="form-control" placeholder="Nama pemain" required>
           </div>
           <div class="form-group">
-            <label>Karakter Pilihan (Opsional)</label>
-            <input type="text" id="input-char" class="form-control" placeholder="cth: Sasuke (EMS) / kosongkan dulu" list="storm-characters">
+            <label>Karakter (Opsional)</label>
+            <input type="text" id="input-char" class="form-control" placeholder="Pilih karakter" list="storm-characters">
           </div>
           <div class="form-row">
             <div class="form-group" style="flex: 1;">
-              <label>Jumlah Match (Tiket) *</label>
+              <label>Tiket *</label>
               <input type="number" id="input-matches" class="form-control" value="3" min="1" required>
             </div>
             <div class="form-group" style="flex: 1;">
-              <label>Kategori Antrean *</label>
+              <label>Tier *</label>
               <select id="input-type" class="form-control">
-                <option value="FREE">FREE (Biasa)</option>
-                <option value="VIP">VIP (Prioritas Top)</option>
-                <option value="SAVE">SAVE (Simpan Dulu)</option>
+                <option value="VVIP">VVIP</option>
+                <option value="VIP">VIP</option>
+                <option value="FREE" selected>FREE</option>
               </select>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Tambah ke Daftar</button>
+          <div style="display: flex; gap: 8px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">+ Antrean</button>
+            <button type="button" class="btn btn-blue" style="flex: 1;" onclick="handleAddPlayerDirectSave()">+ Simpan</button>
+          </div>
         </form>
       </div>
 
       <!-- PENGUMUMAN / NOTE RUNNING TEXT OVERLAY -->
       <div class="card">
         <div class="card-title">
-          <span>Pengumuman Overlay</span>
+          <span>Running Text</span>
         </div>
-        <p class="instructions" style="margin-bottom: 8px;">Teks ini akan muncul berjalan di bagian atas overlay live stream.</p>
+        <p class="instructions" style="margin-bottom: 8px;">Teks berjalan di bar atas overlay live.</p>
         <div class="form-group">
-          <input type="text" id="input-announcement" class="form-control" placeholder="cth: 1 Mawar = Antrean VIP | King WS 5x dapat +1 Tiket">
+          <input type="text" id="input-announcement" class="form-control" placeholder="Pesan pengumuman...">
         </div>
-        <button class="btn btn-primary btn-block" onclick="saveAnnouncement()">Simpan Pengumuman</button>
+        <button class="btn btn-primary btn-block" onclick="saveAnnouncement()">Simpan Teks</button>
       </div>
 
-      <!-- KELOLA ANTREAN & SAVED PLAYERS (TAB + CARI PEMAIN) -->
+      <!-- KELOLA ANTREAN & SAVED PLAYERS -->
       <div class="card full-width">
         <!-- Search bar untuk cek slot penonton -->
-        <div style="background: rgba(0,0,0,0.35); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+        <div style="background: var(--panel-subtle); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border-color);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
-            <label style="font-weight: 700; font-size: 0.88rem; color: var(--accent-gold);">Cari Nama / Cek Slot Pemain:</label>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">Gunakan jika penonton tanya slot di live chat</span>
+            <label style="font-weight: 700; font-size: 0.88rem; color: var(--text-light);">Cari Pemain:</label>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Cek posisi antrean & sisa tiket</span>
           </div>
           <div style="display:flex; gap: 8px;">
-            <input type="text" id="search-player-input" class="form-control" placeholder="Ketik nama penonton (cth: Naruto)..." oninput="handleSearchPlayer()">
+            <input type="text" id="search-player-input" class="form-control" placeholder="Ketik nama..." oninput="handleSearchPlayer()">
             <button class="btn btn-sm btn-blue" onclick="document.getElementById('search-player-input').value=''; handleSearchPlayer();">Reset</button>
           </div>
           <div id="search-result-box" style="display:none; margin-top: 8px; padding: 10px; border-radius: 6px; font-size: 0.88rem; line-height: 1.5;"></div>
         </div>
 
         <!-- Toggle Mode Tampilan Live Overlay -->
-        <div style="background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;">
+        <div style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;">
           <div>
-            <span style="font-weight: 700; font-size: 0.88rem; color: var(--text-light);">Tampilan di Live Overlay:</span>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Pilih daftar yang ingin dilihat penonton di layar stream</div>
+            <span style="font-weight: 700; font-size: 0.88rem; color: var(--text-light);">Tampil di Overlay:</span>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Pilih daftar untuk layar live</div>
           </div>
           <div style="display: flex; gap: 8px;">
-            <button id="mode-queue-btn" class="btn btn-sm btn-primary" onclick="setOverlayListMode('queue')">Tampilkan Antrean</button>
-            <button id="mode-saved-btn" class="btn btn-sm" style="background: #334155; color: #fff;" onclick="setOverlayListMode('saved')">Tampilkan Save</button>
+            <button id="mode-queue-btn" class="btn btn-sm btn-primary" onclick="setOverlayListMode('queue')">Antrean</button>
+            <button id="mode-saved-btn" class="btn btn-sm btn-danger" onclick="setOverlayListMode('saved')">Saved</button>
           </div>
         </div>
 
         <!-- Sub-Tabs Switcher -->
         <div style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
           <button id="subtab-queue-btn" class="btn btn-sm btn-primary" onclick="switchListTab('queue')">
-            Antrean Aktif (<span id="queue-count">0</span>)
+            Antrean (<span id="queue-count">0</span>)
           </button>
-          <button id="subtab-saved-btn" class="btn btn-sm" style="background: #334155; color: #fff;" onclick="switchListTab('saved')">
-            Saved Players (<span id="save-count">0</span>)
+          <button id="subtab-saved-btn" class="btn btn-sm btn-danger" onclick="switchListTab('saved')">
+            Saved (<span id="save-count">0</span>)
           </button>
         </div>
 
         <!-- TAB 1: ANTREAN AKTIF LIVE -->
         <div id="subtab-queue-content">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-            <span style="font-size: 0.82rem; color: var(--text-muted);">Pilih pemain di bawah untuk dinaikkan ke arena:</span>
-            <button class="btn btn-sm btn-danger" onclick="clearQueue()">Kosongkan Antrean</button>
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Klik pemain untuk naik arena:</span>
+            <button class="btn btn-sm btn-danger" onclick="clearQueue()">Reset Antrean</button>
           </div>
           <div id="queue-list-container"></div>
         </div>
@@ -555,8 +825,8 @@
         <!-- TAB 2: SAVED PLAYERS -->
         <div id="subtab-saved-content" style="display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-            <span style="font-size: 0.82rem; color: var(--text-muted);">Daftar pemain yang disimpan:</span>
-            <button class="btn btn-sm btn-danger" onclick="clearSaved()">Hapus Semua</button>
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain tersimpan:</span>
+            <button class="btn btn-sm btn-danger" onclick="clearSaved()">Reset Saved</button>
           </div>
           <div id="saved-list-container"></div>
         </div>
@@ -565,11 +835,11 @@
       <!-- BACKUP & RESTORE DATA -->
       <div class="card full-width">
         <div class="card-title">
-          <span>Backup & Restore Data</span>
+          <span>Backup & Restore</span>
         </div>
-        <p class="instructions" style="margin-bottom: 10px;">Simpan cadangan data pemain dan sisa tiket ke file di HP/PC.</p>
+        <p class="instructions" style="margin-bottom: 10px;">Download / upload file data pemain.</p>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button type="button" class="btn btn-blue" onclick="exportDataBackup()">Download Backup (.json)</button>
+          <button type="button" class="btn btn-blue" onclick="exportDataBackup()">Download Backup</button>
           <label class="btn btn-primary" style="margin-bottom: 0; cursor: pointer;">
             Restore Backup
             <input type="file" accept=".json" style="display: none;" onchange="importDataBackup(event)">
@@ -578,13 +848,13 @@
       </div>
 
       <!-- RESET ALL SESSION -->
-      <div class="card full-width" style="text-align: center; border-color: rgba(239, 68, 68, 0.4);">
+      <div class="card full-width" style="text-align: center; border-color: var(--border-strong);">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
           <div style="text-align: left;">
-            <span style="font-weight: bold; color: var(--accent-red);">Reset Total Sesi Live</span>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Hapus semua data arena, antrean, dan simpanan untuk memulai live streaming baru.</div>
+            <span style="font-weight: bold; color: var(--text-light);">Reset Sesi</span>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Hapus semua data untuk sesi live baru.</div>
           </div>
-          <button class="btn btn-sm btn-danger" onclick="resetAllData()">Reset Semua Data</button>
+          <button class="btn btn-sm btn-danger" onclick="resetAllData()">Reset Total</button>
         </div>
       </div>
 
@@ -594,8 +864,6 @@
   <!-- VIEW 2: TIKTOK LIVE OVERLAY SOURCE -->
   <div id="overlay-view" class="view-container">
     <div class="overlay-container">
-      <div class="overlay-header">KING OF THE HILL</div>
-      
       <div class="overlay-match">
         <div class="overlay-player p1">
           <div>
@@ -603,7 +871,7 @@
             <div id="ov-p1-char" class="overlay-pchar">-</div>
           </div>
           <div style="text-align: right;">
-            <div class="overlay-ws">WS: <span id="ov-p1-ws">0</span> <span id="ov-p1-free" class="free-streak-badge" style="display:none;">FREE MATCH</span> <span id="ov-p1-bonus" class="free-streak-badge" style="display:none; background:#a855f7;">+1 TIKET</span></div>
+            <div class="overlay-ws">WS: <span id="ov-p1-ws">0</span> <span id="ov-p1-bonus" class="free-streak-badge" style="display:none; background:#a855f7;">+1 TIKET</span></div>
             <div style="font-size:0.75rem; color:#aaa;">Tiket: <span id="ov-p1-m">0</span></div>
           </div>
         </div>
@@ -616,7 +884,7 @@
             <div id="ov-p2-char" class="overlay-pchar">-</div>
           </div>
           <div style="text-align: right;">
-            <div class="overlay-ws">WS: <span id="ov-p2-ws">0</span> <span id="ov-p2-free" class="free-streak-badge" style="display:none;">FREE MATCH</span> <span id="ov-p2-bonus" class="free-streak-badge" style="display:none; background:#a855f7;">+1 TIKET</span></div>
+            <div class="overlay-ws">WS: <span id="ov-p2-ws">0</span> <span id="ov-p2-bonus" class="free-streak-badge" style="display:none; background:#a855f7;">+1 TIKET</span></div>
             <div style="font-size:0.75rem; color:#aaa;">Tiket: <span id="ov-p2-m">0</span></div>
           </div>
         </div>
@@ -709,8 +977,24 @@
     function loadState() {
       const data = localStorage.getItem('koth_naruto_state');
       if (data) {
-        try { state = JSON.parse(data); } catch(e){}
+        try { 
+          state = JSON.parse(data); 
+        } catch(e){}
       }
+      // Sanitize: pastikan label VVIP/VIP/FREE valid dan tidak ada 'SAVE'
+      if (Array.isArray(state.queue)) {
+        state.queue.forEach(p => {
+          if (!p.type || p.type === 'SAVE') p.type = 'FREE';
+        });
+      }
+      if (Array.isArray(state.saved)) {
+        state.saved.forEach(p => {
+          if (!p.type || p.type === 'SAVE') p.type = 'FREE';
+        });
+      }
+      if (state.p1 && (!state.p1.type || state.p1.type === 'SAVE')) state.p1.type = 'FREE';
+      if (state.p2 && (!state.p2.type || state.p2.type === 'SAVE')) state.p2.type = 'FREE';
+
       renderAll();
       setupSync();
     }
@@ -849,23 +1133,64 @@
       }
     }
 
+    // Helper Escape HTML
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Rank Tier Prioritas: VVIP (1) -> VIP (2) -> FREE (3)
+    const tierRank = { 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
+
+    function sortQueue() {
+      state.queue.sort((a, b) => {
+        const rankA = tierRank[a.type] || 3;
+        const rankB = tierRank[b.type] || 3;
+        if (rankA !== rankB) return rankA - rankB;
+        return 0; // FIFO dalam tier yang sama
+      });
+    }
+
+    function sortSaved() {
+      state.saved.sort((a, b) => {
+        const rankA = tierRank[a.type] || 3;
+        const rankB = tierRank[b.type] || 3;
+        if (rankA !== rankB) return rankA - rankB;
+        return 0; // FIFO dalam tier yang sama
+      });
+    }
+
     // Handle Tambah Pemain
     function handleAddPlayer(e) {
-      e.preventDefault();
-      const name = document.getElementById('input-username').value.trim();
-      const char = document.getElementById('input-char').value.trim() || 'Belum Pilih / TBA';
-      const matchesLeft = parseInt(document.getElementById('input-matches').value) || 1;
-      const type = document.getElementById('input-type').value;
+      if (e) e.preventDefault();
+      saveNewPlayer('queue');
+    }
 
-      if (!name) return;
+    function handleAddPlayerDirectSave() {
+      saveNewPlayer('saved');
+    }
+
+    function saveNewPlayer(target) {
+      const name = document.getElementById('input-username').value.trim();
+      const char = document.getElementById('input-char').value.trim() || 'TBA';
+      const matchesLeft = parseInt(document.getElementById('input-matches').value) || 1;
+      let type = document.getElementById('input-type').value || 'FREE';
+      if (type === 'SAVE') type = 'FREE';
+
+      if (!name) {
+        alert("Masukkan username pemain!");
+        return;
+      }
 
       const newPlayer = { id: Date.now().toString(), name, char, matchesLeft, ws: 0, type };
 
-      if (type === 'SAVE') {
+      if (target === 'saved') {
         state.saved.push(newPlayer);
+        sortSaved();
       } else {
         state.queue.push(newPlayer);
         sortQueue();
+        checkAutoFillArena();
       }
 
       // Reset form
@@ -873,23 +1198,18 @@
       document.getElementById('input-char').value = '';
 
       saveState();
-      checkAutoFillArena();
     }
 
-    function sortQueue() {
-      state.queue.sort((a, b) => {
-        if (a.type === 'VIP' && b.type !== 'VIP') return -1;
-        if (a.type !== 'VIP' && b.type === 'VIP') return 1;
-        return 0; // FIFO
-      });
-    }
-
-    // Move Saved to Active Queue
-    function moveSavedToQueue(id, targetType) {
+    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (VVIP/VIP/FREE)
+    function moveSavedToQueue(id, overrideType) {
       const index = state.saved.findIndex(p => p.id === id);
       if (index !== -1) {
         const player = state.saved.splice(index, 1)[0];
-        player.type = targetType;
+        if (overrideType) {
+          player.type = overrideType;
+        } else if (!player.type || player.type === 'SAVE') {
+          player.type = 'FREE';
+        }
         state.queue.push(player);
         sortQueue();
         saveState();
@@ -897,15 +1217,88 @@
       }
     }
 
-    // Move Active Queue to Save
+    // Move Active Queue to Save: MEMPERTAHANKAN TIER (VVIP/VIP/FREE)
     function moveQueueToSave(id) {
       const index = state.queue.findIndex(p => p.id === id);
       if (index !== -1) {
         const player = state.queue.splice(index, 1)[0];
-        player.type = 'SAVE';
+        if (!player.type || player.type === 'SAVE') player.type = 'FREE';
         state.saved.push(player);
+        sortSaved();
         saveState();
       }
+    }
+
+    function formatChar(char) {
+      if (!char) return '-';
+      const c = String(char).trim();
+      if (!c || c === 'TBA' || c === 'Belum Pilih' || c === 'Belum Pilih / TBA' || c.toLowerCase() === 'tba') {
+        return '-';
+      }
+      return c;
+    }
+
+    // Dropdown Ganti Tier Pemain
+    function changePlayerTier(id, listType, newTier) {
+      const list = listType === 'queue' ? state.queue : state.saved;
+      const player = list.find(p => p.id === id);
+      if (!player) return;
+      player.type = newTier;
+      if (listType === 'queue') {
+        sortQueue();
+      } else {
+        sortSaved();
+      }
+      saveState();
+    }
+
+    // Dropdown Ubah Urutan Pemain Dalam Tier (Tidak Mengganggu Tier Lain)
+    function reorderPlayerWithinTier(id, listType, newPosInTier) {
+      const list = listType === 'queue' ? state.queue : state.saved;
+      const player = list.find(p => p.id === id);
+      if (!player) return;
+
+      const pTier = (player.type === 'VVIP' || player.type === 'VIP') ? player.type : 'FREE';
+
+      const vvipList = list.filter(p => p.type === 'VVIP');
+      const vipList = list.filter(p => p.type === 'VIP');
+      const freeList = list.filter(p => p.type !== 'VVIP' && p.type !== 'VIP');
+
+      let targetList = (pTier === 'VVIP') ? vvipList : ((pTier === 'VIP') ? vipList : freeList);
+      const curIdx = targetList.findIndex(p => p.id === id);
+      if (curIdx === -1) return;
+
+      // Geser posisi dalam tier sendiri
+      targetList.splice(curIdx, 1);
+      targetList.splice(newPosInTier - 1, 0, player);
+
+      const combined = [...vvipList, ...vipList, ...freeList];
+      if (listType === 'queue') {
+        state.queue = combined;
+      } else {
+        state.saved = combined;
+      }
+      saveState();
+    }
+
+    // Quick Switch Tier fallback
+    function togglePlayerTier(id, listType) {
+      const list = listType === 'queue' ? state.queue : state.saved;
+      const player = list.find(p => p.id === id);
+      if (!player) return;
+      if (player.type === 'FREE' || !player.type || player.type === 'SAVE') {
+        player.type = 'VIP';
+      } else if (player.type === 'VIP') {
+        player.type = 'VVIP';
+      } else {
+        player.type = 'FREE';
+      }
+      if (listType === 'queue') {
+        sortQueue();
+      } else {
+        sortSaved();
+      }
+      saveState();
     }
 
     function deletePlayer(listType, id) {
@@ -931,18 +1324,21 @@
       if (qBtn && sBtn) {
         if (mode === 'queue') {
           qBtn.className = 'btn btn-sm btn-primary';
+          qBtn.style.background = 'var(--c-dark)';
+          qBtn.style.color = 'var(--c-white)';
           qBtn.innerText = 'Antrean di Live (Aktif)';
-          sBtn.className = 'btn btn-sm';
-          sBtn.style.background = '#334155';
-          sBtn.style.color = '#fff';
+          sBtn.className = 'btn btn-sm btn-danger';
+          sBtn.style.background = 'var(--c-light)';
+          sBtn.style.color = 'var(--c-dark)';
           sBtn.innerText = 'Tampilkan Save di Live';
         } else {
           sBtn.className = 'btn btn-sm btn-primary';
-          sBtn.style.background = 'var(--accent-orange)';
+          sBtn.style.background = 'var(--c-dark)';
+          sBtn.style.color = 'var(--c-white)';
           sBtn.innerText = 'Daftar Save di Live (Aktif)';
-          qBtn.className = 'btn btn-sm';
-          qBtn.style.background = '#334155';
-          qBtn.style.color = '#fff';
+          qBtn.className = 'btn btn-sm btn-danger';
+          qBtn.style.background = 'var(--c-light)';
+          qBtn.style.color = 'var(--c-dark)';
           qBtn.innerText = 'Tampilkan Antrean di Live';
         }
       }
@@ -957,18 +1353,20 @@
 
       if (tab === 'queue') {
         qBtn.className = 'btn btn-sm btn-primary';
-        qBtn.style.background = '';
-        sBtn.className = 'btn btn-sm';
-        sBtn.style.background = '#334155';
-        sBtn.style.color = '#fff';
+        qBtn.style.background = 'var(--c-dark)';
+        qBtn.style.color = 'var(--c-white)';
+        sBtn.className = 'btn btn-sm btn-danger';
+        sBtn.style.background = 'var(--c-light)';
+        sBtn.style.color = 'var(--c-dark)';
         qContent.style.display = 'block';
         sContent.style.display = 'none';
       } else {
         sBtn.className = 'btn btn-sm btn-primary';
-        sBtn.style.background = 'var(--accent-orange)';
-        qBtn.className = 'btn btn-sm';
-        qBtn.style.background = '#334155';
-        qBtn.style.color = '#fff';
+        sBtn.style.background = 'var(--c-dark)';
+        sBtn.style.color = 'var(--c-white)';
+        qBtn.className = 'btn btn-sm btn-danger';
+        qBtn.style.background = 'var(--c-light)';
+        qBtn.style.color = 'var(--c-dark)';
         sContent.style.display = 'block';
         qContent.style.display = 'none';
       }
@@ -1024,14 +1422,14 @@
 
       resBox.style.display = 'block';
       if (matches.length > 0) {
-        resBox.style.background = 'rgba(34, 197, 94, 0.15)';
-        resBox.style.border = '1px solid var(--accent-green)';
-        resBox.style.color = '#fff';
+        resBox.style.background = 'var(--panel-subtle)';
+        resBox.style.border = '1px solid var(--c-dark)';
+        resBox.style.color = 'var(--text-light)';
         resBox.innerHTML = `<b>Ditemukan (${matches.length}):</b><br>` + matches.map(m => `• ${m}`).join('<br>');
       } else {
-        resBox.style.background = 'rgba(239, 68, 68, 0.15)';
-        resBox.style.border = '1px solid var(--accent-red)';
-        resBox.style.color = '#fff';
+        resBox.style.background = 'var(--panel-subtle)';
+        resBox.style.border = '1px solid var(--c-slate)';
+        resBox.style.color = 'var(--text-light)';
         resBox.innerHTML = `<b>Tidak Ditemukan:</b> Pemain dengan nama "<b>${q}</b>" tidak ada di antrean maupun simpanan.`;
       }
     }
@@ -1107,40 +1505,36 @@
       // 1. UPDATE WINNER & BONUS WS KELIPATAN 5 (WS 5x = +1 TIKET)
       winner.ws += 1; // Win streak bertambah
 
-      let bonusMsg = "";
       if (winner.ws > 0 && winner.ws % 5 === 0) {
-        winner.matchesLeft += 1; // Setiap kelipatan 5 WS dapat +1 tiket pertandingan
-        bonusMsg = `STREAK BONUS ${winner.ws}x!\n[ ${winner.name} ] mencapai ${winner.ws}x WIN STREAK!\nBonus +1 Tiket Pertandingan otomatis ditambahkan! (Sisa Tiket: ${winner.matchesLeft})`;
+        winner.bonusBase = winner.matchesLeft;
+        winner.matchesLeft += 1; // Bonus +1 tiket
+        winner.bonusAnimUntil = Date.now() + 5000; // Notif 'Tiket: 1+1' selama 5 detik lalu otomatis jadi Tiket: 2
       }
 
       // 2. UPDATE LOSER
       loser.ws = 0; // WS reset ke 0
 
-      // Beritahu bonus streak ke admin jika ada
-      if (bonusMsg) {
-        alert(bonusMsg);
-      }
-
-      // Penanganan Pemain Kalah:
+      // Penanganan Pemain Kalah: Auto reset karakter jika tiket masih ada
       if (loser.matchesLeft > 0) {
+        loser.char = '-'; // Auto reset karakter ke '-'
         const backToQueue = confirm(
-          `Pemain [ ${loser.name} ] KALAH!\nSisa Tiket: ${loser.matchesLeft}.\n\nApakah ingin memasukkan ${loser.name} kembali ke ANTREAN AKTIF?`
+          `[ ${loser.name} ] KALAH!\nSisa Tiket: ${loser.matchesLeft}.\n\nKembalikan ke ANTREAN AKTIF?`
         );
 
         if (backToQueue) {
-          const newChar = prompt(`Ubah Karakter untuk antrean berikutnya (biarkan jika tetap sama):`, loser.char);
-          if (newChar !== null) loser.char = newChar.trim() || loser.char;
           state.queue.push(loser);
           sortQueue();
         } else {
-          const saveDulu = confirm(`Simpan [ ${loser.name} ] ke daftar SAVED PLAYERS?`);
+          const saveDulu = confirm(`Simpan [ ${loser.name} ] ke tab SAVED?`);
           if (saveDulu) {
-            loser.type = 'SAVE';
+            // PERTAHANKAN TIER: VVIP, VIP, atau FREE tetap melekat!
+            if (!loser.type || loser.type === 'SAVE') loser.type = 'FREE';
             state.saved.push(loser);
+            sortSaved();
           }
         }
       } else {
-        alert(`Pemain [ ${loser.name} ] KALAH dan Tiket sudah HABIS! Keluar dari sistem.`);
+        alert(`[ ${loser.name} ] KALAH & Tiket HABIS.`);
       }
 
       // 3. TUKAR POSISI PEMENANG (ALTERNATING SLOTS SELAMA WS):
@@ -1312,9 +1706,6 @@
     }
 
     function renderArena() {
-      const roles = getArenaRoles(state);
-      const isP1King = roles.kingSlot === 'p1';
-
       // 1. UPDATE P1 SLOT
       const p1SlotCard = document.getElementById('p1-slot-card');
       const p1RoleBadge = document.getElementById('p1-role-badge');
@@ -1324,29 +1715,35 @@
       const p1QuickBtn = document.getElementById('p1-quick-btn');
       const p1DemoteBtn = document.getElementById('p1-demote-btn');
 
-      if (p1SlotCard && p1RoleBadge) {
-        if (isP1King) {
-          p1SlotCard.className = 'player-slot king';
-          p1RoleBadge.innerText = 'KING (P1)';
-        } else {
-          p1SlotCard.className = 'player-slot challenger';
-          p1RoleBadge.innerText = 'PENANTANG (P1)';
-        }
-      }
-
       if (state.p1) {
+        const p1Tier = (state.p1.type === 'VVIP' || state.p1.type === 'VIP') ? state.p1.type : 'FREE';
+        if (p1SlotCard) p1SlotCard.className = 'player-slot ' + p1Tier.toLowerCase();
+        if (p1RoleBadge) {
+          p1RoleBadge.innerText = `${p1Tier} (P1)`;
+          p1RoleBadge.className = 'role-badge badge-' + p1Tier.toLowerCase();
+        }
         document.getElementById('p1-name').innerText = state.p1.name;
-        document.getElementById('p1-char').innerText = state.p1.char;
+        document.getElementById('p1-char').innerText = formatChar(state.p1.char);
         document.getElementById('p1-ws').innerText = state.p1.ws;
-        document.getElementById('p1-matches').innerText = state.p1.matchesLeft;
+
+        // WS 5 bonus notification
+        let p1TicketText = String(state.p1.matchesLeft);
+        if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
+          const base = state.p1.bonusBase !== undefined ? state.p1.bonusBase : (state.p1.matchesLeft - 1);
+          p1TicketText = `${base}+1`;
+          const remaining = state.p1.bonusAnimUntil - Date.now();
+          setTimeout(renderAll, remaining + 50);
+        }
+        document.getElementById('p1-matches').innerText = p1TicketText;
+
         if (p1BtnGroup) p1BtnGroup.style.display = 'flex';
         if (p1EmptyNotice) p1EmptyNotice.style.display = 'none';
-        if (p1DemoteBtn) p1DemoteBtn.style.display = (!isP1King || state.p1.ws === 0) ? 'inline-flex' : 'none';
+        if (p1DemoteBtn) p1DemoteBtn.style.display = 'inline-flex';
 
         // P1 Bonus Badge (kelipatan 5 WS)
         const p1BonusBadge = document.getElementById('p1-bonus-badge');
         if (p1BonusBadge) {
-          if (state.p1.ws >= 5) {
+          if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
             p1BonusBadge.innerText = '+1 Tiket';
             p1BonusBadge.style.display = 'inline-block';
           } else {
@@ -1354,8 +1751,13 @@
           }
         }
       } else {
-        document.getElementById('p1-name').innerText = isP1King ? "Belum Ada King" : "Belum Ada Penantang";
-        document.getElementById('p1-char').innerText = isP1King ? "Pilih pemain di bawah untuk jadi King" : "Klik 'Naik P1' di antrean bawah";
+        if (p1SlotCard) p1SlotCard.className = 'player-slot free';
+        if (p1RoleBadge) {
+          p1RoleBadge.innerText = 'KOSONG (P1)';
+          p1RoleBadge.className = 'role-badge badge-free';
+        }
+        document.getElementById('p1-name').innerText = "Slot P1 Kosong";
+        document.getElementById('p1-char').innerText = "-";
         document.getElementById('p1-ws').innerText = "0";
         document.getElementById('p1-matches').innerText = "0";
         const p1BonusBadge = document.getElementById('p1-bonus-badge');
@@ -1364,9 +1766,7 @@
         if (p1EmptyNotice) {
           p1EmptyNotice.style.display = 'block';
           if (p1EmptyText) {
-            p1EmptyText.innerHTML = isP1King 
-              ? `<b>Slot King (P1) Kosong</b>. Pilih dari antrean di bawah.` 
-              : `<b>Slot Penantang (P1) Kosong</b> (Admin yang memilih).`;
+            p1EmptyText.innerHTML = `<b>Slot P1 Kosong</b>. Pilih pemain dari antrean di bawah.`;
           }
           if (p1QuickBtn) {
             if (state.queue.length > 0) {
@@ -1388,29 +1788,35 @@
       const p2QuickBtn = document.getElementById('p2-quick-btn');
       const p2DemoteBtn = document.getElementById('p2-demote-btn');
 
-      if (p2SlotCard && p2RoleBadge) {
-        if (!isP1King) {
-          p2SlotCard.className = 'player-slot king';
-          p2RoleBadge.innerText = 'KING (P2)';
-        } else {
-          p2SlotCard.className = 'player-slot challenger';
-          p2RoleBadge.innerText = 'PENANTANG (P2)';
-        }
-      }
-
       if (state.p2) {
+        const p2Tier = (state.p2.type === 'VVIP' || state.p2.type === 'VIP') ? state.p2.type : 'FREE';
+        if (p2SlotCard) p2SlotCard.className = 'player-slot ' + p2Tier.toLowerCase();
+        if (p2RoleBadge) {
+          p2RoleBadge.innerText = `${p2Tier} (P2)`;
+          p2RoleBadge.className = 'role-badge badge-' + p2Tier.toLowerCase();
+        }
         document.getElementById('p2-name').innerText = state.p2.name;
-        document.getElementById('p2-char').innerText = state.p2.char;
+        document.getElementById('p2-char').innerText = formatChar(state.p2.char);
         document.getElementById('p2-ws').innerText = state.p2.ws;
-        document.getElementById('p2-matches').innerText = state.p2.matchesLeft;
+
+        // WS 5 bonus notification
+        let p2TicketText = String(state.p2.matchesLeft);
+        if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
+          const base = state.p2.bonusBase !== undefined ? state.p2.bonusBase : (state.p2.matchesLeft - 1);
+          p2TicketText = `${base}+1`;
+          const remaining = state.p2.bonusAnimUntil - Date.now();
+          setTimeout(renderAll, remaining + 50);
+        }
+        document.getElementById('p2-matches').innerText = p2TicketText;
+
         if (p2BtnGroup) p2BtnGroup.style.display = 'flex';
         if (p2EmptyNotice) p2EmptyNotice.style.display = 'none';
-        if (p2DemoteBtn) p2DemoteBtn.style.display = (isP1King || state.p2.ws === 0) ? 'inline-flex' : 'none';
+        if (p2DemoteBtn) p2DemoteBtn.style.display = 'inline-flex';
 
         // P2 Bonus Badge (kelipatan 5 WS)
         const p2BonusBadge = document.getElementById('p2-bonus-badge');
         if (p2BonusBadge) {
-          if (state.p2.ws >= 5) {
+          if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
             p2BonusBadge.innerText = '+1 Tiket';
             p2BonusBadge.style.display = 'inline-block';
           } else {
@@ -1418,8 +1824,13 @@
           }
         }
       } else {
-        document.getElementById('p2-name').innerText = !isP1King ? "Belum Ada King" : "Belum Ada Penantang";
-        document.getElementById('p2-char').innerText = !isP1King ? "Pilih pemain di bawah untuk jadi King" : "Klik 'Naik P2' di antrean bawah";
+        if (p2SlotCard) p2SlotCard.className = 'player-slot free';
+        if (p2RoleBadge) {
+          p2RoleBadge.innerText = 'KOSONG (P2)';
+          p2RoleBadge.className = 'role-badge badge-free';
+        }
+        document.getElementById('p2-name').innerText = "Slot P2 Kosong";
+        document.getElementById('p2-char').innerText = "-";
         document.getElementById('p2-ws').innerText = "0";
         document.getElementById('p2-matches').innerText = "0";
         const p2BonusBadge = document.getElementById('p2-bonus-badge');
@@ -1428,9 +1839,7 @@
         if (p2EmptyNotice) {
           p2EmptyNotice.style.display = 'block';
           if (p2EmptyText) {
-            p2EmptyText.innerHTML = !isP1King 
-              ? `<b>Slot King (P2) Kosong</b>. Pilih dari antrean di bawah.` 
-              : `<b>Slot Penantang (P2) Kosong</b> (Admin yang memilih).`;
+            p2EmptyText.innerHTML = `<b>Slot P2 Kosong</b> (Admin yang memilih).`;
           }
           if (p2QuickBtn) {
             if (state.queue.length > 0) {
@@ -1447,51 +1856,109 @@
     function renderQueue() {
       const container = document.getElementById('queue-list-container');
       const qCountEl = document.getElementById('queue-count');
-      if (qCountEl) qCountEl.innerText = `${state.queue.length} Pemain`;
+      if (qCountEl) qCountEl.innerText = `${state.queue.length}`;
       container.innerHTML = '';
 
       if (state.queue.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding: 12px 0;">Antrean kosong. Tambah pemain di atas atau buka tab Saved.</div>';
+        container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding: 12px 0;">Antrean kosong. Tambah pemain di atas atau dari tab Saved.</div>';
         return;
       }
 
-      state.queue.forEach((p, index) => {
-        const item = document.createElement('div');
-        item.className = `list-item ${p.type.toLowerCase()}`;
+      sortQueue();
 
-        // Tombol aksi naik arena dinamis sesuai slot yang kosong
-        let arenaBtn = '';
-        if (!state.p1 && !state.p2) {
-          arenaBtn = `
-            <button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')">Jadi King</button>
-            <button class="btn btn-sm btn-primary" onclick="assignToArena('${p.id}', 'p2')">Naik P2</button>
-          `;
-        } else if (!state.p1 && state.p2) {
-          arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')">Naik P1</button>`;
-        } else if (state.p1 && !state.p2) {
-          arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p2')">Naik P2</button>`;
+      const tiers = [
+        { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
+        { key: 'VIP', label: 'VIP', cls: 'vip' },
+        { key: 'FREE', label: 'FREE', cls: 'free' }
+      ];
+
+      tiers.forEach(tier => {
+        const playersWithIndex = [];
+        state.queue.forEach((p, idx) => {
+          const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
+          if (pTier === tier.key) {
+            playersWithIndex.push({ player: p, globalIdx: idx + 1, originalIdx: idx });
+          }
+        });
+
+        const tierSec = document.createElement('div');
+        tierSec.className = `tier-section ${tier.cls}`;
+
+        const tierHead = document.createElement('div');
+        tierHead.className = `tier-header ${tier.cls}`;
+        tierHead.innerHTML = `
+          <span>${tier.label}</span>
+          <span>${playersWithIndex.length}</span>
+        `;
+        tierSec.appendChild(tierHead);
+
+        if (playersWithIndex.length === 0) {
+          const emptyDiv = document.createElement('div');
+          emptyDiv.className = 'tier-empty';
+          emptyDiv.innerText = '(Kosong)';
+          tierSec.appendChild(emptyDiv);
+        } else {
+          const totalInTier = playersWithIndex.length;
+          playersWithIndex.forEach(({ player: p, globalIdx, originalIdx }, rankInTier) => {
+            const posInTier = rankInTier + 1;
+            const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
+
+            let posOptions = '';
+            for (let i = 1; i <= totalInTier; i++) {
+              posOptions += `<option value="${i}" ${i === posInTier ? 'selected' : ''}>#${i}</option>`;
+            }
+
+            const tierOptions = `
+              <option value="VVIP" ${pTier === 'VVIP' ? 'selected' : ''}>VVIP</option>
+              <option value="VIP" ${pTier === 'VIP' ? 'selected' : ''}>VIP</option>
+              <option value="FREE" ${pTier === 'FREE' ? 'selected' : ''}>FREE</option>
+            `;
+
+            const item = document.createElement('div');
+            item.className = `list-item ${tier.cls}`;
+
+            let arenaBtn = '';
+            if (!state.p1 && !state.p2) {
+              arenaBtn = `
+                <button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')">P1</button>
+                <button class="btn btn-sm btn-primary" onclick="assignToArena('${p.id}', 'p2')">P2</button>
+              `;
+            } else if (!state.p1 && state.p2) {
+              arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')">P1</button>`;
+            } else if (state.p1 && !state.p2) {
+              arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p2')">P2</button>`;
+            }
+
+            item.innerHTML = `
+              <div class="item-info">
+                <div class="item-name">#${globalIdx} ${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span></div>
+                <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft}</b></div>
+              </div>
+              <div class="item-meta" style="display:flex; gap:5px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
+                ${arenaBtn}
+                <select class="pos-select" title="Ubah urutan posisi dalam tier ini" onchange="reorderPlayerWithinTier('${p.id}', 'queue', parseInt(this.value))">
+                  ${posOptions}
+                </select>
+                <select class="tier-select" title="Ganti Tier" onchange="changePlayerTier('${p.id}', 'queue', this.value)">
+                  ${tierOptions}
+                </select>
+                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${originalIdx}])">Char</button>
+                <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')">Save</button>
+                <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')">Hapus</button>
+              </div>
+            `;
+            tierSec.appendChild(item);
+          });
         }
 
-        item.innerHTML = `
-          <div class="item-info">
-            <div class="item-name">#${index+1} ${p.name} <span class="badge badge-${p.type.toLowerCase()}">${p.type}</span></div>
-            <div class="item-char">Char: <b>${p.char}</b> | Sisa Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft} Tiket (Edit)</b></div>
-          </div>
-          <div class="item-meta" style="display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end;">
-            ${arenaBtn}
-            <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${index}])">Char</button>
-            <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')">Save</button>
-            <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')">Hapus</button>
-          </div>
-        `;
-        container.appendChild(item);
+        container.appendChild(tierSec);
       });
     }
 
     function renderSaved() {
       const container = document.getElementById('saved-list-container');
       const sCountEl = document.getElementById('save-count');
-      if (sCountEl) sCountEl.innerText = `${state.saved.length} Pemain`;
+      if (sCountEl) sCountEl.innerText = `${state.saved.length}`;
       container.innerHTML = '';
 
       if (state.saved.length === 0) {
@@ -1499,22 +1966,80 @@
         return;
       }
 
-      state.saved.forEach((p, index) => {
-        const item = document.createElement('div');
-        item.className = 'list-item save';
-        item.innerHTML = `
-          <div class="item-info">
-            <div class="item-name">${p.name}</div>
-            <div class="item-char">Char: <b>${p.char}</b> | Sisa Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft} Tiket (Edit)</b></div>
-          </div>
-          <div class="item-meta" style="display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end;">
-            <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}', 'FREE')">+ Antrean FREE</button>
-            <button class="btn btn-sm btn-primary" onclick="moveSavedToQueue('${p.id}', 'VIP')">+ VIP</button>
-            <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${index}])">Char</button>
-            <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')">Hapus</button>
-          </div>
+      sortSaved();
+
+      const tiers = [
+        { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
+        { key: 'VIP', label: 'VIP', cls: 'vip' },
+        { key: 'FREE', label: 'FREE', cls: 'free' }
+      ];
+
+      tiers.forEach(tier => {
+        const playersInTier = [];
+        state.saved.forEach((p, idx) => {
+          const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
+          if (pTier === tier.key) {
+            playersInTier.push({ player: p, originalIdx: idx });
+          }
+        });
+
+        const tierSec = document.createElement('div');
+        tierSec.className = `tier-section ${tier.cls}`;
+
+        const tierHead = document.createElement('div');
+        tierHead.className = `tier-header ${tier.cls}`;
+        tierHead.innerHTML = `
+          <span>${tier.label}</span>
+          <span>${playersInTier.length}</span>
         `;
-        container.appendChild(item);
+        tierSec.appendChild(tierHead);
+
+        if (playersInTier.length === 0) {
+          const emptyDiv = document.createElement('div');
+          emptyDiv.className = 'tier-empty';
+          emptyDiv.innerText = '(Kosong)';
+          tierSec.appendChild(emptyDiv);
+        } else {
+          const totalInTier = playersInTier.length;
+          playersInTier.forEach(({ player: p, originalIdx }, rankInTier) => {
+            const posInTier = rankInTier + 1;
+            const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
+
+            let posOptions = '';
+            for (let i = 1; i <= totalInTier; i++) {
+              posOptions += `<option value="${i}" ${i === posInTier ? 'selected' : ''}>#${i}</option>`;
+            }
+
+            const tierOptions = `
+              <option value="VVIP" ${pTier === 'VVIP' ? 'selected' : ''}>VVIP</option>
+              <option value="VIP" ${pTier === 'VIP' ? 'selected' : ''}>VIP</option>
+              <option value="FREE" ${pTier === 'FREE' ? 'selected' : ''}>FREE</option>
+            `;
+
+            const item = document.createElement('div');
+            item.className = `list-item ${tier.cls}`;
+            item.innerHTML = `
+              <div class="item-info">
+                <div class="item-name">${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span></div>
+                <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft}</b></div>
+              </div>
+              <div class="item-meta" style="display:flex; gap:5px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
+                <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}')">+ Antrean</button>
+                <select class="pos-select" title="Ubah urutan posisi dalam tier ini" onchange="reorderPlayerWithinTier('${p.id}', 'saved', parseInt(this.value))">
+                  ${posOptions}
+                </select>
+                <select class="tier-select" title="Ganti Tier" onchange="changePlayerTier('${p.id}', 'saved', this.value)">
+                  ${tierOptions}
+                </select>
+                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${originalIdx}])">Char</button>
+                <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')">Hapus</button>
+              </div>
+            `;
+            tierSec.appendChild(item);
+          });
+        }
+
+        container.appendChild(tierSec);
       });
     }
 
@@ -1522,21 +2047,24 @@
       // P1
       if (state.p1) {
         document.getElementById('ov-p1-name').innerText = state.p1.name;
-        document.getElementById('ov-p1-char').innerText = state.p1.char;
-        document.getElementById('ov-p1-ws').innerText = state.p1.ws;
-        document.getElementById('ov-p1-m').innerText = state.p1.matchesLeft;
-        document.getElementById('ov-p1-free').style.display = state.p1.ws >= 1 ? 'inline-block' : 'none';
+        document.getElementById('ov-p1-char').innerText = formatChar(state.p1.char);
+        document.getElementById('ov-p1-ws').innerText = state.p1.ws || 0;
+        let ovP1Tickets = String(state.p1.matchesLeft);
+        if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
+          const base = state.p1.bonusBase !== undefined ? state.p1.bonusBase : (state.p1.matchesLeft - 1);
+          ovP1Tickets = `${base}+1`;
+        }
+        document.getElementById('ov-p1-m').innerText = ovP1Tickets;
         const ovB1El = document.getElementById('ov-p1-bonus');
         if (ovB1El) {
           ovB1El.innerText = '+1 TIKET';
-          ovB1El.style.display = state.p1.ws >= 5 ? 'inline-block' : 'none';
+          ovB1El.style.display = (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) ? 'inline-block' : 'none';
         }
       } else {
-        document.getElementById('ov-p1-name').innerText = "Waiting Player...";
+        document.getElementById('ov-p1-name').innerText = "Menunggu...";
         document.getElementById('ov-p1-char').innerText = "-";
         document.getElementById('ov-p1-ws').innerText = "0";
         document.getElementById('ov-p1-m').innerText = "0";
-        document.getElementById('ov-p1-free').style.display = 'none';
         const ovB1El = document.getElementById('ov-p1-bonus');
         if (ovB1El) ovB1El.style.display = 'none';
       }
@@ -1544,48 +2072,93 @@
       // P2
       if (state.p2) {
         document.getElementById('ov-p2-name').innerText = state.p2.name;
-        document.getElementById('ov-p2-char').innerText = state.p2.char;
-        document.getElementById('ov-p2-ws').innerText = state.p2.ws;
-        document.getElementById('ov-p2-m').innerText = state.p2.matchesLeft;
-        document.getElementById('ov-p2-free').style.display = state.p2.ws >= 1 ? 'inline-block' : 'none';
+        document.getElementById('ov-p2-char').innerText = formatChar(state.p2.char);
+        document.getElementById('ov-p2-ws').innerText = state.p2.ws || 0;
+        let ovP2Tickets = String(state.p2.matchesLeft);
+        if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
+          const base = state.p2.bonusBase !== undefined ? state.p2.bonusBase : (state.p2.matchesLeft - 1);
+          ovP2Tickets = `${base}+1`;
+        }
+        document.getElementById('ov-p2-m').innerText = ovP2Tickets;
         const ovB2El = document.getElementById('ov-p2-bonus');
         if (ovB2El) {
           ovB2El.innerText = '+1 TIKET';
-          ovB2El.style.display = state.p2.ws >= 5 ? 'inline-block' : 'none';
+          ovB2El.style.display = (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) ? 'inline-block' : 'none';
         }
       } else {
-        document.getElementById('ov-p2-name').innerText = "Waiting Player...";
+        document.getElementById('ov-p2-name').innerText = "Menunggu...";
         document.getElementById('ov-p2-char').innerText = "-";
         document.getElementById('ov-p2-ws').innerText = "0";
         document.getElementById('ov-p2-m').innerText = "0";
-        document.getElementById('ov-p2-free').style.display = 'none';
         const ovB2El = document.getElementById('ov-p2-bonus');
         if (ovB2El) ovB2El.style.display = 'none';
       }
 
-      // List Overlay (Queue vs Saved)
+      // List Overlay (Queue vs Saved) - 3 Vertical Tiers (VVIP, VIP, FREE)
       const qContainer = document.getElementById('ov-queue-list');
       qContainer.innerHTML = '';
       const isSaved = state.overlayListMode === 'saved';
       const listData = isSaved ? (state.saved || []) : (state.queue || []);
 
       if (listData.length === 0) {
-        qContainer.innerHTML = `<div style="font-size:0.8rem; color:#aaa;">(${isSaved ? 'Belum ada simpanan' : 'Antrean Kosong'})</div>`;
+        qContainer.innerHTML = `<div style="font-size:0.8rem; color:#aaa; padding:10px 0;">(${isSaved ? 'Saved Kosong' : 'Antrean Kosong'})</div>`;
       } else {
-        listData.slice(0, 5).forEach((p, i) => {
-          const qEl = document.createElement('div');
-          qEl.className = 'overlay-qitem';
-          qEl.innerHTML = `
-            <span>#${i+1} <b>${p.name}</b> (${p.char})</span>
-            <span style="display:flex; gap:6px; align-items:center;">
-              <span style="font-size:0.75rem; color:#cbd5e1; background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:3px;">${p.matchesLeft} Tiket</span>
-              <span style="color:${isSaved ? 'var(--accent-orange)' : 'var(--accent-gold)'}; font-weight:bold;">${isSaved ? 'SAVED' : p.type}</span>
-            </span>
-          `;
-          qContainer.appendChild(qEl);
+        const tiers = [
+          { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
+          { key: 'VIP', label: 'VIP', cls: 'vip' },
+          { key: 'FREE', label: 'FREE', cls: 'free' }
+        ];
+
+        tiers.forEach(tier => {
+          const players = [];
+          listData.forEach((p, idx) => {
+            const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
+            if (pTier === tier.key) {
+              players.push({ player: p, globalIdx: idx + 1 });
+            }
+          });
+
+          if (players.length > 0) {
+            const tierHeader = document.createElement('div');
+            tierHeader.className = `tier-header ${tier.cls}`;
+            tierHeader.style.cssText = 'margin-top:6px; margin-bottom:3px; padding:2px 6px; font-size:0.7rem;';
+            tierHeader.innerHTML = `<span>${tier.label}</span><span>${players.length}</span>`;
+            qContainer.appendChild(tierHeader);
+
+            players.slice(0, 4).forEach(({ player: p, globalIdx }) => {
+              const qEl = document.createElement('div');
+              qEl.className = 'overlay-qitem';
+              const numPrefix = isSaved ? '' : `#${globalIdx} `;
+              qEl.innerHTML = `
+                <span style="font-weight:700;">${numPrefix}${escapeHtml(p.name)} | <span style="font-weight:400; color:var(--c-slate);">${escapeHtml(formatChar(p.char))}</span></span>
+                <span style="display:flex; gap:6px; align-items:center;">
+                  <span style="font-size:0.75rem; color:var(--c-white); background:rgba(255,255,255,0.12); padding:1px 5px; border-radius:3px; border:1px solid var(--c-slate);">${p.matchesLeft} Tiket</span>
+                  <span class="badge badge-${tier.cls}">${p.type || 'FREE'}</span>
+                </span>
+              `;
+              qContainer.appendChild(qEl);
+            });
+          }
         });
       }
     }
+
+    // Toggle Theme (Palet Terang / Gelap)
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('koth_theme', next);
+      const btn = document.getElementById('theme-toggle-btn');
+      if (btn) btn.innerText = next === 'dark' ? 'Tema: Gelap' : 'Tema: Terang';
+    }
+
+    (function initTheme() {
+      const savedTheme = localStorage.getItem('koth_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const btn = document.getElementById('theme-toggle-btn');
+      if (btn) btn.innerText = savedTheme === 'dark' ? 'Tema: Gelap' : 'Tema: Terang';
+    })();
 
     // Inisialisasi
     loadState();

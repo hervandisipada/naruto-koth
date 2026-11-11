@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,7 +57,10 @@
       font-family: 'Consolas', 'Courier New', Courier, monospace;
     }
 
-    button, input, select, textarea {
+    button,
+    input,
+    select,
+    textarea {
       font-family: 'Consolas', 'Courier New', Courier, monospace;
     }
 
@@ -122,6 +126,7 @@
       .admin-grid {
         grid-template-columns: 1fr 1fr;
       }
+
       .full-width {
         grid-column: span 2;
       }
@@ -201,6 +206,7 @@
       background-color: var(--c-dark);
       color: var(--c-white);
     }
+
     .btn-primary:hover {
       opacity: 0.92;
     }
@@ -209,6 +215,7 @@
       background-color: var(--c-dark);
       color: var(--c-white);
     }
+
     .btn-success:hover {
       opacity: 0.92;
     }
@@ -218,6 +225,7 @@
       color: var(--c-dark);
       border: 1px solid var(--c-slate);
     }
+
     .btn-danger:hover {
       background-color: var(--c-slate);
       color: var(--c-white);
@@ -227,6 +235,7 @@
       background-color: var(--c-slate);
       color: var(--c-white);
     }
+
     .btn-blue:hover {
       opacity: 0.92;
     }
@@ -235,6 +244,7 @@
       padding: 5px 10px;
       font-size: 0.88rem;
     }
+
     .btn-block {
       width: 100%;
     }
@@ -271,12 +281,15 @@
       border: 2px solid var(--c-dark);
       background: var(--panel-subtle);
     }
+
     .player-slot.vip {
       border: 2px solid var(--c-slate);
     }
+
     .player-slot.free {
       border: 2px solid var(--border-color);
     }
+
     [data-theme="dark"] .player-slot.vvip {
       border: 2px solid var(--c-white);
     }
@@ -294,43 +307,51 @@
       color: var(--c-white);
     }
 
-    .role-badge.vvip, .role-badge.badge-vvip {
+    .role-badge.vvip,
+    .role-badge.badge-vvip {
       background-color: var(--c-dark);
       color: var(--c-white);
       font-weight: 900;
       border: 1px solid var(--c-white);
     }
-    [data-theme="dark"] .role-badge.vvip, [data-theme="dark"] .role-badge.badge-vvip {
+
+    [data-theme="dark"] .role-badge.vvip,
+    [data-theme="dark"] .role-badge.badge-vvip {
       background-color: var(--c-white);
       color: var(--c-dark);
       border: none;
     }
-    .role-badge.vip, .role-badge.badge-vip {
+
+    .role-badge.vip,
+    .role-badge.badge-vip {
       background-color: var(--c-slate);
       color: var(--c-white);
       font-weight: 800;
     }
-    .role-badge.free, .role-badge.badge-free {
+
+    .role-badge.free,
+    .role-badge.badge-free {
       background-color: var(--panel-subtle);
       color: var(--text-light);
       border: 1px solid var(--border-color);
       font-weight: 700;
     }
 
-    /* DROPDOWN ICON BUTTONS (URUTAN # & ROLE 👤) */
+    /* DROPDOWN ICON BUTTONS (URUTAN # & ROLE 🏷️) */
     .dropdown-icon-btn {
       position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 33px;
+      height: 38px;
     }
+
     .btn-select-face {
-      font-size: 0.95rem;
-      font-weight: 900;
-      padding: 6px 14px;
-      min-width: 44px;
-      height: 33px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      padding: 7px 12px;
+      min-width: 48px;
+      height: 38px;
       border-radius: 6px;
       background: var(--panel-subtle);
       color: var(--text-light);
@@ -339,15 +360,19 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 4px;
       pointer-events: none;
       transition: all 0.2s ease;
       box-sizing: border-box;
+      white-space: nowrap;
     }
+
     .dropdown-icon-btn:hover .btn-select-face,
     .dropdown-icon-btn:focus-within .btn-select-face {
       border-color: var(--border-strong);
       background: var(--border-color);
     }
+
     .dropdown-icon-btn select.icon-select-overlay {
       position: absolute;
       top: 0;
@@ -362,8 +387,34 @@
       margin: 0;
       padding: 0;
     }
+
     .dropdown-icon-btn select.icon-select-overlay option {
       background-color: var(--panel-bg);
+      color: var(--text-light);
+      padding: 8px 12px;
+    }
+
+    /* ARENA ACTION BUTTONS (WIN, CHAR, TURUN) */
+    .arena-action-btn {
+      height: 44px;
+      padding: 8px 18px;
+      font-size: 1rem;
+      font-weight: 800;
+      border-radius: 8px;
+      min-width: 95px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .arena-action-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
       color: var(--text-light);
       font-size: 0.92rem;
       padding: 6px 10px;
@@ -422,12 +473,15 @@
       border-left-color: var(--c-dark);
       background-color: var(--panel-subtle);
     }
+
     .list-item.vip {
       border-left-color: var(--c-dark);
     }
+
     .list-item.free {
       border-left-color: var(--c-slate);
     }
+
     .list-item.save {
       border-left-color: var(--c-slate);
     }
@@ -436,6 +490,7 @@
       border-left-color: var(--c-white);
       background-color: var(--panel-subtle);
     }
+
     [data-theme="dark"] .list-item.vip {
       border-left-color: var(--c-slate);
     }
@@ -458,20 +513,25 @@
     .item-meta {
       display: flex;
       align-items: center;
-      gap: 7px;
-      margin-right: 6px;
+      gap: 8px;
+      margin-top: 4px;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
+
     .item-meta .btn {
-      font-size: 0.95rem;
-      padding: 6px 14px;
-      min-width: 44px;
-      height: 33px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      padding: 7px 13px;
+      min-width: 46px;
+      height: 38px;
       box-sizing: border-box;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 5px;
+      border-radius: 6px;
+      white-space: nowrap;
     }
 
     .badge {
@@ -480,34 +540,40 @@
       border-radius: 4px;
       font-weight: bold;
     }
+
     .badge-vvip {
       background-color: var(--c-dark);
       color: var(--c-white);
       font-weight: 900;
       border: 1px solid var(--c-white);
     }
+
     [data-theme="dark"] .badge-vvip {
       background-color: var(--c-white);
       color: var(--c-dark);
       font-weight: 900;
       border: none;
     }
+
     .badge-vip {
       background-color: var(--c-slate);
       color: var(--c-white);
       font-weight: 800;
     }
+
     .badge-free {
       background-color: var(--c-light);
       color: var(--c-dark);
       border: 1px solid var(--c-slate);
       font-weight: 700;
     }
+
     [data-theme="dark"] .badge-free {
       background-color: transparent;
       color: var(--c-slate);
       border: 1px solid var(--c-slate);
     }
+
     .badge-save {
       background-color: var(--c-light);
       color: var(--c-dark);
@@ -518,6 +584,7 @@
     .tier-section {
       margin-bottom: 14px;
     }
+
     .tier-header {
       display: flex;
       justify-content: space-between;
@@ -530,37 +597,44 @@
       letter-spacing: 0.8px;
       text-transform: uppercase;
     }
+
     .tier-header.vvip {
       background: var(--c-dark);
       color: var(--c-white);
       border-left: 3px solid var(--c-white);
     }
+
     [data-theme="dark"] .tier-header.vvip {
       background: rgba(247, 247, 247, 0.16);
       color: var(--c-white);
       border-left: 3px solid var(--c-white);
     }
+
     .tier-header.vip {
       background: var(--panel-subtle);
       color: var(--text-light);
       border-left: 3px solid var(--c-slate);
     }
+
     [data-theme="dark"] .tier-header.vip {
       background: rgba(146, 154, 171, 0.16);
       color: var(--c-slate);
       border-left: 3px solid var(--c-slate);
     }
+
     .tier-header.free {
       background: var(--panel-subtle);
       color: var(--text-muted);
       border-left: 3px solid var(--border-color);
       font-weight: 700;
     }
+
     [data-theme="dark"] .tier-header.free {
       background: rgba(255, 255, 255, 0.04);
       color: var(--c-slate);
       border-left: 3px solid rgba(146, 154, 171, 0.3);
     }
+
     .tier-empty {
       font-size: 0.75rem;
       color: var(--text-muted);
@@ -582,20 +656,24 @@
       letter-spacing: 0.5px;
       border: 1px solid transparent;
     }
+
     .tier-status-btn.open {
       background: rgba(34, 197, 94, 0.2);
       color: #22c55e;
       border-color: #22c55e;
     }
+
     .tier-status-btn.open:hover {
       background: #22c55e;
       color: #000;
     }
+
     .tier-status-btn.closed {
       background: rgba(239, 68, 68, 0.2);
       color: #ef4444;
       border-color: #ef4444;
     }
+
     .tier-status-btn.closed:hover {
       background: #ef4444;
       color: #fff;
@@ -612,10 +690,12 @@
       vertical-align: middle;
       color: #ffffff;
     }
+
     .tier-status-tag.open {
       background: rgba(34, 197, 94, 0.35);
       border: 1px solid #22c55e;
     }
+
     .tier-status-tag.closed {
       background: rgba(239, 68, 68, 0.35);
       border: 1px solid #ef4444;
@@ -634,7 +714,7 @@
       padding: 14px;
       color: var(--c-white);
       border: 1px solid var(--c-slate);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
       margin: 20px auto;
     }
 
@@ -654,7 +734,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      background: rgba(0,0,0,0.25);
+      background: rgba(0, 0, 0, 0.25);
       padding: 10px;
       border-radius: 8px;
       margin-bottom: 12px;
@@ -673,6 +753,7 @@
       background: rgba(255, 255, 255, 0.06);
       border-left: 3px solid var(--c-white);
     }
+
     .overlay-player.p2 {
       background: rgba(255, 255, 255, 0.04);
       border-left: 3px solid var(--c-slate);
@@ -683,15 +764,18 @@
       font-size: 1.05rem;
       color: var(--c-white);
     }
+
     .overlay-pchar {
       font-size: 0.8rem;
       color: var(--c-slate);
     }
+
     .overlay-ws {
       font-weight: 900;
       color: var(--c-white);
       font-size: 0.9rem;
     }
+
     .free-streak-badge {
       font-size: 0.65rem;
       background: var(--c-light);
@@ -724,7 +808,10 @@
     .modal-overlay {
       display: none;
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(57, 62, 70, 0.7);
       backdrop-filter: blur(4px);
       z-index: 999;
@@ -732,9 +819,11 @@
       align-items: center;
       padding: 20px;
     }
+
     .modal-overlay.active {
       display: flex;
     }
+
     .modal-box {
       background: var(--panel-bg);
       border-radius: 10px;
@@ -753,25 +842,31 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Switcher Tab -->
   <div class="view-switcher">
     <button class="tab-btn active" onclick="switchTab('admin')">Panel Admin</button>
-    <a href="overlay.html" target="_blank" class="tab-btn" style="text-decoration:none; text-align:center;">Overlay ↗</a>
-    <button id="theme-toggle-btn" onclick="toggleTheme()" class="btn btn-sm" style="margin: 0 10px; background: rgba(255,255,255,0.12); color: var(--c-white); border: 1px solid var(--c-slate); font-size: 0.78rem;" title="Ganti mode tema">Tema: Terang</button>
+    <a href="overlay.html" target="_blank" class="tab-btn" style="text-decoration:none; text-align:center;">Overlay
+      ↗</a>
+    <button id="theme-toggle-btn" onclick="toggleTheme()" class="btn btn-sm"
+      style="margin: 0 10px; background: rgba(255,255,255,0.12); color: var(--c-white); border: 1px solid var(--c-slate); font-size: 0.78rem;"
+      title="Ganti mode tema">Tema: Terang</button>
   </div>
 
   <!-- Quick Link Banner for Streamer -->
   <div class="streamer-banner">
     <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
       <span style="font-weight: 700; color: var(--c-dark);">Link Overlay:</span>
-      <code id="tiktok-link-display" style="background: var(--panel-bg); border: 1px solid var(--border-strong); padding: 3px 8px; border-radius: 4px; color: var(--c-dark); font-weight: 600;">http://localhost:8000/overlay.html</code>
+      <code id="tiktok-link-display"
+        style="background: var(--panel-bg); border: 1px solid var(--border-strong); padding: 3px 8px; border-radius: 4px; color: var(--c-dark); font-weight: 600;">http://localhost:8000/overlay.html</code>
       <button class="btn btn-sm btn-primary" onclick="copyOverlayLink()">Salin</button>
     </div>
     <div style="display: flex; align-items: center; gap: 14px; font-size: 0.82rem;">
       <span id="cloud-sync-badge" style="color: var(--c-dark); font-weight: 700;">Sync: <b>Aktif</b></span>
-      <span style="color: var(--text-muted);">HP: <b id="hp-link-display" style="color: var(--c-dark);">http://localhost:8000</b></span>
+      <span style="color: var(--text-muted);">HP: <b id="hp-link-display"
+          style="color: var(--c-dark);">http://localhost:8000</b></span>
     </div>
   </div>
 
@@ -793,21 +888,32 @@
             <div id="p1-name" class="player-name">Kosong</div>
             <div id="p1-char" class="player-char">-</div>
             <div class="player-stats">
-              <span>WS: <span id="p1-ws" class="stat-val">0</span> <span id="p1-bonus-badge" class="badge" style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.72rem; border:1px solid var(--c-slate);">+1 Tiket</span></span>
-              <span style="cursor:pointer;" onclick="promptEditTickets('p1')" title="Klik untuk edit tiket">Tiket: <span id="p1-matches" class="stat-val">0</span></span>
+              <span style="cursor:pointer;" onclick="promptEditWs('p1')" title="Klik untuk ubah WS P1">WS: <span id="p1-ws" class="stat-val">0</span> ✏️ <span id="p1-bonus-badge" class="badge"
+                  style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.72rem; border:1px solid var(--c-slate);">+1
+                  Tiket</span></span>
+              <span style="cursor:pointer;" onclick="promptEditTickets('p1')" title="Klik untuk edit tiket">Tiket: <span
+                  id="p1-matches" class="stat-val">0</span></span>
             </div>
-            <div id="p1-btn-group" style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
-              <button class="btn btn-sm btn-success" onclick="triggerWin('p1')" title="Pemenang P1">W</button>
-              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p1')" title="Ubah Karakter">🎮</button>
-              <button class="btn btn-sm btn-danger" id="p1-demote-btn" onclick="removeSlotToQueue('p1')" title="Kembalikan / Turunkan ke antrean">⬇</button>
+            <div id="p1-btn-group" style="margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn btn-success arena-action-btn" onclick="triggerWin('p1')" title="Pemenang P1">🏆 MENANG</button>
+              <button class="btn btn-blue arena-action-btn" onclick="promptEditChar('p1')" title="Ubah Karakter">🥋 CHAR</button>
+              <button class="btn btn-danger arena-action-btn" id="p1-demote-btn" onclick="removeSlotToQueue('p1')"
+                title="Turunkan ke antrean (WS & Karakter tetap terbawa)">⬇ TURUN</button>
             </div>
-            <div id="p1-empty-notice" style="display:none; margin-top: 10px; font-size: 0.88rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <div id="p1-empty-notice"
+              style="display:none; margin-top: 10px; font-size: 0.88rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
               <div id="p1-empty-text">Slot P1 Kosong.</div>
-              <button id="p1-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p1')">⬆ #1 ke P1</button>
+              <button id="p1-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;"
+                onclick="quickAssignSlot('p1')">⬆ #1 ke P1</button>
             </div>
           </div>
 
-          <div class="vs-divider">VS</div>
+          <div class="vs-divider" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+            <span>VS</span>
+            <button type="button" class="btn btn-blue" onclick="swapArenaSlots()" title="Tukar Posisi P1 dan P2" style="font-size: 0.82rem; font-weight: 800; padding: 6px 12px; border-radius: 6px; white-space: nowrap;">
+              ⇄ TUKAR (P1 ↔ P2)
+            </button>
+          </div>
 
           <!-- PLAYER 2 SLOT -->
           <div class="player-slot challenger" id="p2-slot-card">
@@ -815,17 +921,23 @@
             <div id="p2-name" class="player-name">Kosong</div>
             <div id="p2-char" class="player-char">-</div>
             <div class="player-stats">
-              <span>WS: <span id="p2-ws" class="stat-val">0</span> <span id="p2-bonus-badge" class="badge" style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.75rem; border:1px solid var(--c-slate);">+1 Tiket</span></span>
-              <span style="cursor:pointer;" onclick="promptEditTickets('p2')" title="Klik untuk edit tiket">Tiket: <span id="p2-matches" class="stat-val">0</span></span>
+              <span style="cursor:pointer;" onclick="promptEditWs('p2')" title="Klik untuk ubah WS P2">WS: <span id="p2-ws" class="stat-val">0</span> ✏️ <span id="p2-bonus-badge" class="badge"
+                  style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.75rem; border:1px solid var(--c-slate);">+1
+                  Tiket</span></span>
+              <span style="cursor:pointer;" onclick="promptEditTickets('p2')" title="Klik untuk edit tiket">Tiket: <span
+                  id="p2-matches" class="stat-val">0</span></span>
             </div>
-            <div id="p2-btn-group" style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
-              <button class="btn btn-sm btn-success" onclick="triggerWin('p2')" title="Pemenang P2">W</button>
-              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p2')" title="Ubah Karakter">🎮</button>
-              <button class="btn btn-sm btn-danger" id="p2-demote-btn" onclick="removeSlotToQueue('p2')" title="Kembalikan / Turunkan ke antrean">⬇</button>
+            <div id="p2-btn-group" style="margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn btn-success arena-action-btn" onclick="triggerWin('p2')" title="Pemenang P2">🏆 MENANG</button>
+              <button class="btn btn-blue arena-action-btn" onclick="promptEditChar('p2')" title="Ubah Karakter">🥋 CHAR</button>
+              <button class="btn btn-danger arena-action-btn" id="p2-demote-btn" onclick="removeSlotToQueue('p2')"
+                title="Turunkan ke antrean (WS & Karakter tetap terbawa)">⬇ TURUN</button>
             </div>
-            <div id="p2-empty-notice" style="display:none; margin-top: 10px; font-size: 0.88rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <div id="p2-empty-notice"
+              style="display:none; margin-top: 10px; font-size: 0.88rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
               <div id="p2-empty-text">Slot P2 Kosong.</div>
-              <button id="p2-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p2')">⬆ #1 ke P2</button>
+              <button id="p2-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;"
+                onclick="quickAssignSlot('p2')">⬆ #1 ke P2</button>
             </div>
           </div>
         </div>
@@ -840,8 +952,14 @@
             <input type="text" id="input-username" class="form-control" placeholder="Nama pemain" required>
           </div>
           <div class="form-group">
-            <label>Karakter (Opsional - Pilih / Ketik Baru)</label>
-            <input type="text" id="input-char" class="form-control" placeholder="Pilih dropdown / ketik karakter..." list="storm-characters" autocomplete="off">
+            <label>Karakter (Pilih Dropdown / Ketik Baru)</label>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <select id="select-char-picker" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="if(this.value){ document.getElementById('input-char').value = this.value; }">
+                <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+              </select>
+              <input type="text" id="input-char" class="form-control" placeholder="Atau ketik nama karakter di sini..."
+                list="storm-characters" autocomplete="off">
+            </div>
           </div>
           <div class="form-row">
             <div class="form-group" style="flex: 1;">
@@ -859,9 +977,78 @@
           </div>
           <div style="display: flex; gap: 8px;">
             <button type="submit" class="btn btn-primary" style="flex: 1;">+ Antrean</button>
-            <button type="button" class="btn btn-blue" style="flex: 1;" onclick="handleAddPlayerDirectSave()">+ Simpan</button>
+            <button type="button" class="btn btn-blue" style="flex: 1;" onclick="handleAddPlayerDirectSave()">+
+              Simpan</button>
           </div>
         </form>
+      </div>
+
+      <!-- KELOLA ANTREAN & SAVED PLAYERS (LIST PEMAIN) -->
+      <div class="card full-width">
+        <!-- Search bar untuk cek slot penonton -->
+        <div
+          style="background: var(--panel-subtle); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+          <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
+            <label style="font-weight: 700; font-size: 0.88rem; color: var(--text-light);">Cari Pemain:</label>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Cek posisi antrean & sisa tiket</span>
+          </div>
+          <div style="display:flex; gap: 8px;">
+            <input type="text" id="search-player-input" class="form-control" placeholder="Ketik nama..."
+              oninput="handleSearchPlayer()">
+            <button class="btn btn-sm btn-blue"
+              onclick="document.getElementById('search-player-input').value=''; handleSearchPlayer();">Reset</button>
+          </div>
+          <div id="search-result-box"
+            style="display:none; margin-top: 8px; padding: 10px; border-radius: 6px; font-size: 0.88rem; line-height: 1.5;">
+          </div>
+        </div>
+
+        <!-- Toggle Mode Tampilan Live Overlay -->
+        <div
+          style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;">
+          <div>
+            <span style="font-weight: 700; font-size: 0.88rem; color: var(--text-light);">Tampil di Overlay:</span>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Pilih daftar untuk layar live</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="mode-queue-btn" class="btn btn-sm btn-primary"
+              onclick="setOverlayListMode('queue')">Antrean</button>
+            <button id="mode-saved-btn" class="btn btn-sm btn-danger"
+              onclick="setOverlayListMode('saved')">Saved</button>
+          </div>
+        </div>
+
+        <!-- Sub-Tabs Switcher -->
+        <div
+          style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
+          <button id="subtab-queue-btn" class="btn btn-sm btn-primary" onclick="switchListTab('queue')">
+            Antrean (<span id="queue-count">0</span>)
+          </button>
+          <button id="subtab-saved-btn" class="btn btn-sm btn-danger" onclick="switchListTab('saved')">
+            Saved (<span id="save-count">0</span>)
+          </button>
+        </div>
+
+        <!-- TAB 1: ANTREAN AKTIF LIVE -->
+        <div id="subtab-queue-content">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain dalam antrean:</span>
+            <button class="btn btn-sm btn-danger" onclick="clearQueue()">Reset Antrean</button>
+          </div>
+          <div id="queue-list-container"></div>
+        </div>
+
+        <!-- TAB 2: SAVED PLAYERS -->
+        <div id="subtab-saved-content" style="display: none;">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain tersimpan:</span>
+            <button class="btn btn-sm btn-danger" onclick="clearSaved()">Reset Saved</button>
+          </div>
+          <div id="saved-list-container"></div>
+        </div>
       </div>
 
       <!-- PENGUMUMAN / NOTE RUNNING TEXT OVERLAY -->
@@ -876,13 +1063,16 @@
         <button class="btn btn-primary btn-block" onclick="saveAnnouncement()">Simpan Teks</button>
       </div>
 
-      <!-- TOP REKOR WS -->
+      <!-- TOP WS -->
       <div class="card">
         <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
-          <span>Top Rekor WS</span>
-          <span id="admin-top-ws-badge" class="badge" style="background: var(--c-white); color: var(--c-dark); font-weight: 800; padding: 2px 8px; border-radius: 4px;">0 WS</span>
+          <span>TOP WS</span>
+          <span id="admin-top-ws-badge" class="badge"
+            style="background: var(--c-white); color: var(--c-dark); font-weight: 800; padding: 2px 8px; border-radius: 4px;">0
+            WS</span>
         </div>
-        <p class="instructions" style="margin-bottom: 8px;">Rekor WS tertinggi di live overlay (otomatis terupdate saat rekor baru tercapai, atau edit manual di bawah).</p>
+        <p class="instructions" style="margin-bottom: 8px;">Rekor WS tertinggi di live overlay (otomatis terupdate saat
+          rekor baru tercapai, atau edit manual di bawah).</p>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
           <div>
             <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Username:</label>
@@ -890,7 +1080,8 @@
           </div>
           <div>
             <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Karakter:</label>
-            <input type="text" id="input-record-char" class="form-control" placeholder="Karakter..." list="storm-characters" autocomplete="off">
+            <input type="text" id="input-record-char" class="form-control" placeholder="Karakter..."
+              list="storm-characters" autocomplete="off">
           </div>
         </div>
         <div style="margin-bottom: 8px;">
@@ -900,62 +1091,6 @@
         <div style="display: flex; gap: 8px;">
           <button class="btn btn-primary" style="flex: 1;" onclick="saveTopRecord()">Simpan Rekor</button>
           <button class="btn btn-danger" style="flex: 1;" onclick="resetTopRecord()">Reset Rekor</button>
-        </div>
-      </div>
-
-      <!-- KELOLA ANTREAN & SAVED PLAYERS -->
-      <div class="card full-width">
-        <!-- Search bar untuk cek slot penonton -->
-        <div style="background: var(--panel-subtle); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border-color);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
-            <label style="font-weight: 700; font-size: 0.88rem; color: var(--text-light);">Cari Pemain:</label>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">Cek posisi antrean & sisa tiket</span>
-          </div>
-          <div style="display:flex; gap: 8px;">
-            <input type="text" id="search-player-input" class="form-control" placeholder="Ketik nama..." oninput="handleSearchPlayer()">
-            <button class="btn btn-sm btn-blue" onclick="document.getElementById('search-player-input').value=''; handleSearchPlayer();">Reset</button>
-          </div>
-          <div id="search-result-box" style="display:none; margin-top: 8px; padding: 10px; border-radius: 6px; font-size: 0.88rem; line-height: 1.5;"></div>
-        </div>
-
-        <!-- Toggle Mode Tampilan Live Overlay -->
-        <div style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;">
-          <div>
-            <span style="font-weight: 700; font-size: 0.88rem; color: var(--text-light);">Tampil di Overlay:</span>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Pilih daftar untuk layar live</div>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button id="mode-queue-btn" class="btn btn-sm btn-primary" onclick="setOverlayListMode('queue')">Antrean</button>
-            <button id="mode-saved-btn" class="btn btn-sm btn-danger" onclick="setOverlayListMode('saved')">Saved</button>
-          </div>
-        </div>
-
-        <!-- Sub-Tabs Switcher -->
-        <div style="display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
-          <button id="subtab-queue-btn" class="btn btn-sm btn-primary" onclick="switchListTab('queue')">
-            Antrean (<span id="queue-count">0</span>)
-          </button>
-          <button id="subtab-saved-btn" class="btn btn-sm btn-danger" onclick="switchListTab('saved')">
-            Saved (<span id="save-count">0</span>)
-          </button>
-        </div>
-
-        <!-- TAB 1: ANTREAN AKTIF LIVE -->
-        <div id="subtab-queue-content">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-            <span style="font-size: 0.82rem; color: var(--text-muted);">Klik pemain untuk naik arena:</span>
-            <button class="btn btn-sm btn-danger" onclick="clearQueue()">Reset Antrean</button>
-          </div>
-          <div id="queue-list-container"></div>
-        </div>
-
-        <!-- TAB 2: SAVED PLAYERS -->
-        <div id="subtab-saved-content" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-            <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain tersimpan:</span>
-            <button class="btn btn-sm btn-danger" onclick="clearSaved()">Reset Saved</button>
-          </div>
-          <div id="saved-list-container"></div>
         </div>
       </div>
 
@@ -991,8 +1126,9 @@
   <!-- VIEW 2: TIKTOK LIVE OVERLAY SOURCE -->
   <div id="overlay-view" class="view-container">
     <div class="overlay-container">
-      <div id="ov-top-record-bar" style="background: rgba(0,0,0,0.45); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2); border-left: 4px solid #fff; display: flex; align-items: center; gap: 8px; font-size: 0.92rem; color: #fff;">
-        <span style="font-weight: 900; font-size: 0.85rem; letter-spacing: 0.8px;">TOP REKOR WS:</span>
+      <div id="ov-top-record-bar"
+        style="background: rgba(0,0,0,0.45); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2); border-left: 4px solid #fff; display: flex; align-items: center; gap: 8px; font-size: 0.92rem; color: #fff;">
+        <span style="font-weight: 900; font-size: 0.85rem; letter-spacing: 0.8px;">TOP WS:</span>
         <span id="ov-top-rec-text" style="font-weight: 700;">- | - | 0 WS</span>
       </div>
       <div class="overlay-match">
@@ -1002,7 +1138,8 @@
             <div id="ov-p1-char" class="overlay-pchar">-</div>
           </div>
           <div style="text-align: right;">
-            <div class="overlay-ws">WS: <span id="ov-p1-ws">0</span> <span id="ov-p1-bonus" class="free-streak-badge" style="display:none; background:#a855f7;">+1 TIKET</span></div>
+            <div class="overlay-ws">WS: <span id="ov-p1-ws">0</span> <span id="ov-p1-bonus" class="free-streak-badge"
+                style="display:none; background:#a855f7;">+1 TIKET</span></div>
             <div style="font-size:0.75rem; color:#aaa;">Tiket: <span id="ov-p1-m">0</span></div>
           </div>
         </div>
@@ -1015,7 +1152,8 @@
             <div id="ov-p2-char" class="overlay-pchar">-</div>
           </div>
           <div style="text-align: right;">
-            <div class="overlay-ws">WS: <span id="ov-p2-ws">0</span> <span id="ov-p2-bonus" class="free-streak-badge" style="display:none; background:#a855f7;">+1 TIKET</span></div>
+            <div class="overlay-ws">WS: <span id="ov-p2-ws">0</span> <span id="ov-p2-bonus" class="free-streak-badge"
+                style="display:none; background:#a855f7;">+1 TIKET</span></div>
             <div style="font-size:0.75rem; color:#aaa;">Tiket: <span id="ov-p2-m">0</span></div>
           </div>
         </div>
@@ -1031,8 +1169,14 @@
     <div class="modal-box">
       <h3 style="margin-bottom: 10px; color: var(--accent-gold);">Pilih / Ubah Karakter</h3>
       <div class="form-group">
-        <label id="modal-target-label">Masukkan Karakter:</label>
-        <input type="text" id="modal-char-input" class="form-control" placeholder="Pilih dropdown / ketik karakter..." list="storm-characters" autocomplete="off">
+        <label id="modal-target-label">Pilih / Ubah Karakter:</label>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <select id="modal-char-select" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="if(this.value){ document.getElementById('modal-char-input').value = this.value; }">
+            <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+          </select>
+          <input type="text" id="modal-char-input" class="form-control" placeholder="Atau ketik nama karakter di sini..."
+            list="storm-characters" autocomplete="off">
+        </div>
       </div>
       <div style="display: flex; gap: 10px; margin-top: 15px;">
         <button class="btn btn-primary" style="flex:1;" onclick="saveModalChar()">Simpan</button>
@@ -1249,7 +1393,7 @@
         try {
           const stored = localStorage.getItem('koth_custom_characters');
           if (stored) custom = JSON.parse(stored);
-        } catch(e) {}
+        } catch (e) { }
       }
       return Array.isArray(custom) ? custom : [];
     }
@@ -1274,10 +1418,28 @@
     }
 
     function renderCharacterDatalist() {
-      const datalist = document.getElementById('storm-characters');
-      if (!datalist) return;
       const all = getAllCharactersSorted();
-      datalist.innerHTML = all.map(c => `<option value="${escapeHtml(c)}">`).join('\n');
+      const datalist = document.getElementById('storm-characters');
+      if (datalist) {
+        datalist.innerHTML = all.map(c => `<option value="${escapeHtml(c)}">`).join('\n');
+      }
+
+      const optionsHtml = `<option value="">▼ PILIH DARI DROPDOWN (${all.length} KARAKTER)...</option>` +
+        all.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('\n');
+
+      const selectPicker = document.getElementById('select-char-picker');
+      if (selectPicker) {
+        const curVal = selectPicker.value;
+        selectPicker.innerHTML = optionsHtml;
+        if (curVal) selectPicker.value = curVal;
+      }
+
+      const modalSelect = document.getElementById('modal-char-select');
+      if (modalSelect) {
+        const curVal = modalSelect.value;
+        modalSelect.innerHTML = optionsHtml;
+        if (curVal) modalSelect.value = curVal;
+      }
     }
 
     function registerCharacter(charName) {
@@ -1296,7 +1458,7 @@
         state.customCharacters.push(trimmed);
         try {
           localStorage.setItem('koth_custom_characters', JSON.stringify(state.customCharacters));
-        } catch(e) {}
+        } catch (e) { }
         renderCharacterDatalist();
         saveState();
       }
@@ -1313,9 +1475,9 @@
     function loadState() {
       const data = localStorage.getItem('koth_naruto_state');
       if (data) {
-        try { 
-          state = JSON.parse(data); 
-        } catch(e){}
+        try {
+          state = JSON.parse(data);
+        } catch (e) { }
       }
       // Sanitize: pastikan label VVIP/VIP/FREE valid dan tidak ada 'SAVE'
       if (Array.isArray(state.queue)) {
@@ -1337,6 +1499,7 @@
       if (!state.topRecord || typeof state.topRecord !== 'object') {
         state.topRecord = { name: '-', char: '-', ws: 0 };
       }
+      syncTopRecordFromAllPlayers();
 
       renderAll();
       setupSync();
@@ -1354,11 +1517,12 @@
               if (!state.topRecord || typeof state.topRecord !== 'object') {
                 state.topRecord = { name: '-', char: '-', ws: 0 };
               }
+              syncTopRecordFromAllPlayers();
               localStorage.setItem('koth_naruto_state', JSON.stringify(state));
               renderAll();
             }
           })
-          .catch(() => {});
+          .catch(() => { });
       }
     }
 
@@ -1366,7 +1530,9 @@
       if (!state.tierStatus) {
         state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
       }
-      state.tierStatus[tierKey] = (state.tierStatus[tierKey] === 'CLOSED') ? 'OPEN' : 'CLOSED';
+      const next = (state.tierStatus[tierKey] === 'CLOSED') ? 'OPEN' : 'CLOSED';
+      if (!confirm(`Ubah status tier ${tierKey} menjadi ${next}?`)) return;
+      state.tierStatus[tierKey] = next;
       saveState();
     }
 
@@ -1378,7 +1544,7 @@
       if (cloudMqttClient && cloudMqttClient.connected) {
         try {
           cloudMqttClient.publish(MQTT_TOPIC, JSON.stringify(state), { retain: true, qos: 0 });
-        } catch(e) {
+        } catch (e) {
           console.warn('MQTT publish error', e);
         }
       }
@@ -1440,7 +1606,7 @@
                 localStorage.setItem('koth_naruto_state', JSON.stringify(state));
                 renderAll();
               }
-            } catch(e) {}
+            } catch (e) { }
           });
 
           cloudMqttClient.on('close', () => {
@@ -1450,7 +1616,7 @@
               badge.style.color = '#eab308';
             }
           });
-        } catch(e) {
+        } catch (e) {
           console.warn('MQTT init failed:', e);
         }
       }
@@ -1466,7 +1632,7 @@
               localStorage.setItem('koth_naruto_state', JSON.stringify(state));
               renderAll();
             }
-          } catch(err) {}
+          } catch (err) { }
         };
       } else {
         window.addEventListener('storage', (e) => {
@@ -1474,7 +1640,7 @@
             try {
               state = JSON.parse(e.newValue);
               renderAll();
-            } catch(err){}
+            } catch (err) { }
           }
         });
       }
@@ -1557,6 +1723,10 @@
         return;
       }
 
+      if (!confirm(`Tambahkan [ ${name} ] (${type}, ${matchesLeft} tiket, Karakter: "${char}") ke ${target === 'saved' ? 'SAVED' : 'ANTREAN'}?`)) {
+        return;
+      }
+
       const newPlayer = { id: Date.now().toString(), name, char, matchesLeft, ws: 0, type };
 
       if (target === 'saved') {
@@ -1571,6 +1741,8 @@
       // Reset form
       document.getElementById('input-username').value = '';
       document.getElementById('input-char').value = '';
+      const picker = document.getElementById('select-char-picker');
+      if (picker) picker.value = '';
 
       saveState();
     }
@@ -1579,7 +1751,9 @@
     function moveSavedToQueue(id, overrideType) {
       const index = state.saved.findIndex(p => p.id === id);
       if (index !== -1) {
-        const player = state.saved.splice(index, 1)[0];
+        const player = state.saved[index];
+        if (!confirm(`Naikkan [ ${player.name} ] (${player.type}) dari Saved ke Antrean Aktif?`)) return;
+        state.saved.splice(index, 1);
         if (overrideType) {
           player.type = overrideType;
         } else if (!player.type || player.type === 'SAVE') {
@@ -1596,7 +1770,9 @@
     function moveQueueToSave(id) {
       const index = state.queue.findIndex(p => p.id === id);
       if (index !== -1) {
-        const player = state.queue.splice(index, 1)[0];
+        const player = state.queue[index];
+        if (!confirm(`Simpan [ ${player.name} ] (${player.type}) ke daftar Saved?`)) return;
+        state.queue.splice(index, 1);
         if (!player.type || player.type === 'SAVE') player.type = 'FREE';
         state.saved.push(player);
         sortSaved();
@@ -1618,6 +1794,10 @@
       const list = listType === 'queue' ? state.queue : state.saved;
       const player = list.find(p => p.id === id);
       if (!player) return;
+      if (!confirm(`Ubah tier [ ${player.name} ] menjadi ${newTier}?`)) {
+        renderAll();
+        return;
+      }
       player.type = newTier;
       if (listType === 'queue') {
         sortQueue();
@@ -1643,6 +1823,11 @@
       const curIdx = targetList.findIndex(p => p.id === id);
       if (curIdx === -1) return;
 
+      if (!confirm(`Ubah posisi urutan [ ${player.name} ] menjadi #${newPosInTier}?`)) {
+        renderAll();
+        return;
+      }
+
       // Geser posisi dalam tier sendiri
       targetList.splice(curIdx, 1);
       targetList.splice(newPosInTier - 1, 0, player);
@@ -1661,13 +1846,14 @@
       const list = listType === 'queue' ? state.queue : state.saved;
       const player = list.find(p => p.id === id);
       if (!player) return;
+      let nextTier = 'FREE';
       if (player.type === 'FREE' || !player.type || player.type === 'SAVE') {
-        player.type = 'VIP';
+        nextTier = 'VIP';
       } else if (player.type === 'VIP') {
-        player.type = 'VVIP';
-      } else {
-        player.type = 'FREE';
+        nextTier = 'VVIP';
       }
+      if (!confirm(`Ubah tier [ ${player.name} ] menjadi ${nextTier}?`)) return;
+      player.type = nextTier;
       if (listType === 'queue') {
         sortQueue();
       } else {
@@ -1677,10 +1863,14 @@
     }
 
     function deletePlayer(listType, id) {
+      const list = listType === 'queue' ? state.queue : state.saved;
+      const p = list.find(x => x.id === id);
+      const pName = p ? p.name : 'pemain ini';
+      if (!confirm(`Hapus [ ${pName} ] dari ${listType === 'queue' ? 'antrean' : 'saved'}?`)) return;
       if (listType === 'queue') {
-        state.queue = state.queue.filter(p => p.id !== id);
+        state.queue = state.queue.filter(x => x.id !== id);
       } else if (listType === 'saved') {
-        state.saved = state.saved.filter(p => p.id !== id);
+        state.saved = state.saved.filter(x => x.id !== id);
       }
       saveState();
     }
@@ -1784,7 +1974,7 @@
       // Cek Antrean Aktif
       state.queue.forEach((p, idx) => {
         if (p.name.toLowerCase().includes(q)) {
-          matches.push(`[Antrean #${idx+1}] <b>${p.name}</b> (${p.type}) - Char: ${p.char}, Tiket Sisa: <b>${p.matchesLeft}</b>`);
+          matches.push(`[Antrean #${idx + 1}] <b>${p.name}</b> (${p.type}) - Char: ${p.char}, Tiket Sisa: <b>${p.matchesLeft}</b>`);
         }
       });
 
@@ -1814,9 +2004,15 @@
       const index = state.queue.findIndex(p => p.id === playerId);
       if (index === -1) return;
 
+      const playerCandidate = state.queue[index];
+      if (!confirm(`Naikkan [ ${playerCandidate.name} ] (${playerCandidate.type}, ${playerCandidate.matchesLeft} tiket) ke arena ${targetSlot.toUpperCase()}?`)) {
+        return;
+      }
+
       const player = state.queue.splice(index, 1)[0];
       // Potong 1 tiket match pertama
       player.matchesLeft = Math.max(0, player.matchesLeft - 1);
+      player.ws = (player.ws !== undefined && player.ws !== null) ? player.ws : 0;
 
       if (targetSlot === 'p1') {
         state.p1 = player;
@@ -1842,8 +2038,10 @@
     function removeSlotToQueue(slot) {
       const player = slot === 'p1' ? state.p1 : state.p2;
       if (!player) return;
-      if (confirm(`Kembalikan [ ${player.name} ] (${slot.toUpperCase()}) ke antrean? Tiket 1 match akan dikembalikan.`)) {
+      const wsInfo = (player.ws && player.ws > 0) ? `\n(WS: ${player.ws} & Karakter: "${formatChar(player.char)}" tetap terjaga)` : '';
+      if (confirm(`Kembalikan [ ${player.name} ] (${slot.toUpperCase()}) ke antrean? Tiket 1 match akan dikembalikan.${wsInfo}`)) {
         player.matchesLeft += 1;
+        // PENTING: BUKAN KALAH! player.ws dan player.char TIDAK DIRESET!
         state.queue.unshift(player);
         if (slot === 'p1') state.p1 = null;
         else state.p2 = null;
@@ -1853,6 +2051,74 @@
 
     function removeP2ToQueue() {
       removeSlotToQueue('p2');
+    }
+
+    // Tukar Posisi Arena P1 ⇄ P2 (Manual Fleksibel)
+    function swapArenaSlots() {
+      if (!state.p1 && !state.p2) {
+        alert("Kedua slot arena masih kosong!");
+        return;
+      }
+      const p1Label = state.p1 ? state.p1.name : '(Kosong)';
+      const p2Label = state.p2 ? state.p2.name : '(Kosong)';
+      if (!confirm(`Tukar posisi pemain di arena?\n\nP1: ${p1Label} ⇄ P2: ${p2Label}`)) return;
+
+      const temp = state.p1;
+      state.p1 = state.p2;
+      state.p2 = temp;
+      saveState();
+    }
+
+    // Ubah WS Manual Pemain di Arena
+    function promptEditWs(slot) {
+      const p = slot === 'p1' ? state.p1 : state.p2;
+      if (!p) {
+        alert(`Slot ${slot.toUpperCase()} kosong!`);
+        return;
+      }
+      const val = prompt(`Ubah Jumlah Win Streak (WS) untuk [ ${p.name} ]:`, p.ws || 0);
+      if (val !== null) {
+        const parsed = parseInt(val);
+        if (!isNaN(parsed) && parsed >= 0) {
+          if (confirm(`Ubah WS [ ${p.name} ] dari ${p.ws || 0} menjadi ${parsed}?`)) {
+            p.ws = parsed;
+            checkAndUpdateTopRecord(p);
+            saveState();
+          }
+        }
+      }
+    }
+
+    function checkAndUpdateTopRecord(candidate) {
+      if (!candidate || candidate.ws === undefined || candidate.ws === null || candidate.ws <= 0) return;
+      if (!state.topRecord || typeof state.topRecord !== 'object') {
+        state.topRecord = { name: '-', char: '-', ws: 0 };
+      }
+      if (candidate.ws > (state.topRecord.ws || 0)) {
+        state.topRecord = {
+          name: candidate.name,
+          char: formatChar(candidate.char),
+          ws: candidate.ws
+        };
+      }
+    }
+
+    function syncTopRecordFromAllPlayers() {
+      if (!state.topRecord || typeof state.topRecord !== 'object') {
+        state.topRecord = { name: '-', char: '-', ws: 0 };
+      }
+      const allPlayers = [state.p1, state.p2, ...(state.queue || []), ...(state.saved || [])].filter(Boolean);
+      let best = (state.topRecord.ws && state.topRecord.ws > 0) ? { ...state.topRecord } : null;
+      for (const p of allPlayers) {
+        if (p && p.ws && p.ws > 0) {
+          if (!best || p.ws > best.ws) {
+            best = { name: p.name, char: formatChar(p.char), ws: p.ws };
+          }
+        }
+      }
+      if (best && (best.ws > (state.topRecord.ws || 0) || state.topRecord.name === '-' || !state.topRecord.name)) {
+        state.topRecord = best;
+      }
     }
 
     // Fill Arena Slot otomatis: Hanya isi jika arena KOSONG TOTAL di awal sesi live
@@ -1867,13 +2133,17 @@
       if (changed) saveState();
     }
 
-    // Trigger Win Logika Pertandingan: POSISI BERGANTIAN SETIAP WIN STREAK
+    // Trigger Win Logika Pertandingan: PEMENANG SELALU KE P1 UNTUK NEXT MATCH
     function triggerWin(winnerRole) {
       const winner = winnerRole === 'p1' ? state.p1 : state.p2;
       const loser = winnerRole === 'p1' ? state.p2 : state.p1;
 
       if (!winner || !loser) {
         alert("Pemain di arena belum lengkap!");
+        return;
+      }
+
+      if (!confirm(`Konfirmasi kemenangan untuk [ ${winner.name} ] (${winnerRole.toUpperCase()})?\nWin streak akan menjadi ${(winner.ws || 0) + 1}.`)) {
         return;
       }
 
@@ -1886,20 +2156,11 @@
         winner.bonusAnimUntil = Date.now() + 5000; // Notif 'Tiket: 1+1' selama 5 detik lalu otomatis jadi Tiket: 2
       }
 
-      // Update TOP REKOR WS jika menang dan WS lebih tinggi dari rekor sesi
-      if (!state.topRecord || typeof state.topRecord !== 'object') {
-        state.topRecord = { name: '-', char: '-', ws: 0 };
-      }
-      if (winner.ws > (state.topRecord.ws || 0)) {
-        state.topRecord = {
-          name: winner.name,
-          char: formatChar(winner.char),
-          ws: winner.ws
-        };
-      }
+      // Update TOP WS jika menang dan WS lebih tinggi dari rekor sesi
+      checkAndUpdateTopRecord(winner);
 
       // 2. UPDATE LOSER
-      loser.ws = 0; // WS reset ke 0
+      loser.ws = 0; // WS reset ke 0 karena kalah
 
       // Penanganan Pemain Kalah: Auto reset karakter jika tiket masih ada
       if (loser.matchesLeft > 0) {
@@ -1924,16 +2185,10 @@
         alert(`[ ${loser.name} ] KALAH & Tiket HABIS.`);
       }
 
-      // 3. TUKAR POSISI PEMENANG (ALTERNATING SLOTS SELAMA WS):
-      // Jika menang di P1 -> match berikutnya pindah ke P2, slot P1 dikosongkan untuk penantang baru
-      // Jika menang di P2 -> match berikutnya pindah ke P1, slot P2 dikosongkan untuk penantang baru
-      if (winnerRole === 'p1') {
-        state.p2 = winner;
-        state.p1 = null;
-      } else {
-        state.p1 = winner;
-        state.p2 = null;
-      }
+      // 3. PEMENANG SELALU OTOMATIS DI SLOT P1 UNTUK MATCH BERIKUTNYA
+      // Slot P2 dikosongkan untuk penantang baru dari antrean
+      state.p1 = winner;
+      state.p2 = null;
 
       saveState();
       // JANGAN PANGGIL checkAutoFillArena! Slot penantang dibiarkan kosong agar admin yang memilih penantang dari antrean.
@@ -1998,7 +2253,7 @@
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         try {
           const imported = JSON.parse(e.target.result);
           if (imported && typeof imported === 'object') {
@@ -2010,7 +2265,7 @@
           } else {
             alert("Format file backup tidak valid!");
           }
-        } catch(err) {
+        } catch (err) {
           alert("Gagal membaca file backup: " + err.message);
         }
       };
@@ -2030,12 +2285,19 @@
 
       document.getElementById('modal-target-label').innerText = `Ubah Karakter ${name}:`;
       document.getElementById('modal-char-input').value = curChar === 'Belum Pilih / TBA' ? '' : curChar;
+      const modalSelect = document.getElementById('modal-char-select');
+      if (modalSelect) {
+        modalSelect.value = curChar || '';
+      }
       document.getElementById('modal-char').classList.add('active');
     }
 
     function saveModalChar() {
       const rawVal = document.getElementById('modal-char-input').value.trim();
       const val = rawVal || 'Belum Pilih / TBA';
+
+      if (!confirm(`Simpan karakter "${val}"?`)) return;
+
       if (rawVal) {
         registerCharacter(rawVal);
       }
@@ -2075,6 +2337,7 @@
       if (val !== null) {
         const parsed = parseInt(val);
         if (!isNaN(parsed) && parsed >= 0) {
+          if (!confirm(`Ubah tiket [ ${p.name} ] dari ${p.matchesLeft} menjadi ${parsed}?`)) return;
           p.matchesLeft = parsed;
           saveState();
         }
@@ -2088,6 +2351,7 @@
       if (val !== null) {
         const parsed = parseInt(val);
         if (!isNaN(parsed) && parsed >= 0) {
+          if (!confirm(`Ubah tiket [ ${p.name} ] dari ${p.matchesLeft} menjadi ${parsed}?`)) return;
           p.matchesLeft = parsed;
           saveState();
         }
@@ -2096,6 +2360,7 @@
 
     // RENDER FUNCTIONS
     function renderAll() {
+      syncTopRecordFromAllPlayers();
       renderArena();
       renderQueue();
       renderSaved();
@@ -2140,14 +2405,15 @@
       const char = document.getElementById('input-record-char').value.trim() || '-';
       const ws = parseInt(document.getElementById('input-record-ws').value) || 0;
 
+      if (!confirm(`Simpan TOP WS berikut?\n${name} | ${char} | ${ws} WS`)) return;
       if (!state.topRecord) state.topRecord = {};
       state.topRecord = { name, char, ws };
       saveState();
-      alert(`Top Rekor WS berhasil diperbarui:\n${name} | ${char} | ${ws} WS`);
+      alert(`TOP WS berhasil diperbarui:\n${name} | ${char} | ${ws} WS`);
     }
 
     function resetTopRecord() {
-      if (confirm("Reset Top Rekor WS menjadi 0?")) {
+      if (confirm("Reset TOP WS menjadi 0?")) {
         state.topRecord = { name: '-', char: '-', ws: 0 };
         saveState();
       }
@@ -2155,6 +2421,7 @@
 
     function saveAnnouncement() {
       const val = document.getElementById('input-announcement').value.trim();
+      if (!confirm("Simpan teks pengumuman running text overlay?")) return;
       state.announcement = val;
       saveState();
       alert("Pengumuman overlay berhasil diperbarui!");
@@ -2392,28 +2659,30 @@
               arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p2')" title="Naikkan ke P2">⬆ P2</button>`;
             }
 
+            const wsBadge = (p.ws && p.ws > 0) ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); margin-left:4px; font-weight:800;">${p.ws} WS</span>` : '';
+
             item.innerHTML = `
               <div class="item-info">
-                <div class="item-name">#${globalIdx} ${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span></div>
+                <div class="item-name">#${globalIdx} ${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span>${wsBadge}</div>
                 <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft}</b></div>
               </div>
               <div class="item-meta">
                 ${arenaBtn}
                 <div class="dropdown-icon-btn" title="Ubah Posisi Urutan (#${posInTier})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">#</button>
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🔢 #${posInTier}</button>
                   <select class="icon-select-overlay" onchange="reorderPlayerWithinTier('${p.id}', 'queue', parseInt(this.value))">
                     ${posOptions}
                   </select>
                 </div>
                 <div class="dropdown-icon-btn" title="Ganti Role (${pTier})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">👤</button>
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🏷️ ${pTier}</button>
                   <select class="icon-select-overlay" onchange="changePlayerTier('${p.id}', 'queue', this.value)">
                     ${tierOptions}
                   </select>
                 </div>
-                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${originalIdx}])" title="Ubah Karakter">🎮</button>
-                <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')" title="Simpan ke Saved">💾</button>
-                <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')" title="Hapus Pemain">🗑</button>
+                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${originalIdx}])" title="Ubah Karakter">🥋 CHAR</button>
+                <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')" title="Simpan ke Saved">💾 SIMPAN</button>
+                <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')" title="Hapus Pemain">🗑️</button>
               </div>
             `;
             tierSec.appendChild(item);
@@ -2495,27 +2764,29 @@
 
             const item = document.createElement('div');
             item.className = `list-item ${tier.cls}`;
+            const wsBadge = (p.ws && p.ws > 0) ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); margin-left:4px; font-weight:800;">${p.ws} WS</span>` : '';
+
             item.innerHTML = `
               <div class="item-info">
-                <div class="item-name">${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span></div>
+                <div class="item-name">${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span>${wsBadge}</div>
                 <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft}</b></div>
               </div>
               <div class="item-meta">
-                <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}')" title="Naikkan ke Antrean">⬆</button>
+                <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}')" title="Naikkan ke Antrean">📋 ANTREAN</button>
                 <div class="dropdown-icon-btn" title="Ubah Posisi Urutan (#${posInTier})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">#</button>
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🔢 #${posInTier}</button>
                   <select class="icon-select-overlay" onchange="reorderPlayerWithinTier('${p.id}', 'saved', parseInt(this.value))">
                     ${posOptions}
                   </select>
                 </div>
                 <div class="dropdown-icon-btn" title="Ganti Role (${pTier})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">👤</button>
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🏷️ ${pTier}</button>
                   <select class="icon-select-overlay" onchange="changePlayerTier('${p.id}', 'saved', this.value)">
                     ${tierOptions}
                   </select>
                 </div>
-                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${originalIdx}])" title="Ubah Karakter">🎮</button>
-                <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')" title="Hapus Pemain">🗑</button>
+                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${originalIdx}])" title="Ubah Karakter">🥋 CHAR</button>
+                <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')" title="Hapus Pemain">🗑️</button>
               </div>
             `;
             tierSec.appendChild(item);
@@ -2664,4 +2935,5 @@
     loadState();
   </script>
 </body>
+
 </html>

@@ -213,8 +213,8 @@
     }
 
     .player-slot.vip {
-      background: rgba(255, 255, 255, 0.08);
-      border-left: 3px solid var(--c-white);
+      background: rgba(255, 215, 0, 0.05);
+      border-left: 3px solid #FFD700;
     }
 
     .player-slot.free {
@@ -229,7 +229,7 @@
     }
     #slot-p2.vip {
       border-left: none;
-      border-right: 3px solid var(--c-white);
+      border-right: 3px solid #FFD700;
     }
     #slot-p2.free {
       border-left: none;
@@ -251,11 +251,12 @@
     }
 
     .p-role-tag.vip {
-      background-color: rgba(255, 255, 255, 0.25);
-      border: 1px solid #ffffff;
-      color: #ffffff;
+      background-color: rgba(255, 215, 0, 0.16);
+      border: 1px solid #FFD700;
+      color: #FFD700;
       font-weight: 900;
       letter-spacing: 0.8px;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.35);
     }
 
     .p-role-tag.free {
@@ -412,6 +413,12 @@
       margin-bottom: 5px;
     }
 
+    .tier-section.vip {
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed rgba(255, 215, 0, 0.45);
+    }
+
     .tier-header {
       display: flex;
       justify-content: space-between;
@@ -436,9 +443,15 @@
     }
 
     .tier-header.vip {
-      background: rgba(247, 247, 247, 0.18);
-      color: #ffffff;
-      border-left: 3px solid #ffffff;
+      background: rgba(255, 215, 0, 0.14);
+      color: #FFD700;
+      border-left: 3px solid #FFD700;
+    }
+
+    .tier-header.vip span:first-child,
+    .tier-header.vip .th-title {
+      color: #FFD700;
+      font-weight: 900;
     }
 
     .tier-header.free {
@@ -491,8 +504,8 @@
     }
 
     .queue-row.vip {
-      border-left-color: var(--c-white);
-      background: rgba(255, 255, 255, 0.08);
+      border-left-color: #FFD700;
+      background: rgba(255, 215, 0, 0.05);
     }
 
     .queue-row.free {
@@ -563,7 +576,8 @@
     }
 
     .queue-row.vip .q-idx {
-      color: #ffffff;
+      color: #FFD700;
+      font-weight: 900;
     }
 
     .q-name {
@@ -611,9 +625,9 @@
     }
 
     .q-badge.vip {
-      background-color: rgba(255, 255, 255, 0.25);
-      border: 1px solid #ffffff;
-      color: #ffffff;
+      background-color: rgba(255, 215, 0, 0.16);
+      border: 1px solid #FFD700;
+      color: #FFD700;
       font-weight: 900;
       letter-spacing: 0.8px;
     }
@@ -912,7 +926,7 @@
 
       const tierRank = { 'VIP': 1, 'FREE': 2 };
       const tiers = [
-        { key: 'VIP', label: '⭐ VIP', cls: 'vip' },
+        { key: 'VIP', label: 'VIP', cls: 'vip' },
         { key: 'FREE', label: 'FREE', cls: 'free' }
       ];
 

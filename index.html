@@ -332,12 +332,13 @@
     }
 
     .player-slot.vip {
-      border: 2px solid var(--c-dark);
-      background: var(--panel-subtle);
+      border: 2px solid #FFD700;
+      background: rgba(255, 215, 0, 0.04);
     }
 
     [data-theme="dark"] .player-slot.vip {
-      border: 2px solid var(--c-white);
+      border: 2px solid #FFD700;
+      background: rgba(255, 215, 0, 0.06);
     }
 
     .player-slot.free {
@@ -359,17 +360,19 @@
 
     .role-badge.vip,
     .role-badge.badge-vip {
-      background-color: var(--c-dark);
-      color: var(--c-white);
+      background-color: #1e242b;
+      color: #FFD700;
       font-weight: 900;
-      border: 1px solid var(--c-white);
+      border: 1px solid #FFD700;
+      letter-spacing: 0.8px;
     }
 
     [data-theme="dark"] .role-badge.vip,
     [data-theme="dark"] .role-badge.badge-vip {
-      background-color: var(--c-white);
-      color: var(--c-dark);
-      border: none;
+      background-color: rgba(255, 215, 0, 0.16);
+      color: #FFD700;
+      border: 1px solid #FFD700;
+      letter-spacing: 0.8px;
     }
 
     .role-badge.free,
@@ -509,7 +512,7 @@
     }
 
     .list-item.vip {
-      border-left-color: var(--c-dark);
+      border-left-color: #FFD700;
       background-color: var(--panel-subtle);
     }
 
@@ -522,8 +525,8 @@
     }
 
     [data-theme="dark"] .list-item.vip {
-      border-left-color: var(--c-white);
-      background-color: var(--panel-subtle);
+      border-left-color: #FFD700;
+      background-color: rgba(255, 215, 0, 0.04);
     }
 
     .item-info {
@@ -573,17 +576,19 @@
     }
 
     .badge-vip {
-      background-color: var(--c-dark);
-      color: var(--c-white);
+      background-color: #1e242b;
+      color: #FFD700;
       font-weight: 900;
-      border: 1px solid var(--c-white);
+      border: 1px solid #FFD700;
+      letter-spacing: 0.8px;
     }
 
     [data-theme="dark"] .badge-vip {
-      background-color: var(--c-white);
-      color: var(--c-dark);
+      background-color: rgba(255, 215, 0, 0.16);
+      color: #FFD700;
       font-weight: 900;
-      border: none;
+      border: 1px solid #FFD700;
+      letter-spacing: 0.8px;
     }
 
     .badge-free {
@@ -610,6 +615,16 @@
       margin-bottom: 14px;
     }
 
+    .tier-section.vip {
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 2px dashed rgba(212, 175, 55, 0.4);
+    }
+
+    [data-theme="dark"] .tier-section.vip {
+      border-bottom: 2px dashed rgba(255, 215, 0, 0.35);
+    }
+
     .tier-header {
       display: flex;
       justify-content: space-between;
@@ -624,15 +639,22 @@
     }
 
     .tier-header.vip {
-      background: var(--c-dark);
-      color: var(--c-white);
-      border-left: 3px solid var(--c-white);
+      background: #1e242b;
+      color: #FFD700;
+      border-left: 3px solid #FFD700;
+    }
+
+    .tier-header.vip span:first-child,
+    .tier-header.vip .tier-title {
+      color: #FFD700;
+      font-weight: 900;
+      letter-spacing: 1px;
     }
 
     [data-theme="dark"] .tier-header.vip {
-      background: rgba(247, 247, 247, 0.16);
-      color: var(--c-white);
-      border-left: 3px solid var(--c-white);
+      background: rgba(255, 215, 0, 0.14);
+      color: #FFD700;
+      border-left: 3px solid #FFD700;
     }
 
     .tier-header.free {
@@ -2747,7 +2769,7 @@
       sortQueue();
 
       const tiers = [
-        { key: 'VIP', label: '⭐ VIP', cls: 'vip' },
+        { key: 'VIP', label: 'VIP', cls: 'vip' },
         { key: 'FREE', label: 'FREE', cls: 'free' }
       ];
 
@@ -2796,7 +2818,7 @@
 
             const tierOptions = `
               <option value="" disabled selected style="display:none;">Pilih Role</option>
-              <option value="VIP">⭐ VIP${pTier === 'VIP' ? ' (Saat ini)' : ''}</option>
+              <option value="VIP">VIP${pTier === 'VIP' ? ' (Saat ini)' : ''}</option>
               <option value="FREE">FREE${pTier === 'FREE' ? ' (Saat ini)' : ''}</option>
             `;
 
@@ -2863,7 +2885,7 @@
       sortSaved();
 
       const tiers = [
-        { key: 'VIP', label: '⭐ VIP', cls: 'vip' },
+        { key: 'VIP', label: 'VIP', cls: 'vip' },
         { key: 'FREE', label: 'FREE', cls: 'free' }
       ];
 
@@ -2912,7 +2934,7 @@
 
             const tierOptions = `
               <option value="" disabled selected style="display:none;">Pilih Role</option>
-              <option value="VIP">⭐ VIP${pTier === 'VIP' ? ' (Saat ini)' : ''}</option>
+              <option value="VIP">VIP${pTier === 'VIP' ? ' (Saat ini)' : ''}</option>
               <option value="FREE">FREE${pTier === 'FREE' ? ' (Saat ini)' : ''}</option>
             `;
 
@@ -3019,7 +3041,7 @@
         qContainer.innerHTML = `<div style="font-size:0.8rem; color:#aaa; padding:10px 0;">(${isSaved ? 'Saved Kosong' : 'Antrean Kosong'})</div>`;
       } else {
         const tiers = [
-          { key: 'VIP', label: '⭐ VIP', cls: 'vip' },
+          { key: 'VIP', label: 'VIP', cls: 'vip' },
           { key: 'FREE', label: 'FREE', cls: 'free' }
         ];
 
@@ -3033,6 +3055,9 @@
           });
 
           if (players.length > 0) {
+            const tierSection = document.createElement('div');
+            tierSection.className = `tier-section ${tier.cls}`;
+
             const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
             const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
 
@@ -3047,7 +3072,7 @@
               </div>
               <span style="letter-spacing:0.8px;">TIKET</span>
             `;
-            qContainer.appendChild(tierHeader);
+            tierSection.appendChild(tierHeader);
 
             players.slice(0, 4).forEach(({ player: p, globalIdx }) => {
               const qEl = document.createElement('div');
@@ -3060,8 +3085,9 @@
                   <span style="font-size:0.85rem; font-weight:900; color:var(--c-white); background:rgba(255,255,255,0.12); padding:1px 6px; border-radius:3px; border:1px solid var(--c-slate); min-width:28px; text-align:center;">${p.matchesLeft}</span>
                 </span>
               `;
-              qContainer.appendChild(qEl);
+              tierSection.appendChild(qEl);
             });
+            qContainer.appendChild(tierSection);
           }
         });
       }

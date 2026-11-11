@@ -76,6 +76,11 @@
     }
   ],
   "overlayListMode": "saved",
+  "topRecord": {
+    "name": "-",
+    "char": "-",
+    "ws": 0
+  },
   "tierStatus": {
     "VVIP": "OPEN",
     "VIP": "OPEN",

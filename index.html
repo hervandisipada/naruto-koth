@@ -876,6 +876,33 @@
         <button class="btn btn-primary btn-block" onclick="saveAnnouncement()">Simpan Teks</button>
       </div>
 
+      <!-- TOP REKOR WS -->
+      <div class="card">
+        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Top Rekor WS</span>
+          <span id="admin-top-ws-badge" class="badge" style="background: var(--c-white); color: var(--c-dark); font-weight: 800; padding: 2px 8px; border-radius: 4px;">0 WS</span>
+        </div>
+        <p class="instructions" style="margin-bottom: 8px;">Rekor WS tertinggi di live overlay (otomatis terupdate saat rekor baru tercapai, atau edit manual di bawah).</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Username:</label>
+            <input type="text" id="input-record-name" class="form-control" placeholder="Nama pemain...">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Karakter:</label>
+            <input type="text" id="input-record-char" class="form-control" placeholder="Karakter..." list="storm-characters" autocomplete="off">
+          </div>
+        </div>
+        <div style="margin-bottom: 8px;">
+          <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Jumlah WS:</label>
+          <input type="number" id="input-record-ws" class="form-control" placeholder="0" min="0">
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-primary" style="flex: 1;" onclick="saveTopRecord()">Simpan Rekor</button>
+          <button class="btn btn-danger" style="flex: 1;" onclick="resetTopRecord()">Reset Rekor</button>
+        </div>
+      </div>
+
       <!-- KELOLA ANTREAN & SAVED PLAYERS -->
       <div class="card full-width">
         <!-- Search bar untuk cek slot penonton -->
@@ -964,6 +991,10 @@
   <!-- VIEW 2: TIKTOK LIVE OVERLAY SOURCE -->
   <div id="overlay-view" class="view-container">
     <div class="overlay-container">
+      <div id="ov-top-record-bar" style="background: rgba(0,0,0,0.45); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2); border-left: 4px solid #fff; display: flex; align-items: center; gap: 8px; font-size: 0.92rem; color: #fff;">
+        <span style="font-weight: 900; font-size: 0.85rem; letter-spacing: 0.8px;">TOP REKOR WS:</span>
+        <span id="ov-top-rec-text" style="font-weight: 700;">- | - | 0 WS</span>
+      </div>
       <div class="overlay-match">
         <div class="overlay-player p1">
           <div>
@@ -1170,6 +1201,7 @@
       queue: [],
       saved: [],
       announcement: '',
+      topRecord: { name: '-', char: '-', ws: 0 },
       overlayListMode: 'queue',
       customCharacters: [],
       tierStatus: { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
@@ -1302,6 +1334,9 @@
       if (!state.tierStatus || typeof state.tierStatus !== 'object') {
         state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
       }
+      if (!state.topRecord || typeof state.topRecord !== 'object') {
+        state.topRecord = { name: '-', char: '-', ws: 0 };
+      }
 
       renderAll();
       setupSync();
@@ -1315,6 +1350,9 @@
               state = serverState;
               if (!state.tierStatus || typeof state.tierStatus !== 'object') {
                 state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
+              }
+              if (!state.topRecord || typeof state.topRecord !== 'object') {
+                state.topRecord = { name: '-', char: '-', ws: 0 };
               }
               localStorage.setItem('koth_naruto_state', JSON.stringify(state));
               renderAll();
@@ -1848,6 +1886,18 @@
         winner.bonusAnimUntil = Date.now() + 5000; // Notif 'Tiket: 1+1' selama 5 detik lalu otomatis jadi Tiket: 2
       }
 
+      // Update TOP REKOR WS jika menang dan WS lebih tinggi dari rekor sesi
+      if (!state.topRecord || typeof state.topRecord !== 'object') {
+        state.topRecord = { name: '-', char: '-', ws: 0 };
+      }
+      if (winner.ws > (state.topRecord.ws || 0)) {
+        state.topRecord = {
+          name: winner.name,
+          char: formatChar(winner.char),
+          ws: winner.ws
+        };
+      }
+
       // 2. UPDATE LOSER
       loser.ws = 0; // WS reset ke 0
 
@@ -1919,8 +1969,10 @@
           queue: [],
           saved: [],
           announcement: '',
+          topRecord: { name: '-', char: '-', ws: 0 },
           overlayListMode: state.overlayListMode || 'queue',
-          customCharacters: state.customCharacters || []
+          customCharacters: state.customCharacters || [],
+          tierStatus: state.tierStatus || { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
         };
         saveState();
       }
@@ -1988,9 +2040,23 @@
         registerCharacter(rawVal);
       }
 
-      if (editingTarget === 'p1' && state.p1) state.p1.char = val;
-      else if (editingTarget === 'p2' && state.p2) state.p2.char = val;
-      else if (typeof editingTarget === 'object') editingTarget.char = val;
+      let updatedPlayer = null;
+      if (editingTarget === 'p1' && state.p1) {
+        state.p1.char = val;
+        updatedPlayer = state.p1;
+      }
+      else if (editingTarget === 'p2' && state.p2) {
+        state.p2.char = val;
+        updatedPlayer = state.p2;
+      }
+      else if (typeof editingTarget === 'object') {
+        editingTarget.char = val;
+        updatedPlayer = editingTarget;
+      }
+
+      if (updatedPlayer && state.topRecord && state.topRecord.name === updatedPlayer.name && state.topRecord.ws === updatedPlayer.ws && state.topRecord.ws > 0) {
+        state.topRecord.char = formatChar(val);
+      }
 
       closeModal();
       saveState();
@@ -2036,12 +2102,54 @@
       renderOverlay();
       updateModeButtons();
       renderCharacterDatalist();
+      renderTopRecordAdmin();
 
       const annInput = document.getElementById('input-announcement');
       if (annInput && state.announcement !== undefined) {
         if (document.activeElement !== annInput) {
           annInput.value = state.announcement;
         }
+      }
+    }
+
+    function renderTopRecordAdmin() {
+      if (!state.topRecord || typeof state.topRecord !== 'object') {
+        state.topRecord = { name: '-', char: '-', ws: 0 };
+      }
+      const recNameInput = document.getElementById('input-record-name');
+      const recCharInput = document.getElementById('input-record-char');
+      const recWsInput = document.getElementById('input-record-ws');
+      const topWsBadge = document.getElementById('admin-top-ws-badge');
+
+      if (topWsBadge) {
+        topWsBadge.innerText = `${state.topRecord.ws || 0} WS`;
+      }
+      if (recNameInput && document.activeElement !== recNameInput) {
+        recNameInput.value = (state.topRecord.name === '-' ? '' : (state.topRecord.name || ''));
+      }
+      if (recCharInput && document.activeElement !== recCharInput) {
+        recCharInput.value = (state.topRecord.char === '-' ? '' : (state.topRecord.char || ''));
+      }
+      if (recWsInput && document.activeElement !== recWsInput) {
+        recWsInput.value = state.topRecord.ws || 0;
+      }
+    }
+
+    function saveTopRecord() {
+      const name = document.getElementById('input-record-name').value.trim() || '-';
+      const char = document.getElementById('input-record-char').value.trim() || '-';
+      const ws = parseInt(document.getElementById('input-record-ws').value) || 0;
+
+      if (!state.topRecord) state.topRecord = {};
+      state.topRecord = { name, char, ws };
+      saveState();
+      alert(`Top Rekor WS berhasil diperbarui:\n${name} | ${char} | ${ws} WS`);
+    }
+
+    function resetTopRecord() {
+      if (confirm("Reset Top Rekor WS menjadi 0?")) {
+        state.topRecord = { name: '-', char: '-', ws: 0 };
+        saveState();
       }
     }
 
@@ -2419,6 +2527,13 @@
     }
 
     function renderOverlay() {
+      // Top Record Bar in Preview
+      const ovTopRecEl = document.getElementById('ov-top-rec-text');
+      if (ovTopRecEl) {
+        const topRec = state.topRecord || { name: '-', char: '-', ws: 0 };
+        ovTopRecEl.innerText = `${topRec.name || '-'} | ${formatChar(topRec.char)} | ${topRec.ws || 0} WS`;
+      }
+
       // P1
       if (state.p1) {
         document.getElementById('ov-p1-name').innerText = state.p1.name;

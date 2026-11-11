@@ -14,6 +14,12 @@ default_state = {
     "p2": None,
     "queue": [],
     "saved": [],
+    "announcement": "",
+    "topRecord": {
+        "name": "-",
+        "char": "-",
+        "ws": 0
+    },
     "tierStatus": {
         "VVIP": "OPEN",
         "VIP": "OPEN",

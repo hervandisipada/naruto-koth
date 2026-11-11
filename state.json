@@ -75,5 +75,10 @@
       "type": "VIP"
     }
   ],
-  "overlayListMode": "saved"
+  "overlayListMode": "saved",
+  "tierStatus": {
+    "VVIP": "OPEN",
+    "VIP": "OPEN",
+    "FREE": "OPEN"
+  }
 }

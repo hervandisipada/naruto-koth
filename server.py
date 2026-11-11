@@ -13,7 +13,12 @@ default_state = {
     "p1": None,
     "p2": None,
     "queue": [],
-    "saved": []
+    "saved": [],
+    "tierStatus": {
+        "VVIP": "OPEN",
+        "VIP": "OPEN",
+        "FREE": "OPEN"
+    }
 }
 
 # In-memory state

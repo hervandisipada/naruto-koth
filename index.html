@@ -567,6 +567,59 @@
       font-style: italic;
     }
 
+    /* TIER STATUS (OPEN / CLOSED) */
+    .tier-status-btn {
+      padding: 2px 8px;
+      font-size: 0.74rem;
+      font-weight: 900;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.5px;
+      border: 1px solid transparent;
+    }
+    .tier-status-btn.open {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border-color: #22c55e;
+    }
+    .tier-status-btn.open:hover {
+      background: #22c55e;
+      color: #000;
+    }
+    .tier-status-btn.closed {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+    .tier-status-btn.closed:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .tier-status-tag {
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 1px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-block;
+      vertical-align: middle;
+      color: #ffffff;
+    }
+    .tier-status-tag.open {
+      background: rgba(34, 197, 94, 0.35);
+      border: 1px solid #22c55e;
+    }
+    .tier-status-tag.closed {
+      background: rgba(239, 68, 68, 0.35);
+      border: 1px solid #ef4444;
+    }
+
     /* Overlay Mode Styles in Index Preview */
     #overlay-view {
       background-color: transparent;
@@ -1117,7 +1170,8 @@
       saved: [],
       announcement: '',
       overlayListMode: 'queue',
-      customCharacters: []
+      customCharacters: [],
+      tierStatus: { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
     };
 
     // Daftar 148 Karakter Bawaan
@@ -1244,6 +1298,10 @@
       if (state.p1 && (!state.p1.type || state.p1.type === 'SAVE')) state.p1.type = 'FREE';
       if (state.p2 && (!state.p2.type || state.p2.type === 'SAVE')) state.p2.type = 'FREE';
 
+      if (!state.tierStatus || typeof state.tierStatus !== 'object') {
+        state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
+      }
+
       renderAll();
       setupSync();
 
@@ -1254,12 +1312,23 @@
           .then(serverState => {
             if (serverState && typeof serverState === 'object' && JSON.stringify(serverState) !== JSON.stringify(state)) {
               state = serverState;
+              if (!state.tierStatus || typeof state.tierStatus !== 'object') {
+                state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
+              }
               localStorage.setItem('koth_naruto_state', JSON.stringify(state));
               renderAll();
             }
           })
           .catch(() => {});
       }
+    }
+
+    function toggleTierStatus(tierKey) {
+      if (!state.tierStatus) {
+        state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
+      }
+      state.tierStatus[tierKey] = (state.tierStatus[tierKey] === 'CLOSED') ? 'OPEN' : 'CLOSED';
+      saveState();
     }
 
     function saveState() {
@@ -2158,13 +2227,20 @@
           }
         });
 
+        const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
+        const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
+        const statusText = tStatus === 'OPEN' ? '🟢 OPEN' : '🔴 CLOSED';
+
         const tierSec = document.createElement('div');
         tierSec.className = `tier-section ${tier.cls}`;
 
         const tierHead = document.createElement('div');
         tierHead.className = `tier-header ${tier.cls}`;
         tierHead.innerHTML = `
-          <span>${tier.label}</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span>${tier.label}</span>
+            <button class="tier-status-btn ${statusClass}" onclick="toggleTierStatus('${tier.key}')" title="Klik untuk ubah status ${tier.label} (OPEN / CLOSED)">${statusText}</button>
+          </div>
           <span>${playersWithIndex.length}</span>
         `;
         tierSec.appendChild(tierHead);
@@ -2267,13 +2343,20 @@
           }
         });
 
+        const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
+        const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
+        const statusText = tStatus === 'OPEN' ? '🟢 OPEN' : '🔴 CLOSED';
+
         const tierSec = document.createElement('div');
         tierSec.className = `tier-section ${tier.cls}`;
 
         const tierHead = document.createElement('div');
         tierHead.className = `tier-header ${tier.cls}`;
         tierHead.innerHTML = `
-          <span>${tier.label}</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span>${tier.label}</span>
+            <button class="tier-status-btn ${statusClass}" onclick="toggleTierStatus('${tier.key}')" title="Klik untuk ubah status ${tier.label} (OPEN / CLOSED)">${statusText}</button>
+          </div>
           <span>${playersInTier.length}</span>
         `;
         tierSec.appendChild(tierHead);
@@ -2410,10 +2493,20 @@
           });
 
           if (players.length > 0) {
+            const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
+            const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
+
             const tierHeader = document.createElement('div');
             tierHeader.className = `tier-header ${tier.cls}`;
             tierHeader.style.cssText = 'margin-top:6px; margin-bottom:3px; padding:3px 8px; font-size:0.78rem; font-weight:900;';
-            tierHeader.innerHTML = `<span>${tier.label} (${players.length})</span><span style="letter-spacing:0.8px;">TIKET</span>`;
+            tierHeader.innerHTML = `
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span>${tier.label}</span>
+                <span class="tier-status-tag ${statusClass}">${tStatus}</span>
+                <span>(${players.length})</span>
+              </div>
+              <span style="letter-spacing:0.8px;">TIKET</span>
+            `;
             qContainer.appendChild(tierHeader);
 
             players.slice(0, 4).forEach(({ player: p, globalIdx }) => {

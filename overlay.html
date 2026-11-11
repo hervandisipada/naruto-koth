@@ -72,27 +72,28 @@
 
     /* ANNOUNCEMENT TICKER */
     .overlay-ticker {
-      background: rgba(0, 0, 0, 0.25);
-      border-radius: 6px;
-      padding: 4px 8px;
-      margin-bottom: 6px;
-      font-size: 0.88rem;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 8px;
+      padding: 7px 12px;
+      margin-bottom: 8px;
+      font-size: 1.05rem;
       display: flex;
       align-items: center;
-      gap: 6px;
-      border-left: 3px solid var(--c-white);
-      color: var(--c-white);
+      gap: 8px;
+      border-left: 4px solid #ffffff;
+      color: #ffffff;
       overflow: hidden;
       flex-shrink: 0;
-      border-top: 1px solid rgba(146, 154, 171, 0.2);
-      border-right: 1px solid rgba(146, 154, 171, 0.2);
-      border-bottom: 1px solid rgba(146, 154, 171, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .ticker-label {
-      color: var(--c-slate);
-      font-weight: 800;
-      font-size: 0.82rem;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 1.05rem;
+      letter-spacing: 0.8px;
       white-space: nowrap;
     }
 
@@ -100,8 +101,10 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: var(--c-white);
-      font-weight: 600;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.02rem;
+      flex: 1;
     }
 
     /* MATCH ARENA (1 VS 1) - COMPACT & HIGH CONTRAST */
@@ -153,27 +156,29 @@
       display: inline-block;
       margin-bottom: 2px;
       letter-spacing: 0.5px;
-      background: var(--c-slate);
-      color: var(--c-white);
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
     }
 
     .p-role-tag.vvip {
-      background-color: var(--c-white);
-      color: var(--c-dark);
+      background-color: rgba(255, 255, 255, 0.25);
+      border: 1px solid #ffffff;
+      color: #ffffff;
       font-weight: 900;
       letter-spacing: 0.8px;
     }
 
     .p-role-tag.vip {
-      background-color: var(--c-slate);
-      color: var(--c-white);
+      background-color: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: #ffffff;
       font-weight: 800;
     }
 
     .p-role-tag.free {
       background-color: transparent;
-      color: var(--c-slate);
-      border: 1px solid var(--c-slate);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
       font-weight: 700;
     }
 
@@ -181,7 +186,7 @@
     .p-name {
       font-weight: 800;
       font-size: 1.35rem;
-      color: var(--c-white);
+      color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -192,8 +197,8 @@
     /* LARGE CHARACTER NAME */
     .p-char {
       font-size: 0.98rem;
-      color: var(--c-slate);
-      font-weight: 600;
+      color: #ffffff;
+      font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -214,7 +219,7 @@
     .p-ws {
       font-weight: 800;
       font-size: 1.15rem;
-      color: var(--c-white);
+      color: #ffffff;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -222,8 +227,9 @@
 
     .free-streak {
       font-size: 0.72rem;
-      background: var(--c-light);
-      color: var(--c-dark);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #ffffff;
       padding: 1px 5px;
       border-radius: 3px;
       font-weight: 800;
@@ -232,8 +238,9 @@
 
     .bonus-badge {
       font-size: 0.72rem;
-      background: var(--c-slate);
-      color: var(--c-white);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #ffffff;
       padding: 1px 5px;
       border-radius: 3px;
       font-weight: 800;
@@ -242,12 +249,12 @@
 
     .p-ticket {
       font-size: 0.92rem;
-      color: var(--c-light);
+      color: #ffffff;
       font-weight: 600;
     }
 
     .p-ticket b {
-      color: var(--c-white);
+      color: #ffffff;
       font-size: 0.95rem;
       font-weight: 800;
     }
@@ -256,7 +263,7 @@
       text-align: center;
       font-size: 0.78rem;
       font-weight: 900;
-      color: var(--c-slate);
+      color: #ffffff;
       letter-spacing: 1px;
       margin: 1px 0;
     }
@@ -277,7 +284,7 @@
     .queue-title {
       font-size: 0.85rem;
       font-weight: 800;
-      color: var(--c-slate);
+      color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 6px;
@@ -328,44 +335,68 @@
       align-items: center;
       padding: 4px 7px;
       border-radius: 4px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 900;
       letter-spacing: 0.8px;
       text-transform: uppercase;
+      color: #ffffff;
     }
 
     .th-ticket {
       font-size: 0.76rem;
       font-weight: 900;
       letter-spacing: 1px;
-      color: var(--c-white);
+      color: #ffffff;
       margin-right: 2px;
       min-width: 32px;
       text-align: center;
     }
 
     .tier-header.vvip {
-      background: rgba(247, 247, 247, 0.16);
-      color: var(--c-white);
-      border-left: 3px solid var(--c-white);
+      background: rgba(247, 247, 247, 0.18);
+      color: #ffffff;
+      border-left: 3px solid #ffffff;
     }
 
     .tier-header.vip {
-      background: rgba(146, 154, 171, 0.16);
-      color: var(--c-slate);
-      border-left: 3px solid var(--c-slate);
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border-left: 3px solid rgba(255, 255, 255, 0.7);
     }
 
     .tier-header.free {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--c-slate);
-      border-left: 3px solid rgba(146, 154, 171, 0.35);
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      border-left: 3px solid rgba(255, 255, 255, 0.4);
       font-weight: 700;
+    }
+
+    .tier-status-tag {
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 1px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-block;
+      vertical-align: middle;
+      color: #ffffff;
+    }
+
+    .tier-status-tag.open {
+      background: rgba(34, 197, 94, 0.35);
+      border: 1px solid #22c55e;
+    }
+
+    .tier-status-tag.closed {
+      background: rgba(239, 68, 68, 0.35);
+      border: 1px solid #ef4444;
     }
 
     .tier-empty {
       font-size: 0.72rem;
-      color: var(--c-slate);
+      color: #ffffff;
+      opacity: 0.85;
       padding: 3px 8px;
       font-style: italic;
     }
@@ -428,9 +459,9 @@
     }
 
     .q-sep {
-      color: var(--c-slate);
+      color: #ffffff;
       font-weight: 800;
-      opacity: 0.7;
+      opacity: 0.8;
       margin: 0 1px;
     }
 
@@ -445,28 +476,28 @@
 
     .q-idx {
       font-weight: 800;
-      color: var(--c-slate);
+      color: #ffffff;
       font-size: 0.95rem;
       min-width: 20px;
     }
 
     .queue-row.vvip .q-idx {
-      color: var(--c-white);
+      color: #ffffff;
     }
 
     .queue-row.vip .q-idx {
-      color: var(--c-slate);
+      color: #ffffff;
     }
 
     .q-name {
       font-weight: 800;
-      color: var(--c-white);
+      color: #ffffff;
       font-size: 1.05rem;
     }
 
     .q-char {
       font-size: 0.92rem;
-      color: var(--c-slate);
+      color: #ffffff;
       font-weight: 600;
     }
 
@@ -482,9 +513,9 @@
     .q-ticket {
       font-size: 0.92rem;
       font-weight: 900;
-      color: var(--c-white);
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid var(--c-slate);
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       padding: 2px 7px;
       border-radius: 4px;
       white-space: nowrap;
@@ -499,36 +530,40 @@
       border-radius: 3px;
       letter-spacing: 0.5px;
       flex-shrink: 0;
+      color: #ffffff;
     }
 
     .q-badge.vvip {
-      background-color: var(--c-white);
-      color: var(--c-dark);
+      background-color: rgba(255, 255, 255, 0.25);
+      border: 1px solid #ffffff;
+      color: #ffffff;
       font-weight: 900;
       letter-spacing: 0.8px;
     }
 
     .q-badge.vip {
-      background-color: var(--c-slate);
-      color: var(--c-white);
+      background-color: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: #ffffff;
       font-weight: 800;
     }
 
     .q-badge.free {
       background-color: transparent;
-      color: var(--c-slate);
-      border: 1px solid var(--c-slate);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
       font-weight: 700;
     }
 
     .q-badge.saved {
-      background-color: var(--c-light);
-      color: var(--c-dark);
+      background-color: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: #ffffff;
       font-weight: 800;
     }
 
     .empty-queue {
-      color: var(--c-slate);
+      color: #ffffff;
       font-size: 0.85rem;
       text-align: center;
       padding: 24px 0;
@@ -536,7 +571,7 @@
 
     .scroll-hint {
       font-size: 0.68rem;
-      color: var(--c-slate);
+      color: #ffffff;
       font-weight: 700;
     }
   </style>
@@ -610,7 +645,8 @@
       queue: [],
       saved: [],
       announcement: '',
-      overlayListMode: 'queue'
+      overlayListMode: 'queue',
+      tierStatus: { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
     };
 
     // Helper deteksi peran King vs Penantang
@@ -776,11 +812,18 @@
           tiers.forEach(tier => {
             const players = sList.filter(p => ((p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE') === tier.key);
 
+            const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
+            const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
+
             const tierDiv = document.createElement('div');
             tierDiv.className = `tier-section ${tier.cls}`;
             tierDiv.innerHTML = `
               <div class="tier-header ${tier.cls}">
-                <span>${tier.label} (${players.length})</span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span>${tier.label}</span>
+                  <span class="tier-status-tag ${statusClass}">${tStatus}</span>
+                  <span>(${players.length})</span>
+                </div>
                 <span class="th-ticket">TIKET</span>
               </div>
             `;
@@ -853,11 +896,18 @@
               }
             });
 
+            const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
+            const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
+
             const tierDiv = document.createElement('div');
             tierDiv.className = `tier-section ${tier.cls}`;
             tierDiv.innerHTML = `
               <div class="tier-header ${tier.cls}">
-                <span>${tier.label} (${players.length})</span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span>${tier.label}</span>
+                  <span class="tier-status-tag ${statusClass}">${tStatus}</span>
+                  <span>(${players.length})</span>
+                </div>
                 <span class="th-ticket">TIKET</span>
               </div>
             `;

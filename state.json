@@ -22,7 +22,7 @@
       "char": "Madara (Six Paths)",
       "matchesLeft": 5,
       "ws": 0,
-      "type": "VVIP"
+      "type": "VIP"
     },
     {
       "id": "1794255226297",
@@ -82,7 +82,6 @@
     "ws": 1
   },
   "tierStatus": {
-    "VVIP": "OPEN",
     "VIP": "OPEN",
     "FREE": "OPEN"
   }

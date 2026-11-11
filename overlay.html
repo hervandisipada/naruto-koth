@@ -212,14 +212,9 @@
       border-left: 3px solid var(--c-slate);
     }
 
-    .player-slot.vvip {
-      background: rgba(255, 255, 255, 0.1);
-      border-left: 3px solid var(--c-white);
-    }
-
     .player-slot.vip {
-      background: rgba(255, 255, 255, 0.06);
-      border-left: 3px solid var(--c-slate);
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 3px solid var(--c-white);
     }
 
     .player-slot.free {
@@ -232,13 +227,9 @@
       border-left: none;
       border-right: 3px solid var(--c-slate);
     }
-    #slot-p2.vvip {
-      border-left: none;
-      border-right: 3px solid var(--c-white);
-    }
     #slot-p2.vip {
       border-left: none;
-      border-right: 3px solid var(--c-slate);
+      border-right: 3px solid var(--c-white);
     }
     #slot-p2.free {
       border-left: none;
@@ -259,19 +250,12 @@
       color: #ffffff;
     }
 
-    .p-role-tag.vvip {
+    .p-role-tag.vip {
       background-color: rgba(255, 255, 255, 0.25);
       border: 1px solid #ffffff;
       color: #ffffff;
       font-weight: 900;
       letter-spacing: 0.8px;
-    }
-
-    .p-role-tag.vip {
-      background-color: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      color: #ffffff;
-      font-weight: 800;
     }
 
     .p-role-tag.free {
@@ -451,16 +435,10 @@
       text-align: center;
     }
 
-    .tier-header.vvip {
+    .tier-header.vip {
       background: rgba(247, 247, 247, 0.18);
       color: #ffffff;
       border-left: 3px solid #ffffff;
-    }
-
-    .tier-header.vip {
-      background: rgba(255, 255, 255, 0.12);
-      color: #ffffff;
-      border-left: 3px solid rgba(255, 255, 255, 0.7);
     }
 
     .tier-header.free {
@@ -512,14 +490,9 @@
       flex-shrink: 0;
     }
 
-    .queue-row.vvip {
-      border-left-color: var(--c-white);
-      background: rgba(255, 255, 255, 0.09);
-    }
-
     .queue-row.vip {
-      border-left-color: var(--c-slate);
-      background: rgba(255, 255, 255, 0.05);
+      border-left-color: var(--c-white);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .queue-row.free {
@@ -589,10 +562,6 @@
       min-width: 20px;
     }
 
-    .queue-row.vvip .q-idx {
-      color: #ffffff;
-    }
-
     .queue-row.vip .q-idx {
       color: #ffffff;
     }
@@ -641,19 +610,12 @@
       color: #ffffff;
     }
 
-    .q-badge.vvip {
+    .q-badge.vip {
       background-color: rgba(255, 255, 255, 0.25);
       border: 1px solid #ffffff;
       color: #ffffff;
       font-weight: 900;
       letter-spacing: 0.8px;
-    }
-
-    .q-badge.vip {
-      background-color: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      color: #ffffff;
-      font-weight: 800;
     }
 
     .q-badge.free {
@@ -770,7 +732,7 @@
       announcement: '',
       topRecord: { name: '-', char: '-', ws: 0 },
       overlayListMode: 'queue',
-      tierStatus: { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
+      tierStatus: { VIP: 'OPEN', FREE: 'OPEN' }
     };
 
     // Helper deteksi peran King vs Penantang
@@ -796,6 +758,12 @@
     function render(data) {
       if (!data) return;
       state = data;
+      if (state.tierStatus && state.tierStatus.VVIP) {
+        delete state.tierStatus.VVIP;
+      }
+      [state.p1, state.p2, ...(state.queue || []), ...(state.saved || [])].forEach(p => {
+        if (p && p.type === 'VVIP') p.type = 'VIP';
+      });
 
       // Announcement Ticker
       const tickerEl = document.getElementById('overlay-ticker');
@@ -936,16 +904,15 @@
         if (p2Bonus) p2Bonus.style.display = 'none';
       }
 
-      // Render Queue or Saved list with Ticket Count & 3 Vertical Tiers (VVIP, VIP, FREE)
+      // Render Queue or Saved list with Ticket Count & 2 Vertical Tiers (VIP, FREE)
       const isSavedMode = (state.overlayListMode === 'saved');
       const qSectionTitle = document.getElementById('queue-section-title');
       const qContainer = document.getElementById('queue-list');
       const qTotal = document.getElementById('queue-total-count');
 
-      const tierRank = { 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
+      const tierRank = { 'VIP': 1, 'FREE': 2 };
       const tiers = [
-        { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
-        { key: 'VIP', label: 'VIP', cls: 'vip' },
+        { key: 'VIP', label: '⭐ VIP', cls: 'vip' },
         { key: 'FREE', label: 'FREE', cls: 'free' }
       ];
 
@@ -953,8 +920,8 @@
         if (qSectionTitle) qSectionTitle.innerText = 'DAFTAR SAVED';
         const sList = (state.saved || []).slice();
         sList.sort((a, b) => {
-          const rankA = tierRank[a.type] || 3;
-          const rankB = tierRank[b.type] || 3;
+          const rankA = tierRank[a.type] || 2;
+          const rankB = tierRank[b.type] || 2;
           if (rankA !== rankB) return rankA - rankB;
           return 0;
         });
@@ -967,7 +934,7 @@
           qContainer.innerHTML = '';
           let globalSavedIdx = 0;
           tiers.forEach(tier => {
-            const players = sList.filter(p => ((p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE') === tier.key);
+            const players = sList.filter(p => ((p.type === 'VIP') ? 'VIP' : 'FREE') === tier.key);
 
             const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
             const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
@@ -1032,8 +999,8 @@
         if (qSectionTitle) qSectionTitle.innerText = 'ANTREAN LIVE';
         const qList = (state.queue || []).slice();
         qList.sort((a, b) => {
-          const rankA = tierRank[a.type] || 3;
-          const rankB = tierRank[b.type] || 3;
+          const rankA = tierRank[a.type] || 2;
+          const rankB = tierRank[b.type] || 2;
           if (rankA !== rankB) return rankA - rankB;
           return 0;
         });
@@ -1047,7 +1014,7 @@
           tiers.forEach(tier => {
             const players = [];
             qList.forEach((p, idx) => {
-              const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
+              const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
               if (pTier === tier.key) {
                 players.push({ player: p, globalIdx: idx + 1 });
               }

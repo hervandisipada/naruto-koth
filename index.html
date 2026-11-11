@@ -1446,7 +1446,7 @@
       const linkEl = document.getElementById('tiktok-link-display');
       const text = linkEl ? linkEl.innerText : 'http://localhost:8000/overlay.html';
       navigator.clipboard.writeText(text).then(() => {
-        alert('Link Overlay berhasil disalin!\nTempelkan (Paste) ke Browser Source di TikTok Live Studio:\n' + text);
+        alert('Link Overlay berhasil disalin!\nTempelkan (Paste) ke Browser Source di TikTok Live Studio:\n' + text + '\n\nResolusi Rekomendasi di TT Studio:\nLebar: 400 | Tinggi: 720 (atau 420 x 740)');
       }).catch(() => {
         prompt('Salin link ini secara manual:', text);
       });

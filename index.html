@@ -77,11 +77,65 @@
     .view-switcher {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       background-color: var(--c-dark);
       border-bottom: 2px solid var(--c-slate);
       position: sticky;
       top: 0;
       z-index: 100;
+      padding: 0 4px;
+    }
+
+    /* Undo & Redo Action Buttons */
+    .btn-undo-action,
+    .btn-redo-action {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--c-white);
+      border: 1px solid var(--c-slate);
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn-undo-action:not(:disabled),
+    .btn-redo-action:not(:disabled) {
+      background: var(--c-blue);
+      border-color: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.35);
+    }
+
+    .btn-undo-action:not(:disabled):hover,
+    .btn-redo-action:not(:disabled):hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .btn-undo-action:disabled,
+    .btn-redo-action:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+      transform: none;
+    }
+
+    [data-theme="light"] .card-title .btn-undo-action:disabled,
+    [data-theme="light"] .card-title .btn-redo-action:disabled {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--text-muted);
+      border-color: var(--border-color);
     }
 
     .tab-btn {
@@ -414,10 +468,6 @@
     .arena-action-btn:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    }
-      color: var(--text-light);
-      font-size: 0.92rem;
-      padding: 6px 10px;
     }
 
     .player-name {
@@ -850,8 +900,12 @@
     <button class="tab-btn active" onclick="switchTab('admin')">Panel Admin</button>
     <a href="overlay.html" target="_blank" class="tab-btn" style="text-decoration:none; text-align:center;">Overlay
       ↗</a>
+    <div style="display: flex; align-items: center; gap: 6px; margin: 4px 10px;">
+      <button class="btn-undo-action" onclick="undo()" title="Undo perubahan terakhir (Ctrl+Z)" disabled>↩ Undo</button>
+      <button class="btn-redo-action" onclick="redo()" title="Redo perubahan (Ctrl+Y)" disabled>↪ Redo</button>
+    </div>
     <button id="theme-toggle-btn" onclick="toggleTheme()" class="btn btn-sm"
-      style="margin: 0 10px; background: rgba(255,255,255,0.12); color: var(--c-white); border: 1px solid var(--c-slate); font-size: 0.78rem;"
+      style="margin: 4px 10px; background: rgba(255,255,255,0.12); color: var(--c-white); border: 1px solid var(--c-slate); font-size: 0.78rem;"
       title="Ganti mode tema">Tema: Terang</button>
   </div>
 
@@ -878,7 +932,11 @@
       <div class="card full-width">
         <div class="card-title">
           <span>ARENA (1 VS 1)</span>
-          <button class="btn btn-sm btn-danger" onclick="resetArena()">Reset Arena</button>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button class="btn-undo-action" onclick="undo()" title="Undo perubahan terakhir (Ctrl+Z)" disabled>↩ Undo</button>
+            <button class="btn-redo-action" onclick="redo()" title="Redo perubahan (Ctrl+Y)" disabled>↪ Redo</button>
+            <button class="btn btn-sm btn-danger" onclick="resetArena()">Reset Arena</button>
+          </div>
         </div>
 
         <div class="arena-container">
@@ -1471,6 +1529,12 @@
     let streamKey = urlParams.get('room') || urlParams.get('key') || localStorage.getItem('koth_stream_key') || 'hervandisipada';
     const MQTT_TOPIC = `koth/naruto/${streamKey}`;
 
+    // Undo & Redo History System
+    let undoStack = [];
+    let redoStack = [];
+    let lastSavedStateJson = null;
+    const MAX_HISTORY_STACK = 50;
+
     // Load Data & Server Sync
     function loadState() {
       const data = localStorage.getItem('koth_naruto_state');
@@ -1501,6 +1565,7 @@
       }
       syncTopRecordFromAllPlayers();
 
+      lastSavedStateJson = JSON.stringify(state);
       renderAll();
       setupSync();
 
@@ -1518,6 +1583,7 @@
                 state.topRecord = { name: '-', char: '-', ws: 0 };
               }
               syncTopRecordFromAllPlayers();
+              lastSavedStateJson = JSON.stringify(state);
               localStorage.setItem('koth_naruto_state', JSON.stringify(state));
               renderAll();
             }
@@ -1536,14 +1602,27 @@
       saveState();
     }
 
-    function saveState() {
-      localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+    function saveState(isUndoRedo = false) {
+      const currentStateJson = JSON.stringify(state);
+
+      if (!isUndoRedo) {
+        if (lastSavedStateJson && lastSavedStateJson !== currentStateJson) {
+          undoStack.push(lastSavedStateJson);
+          if (undoStack.length > MAX_HISTORY_STACK) {
+            undoStack.shift();
+          }
+          redoStack = []; // Setiap perubahan data baru me-reset redo stack
+        }
+      }
+      lastSavedStateJson = currentStateJson;
+
+      localStorage.setItem('koth_naruto_state', currentStateJson);
       renderAll();
 
       // Cloud MQTT Sync (Real-time across Internet / TikTok Live Studio)
       if (cloudMqttClient && cloudMqttClient.connected) {
         try {
-          cloudMqttClient.publish(MQTT_TOPIC, JSON.stringify(state), { retain: true, qos: 0 });
+          cloudMqttClient.publish(MQTT_TOPIC, currentStateJson, { retain: true, qos: 0 });
         } catch (e) {
           console.warn('MQTT publish error', e);
         }
@@ -1554,9 +1633,111 @@
         fetch('/api/state', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(state)
+          body: currentStateJson
         }).catch(err => console.warn('Local sync server error:', err));
       }
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      const previousStateJson = undoStack.pop();
+      redoStack.push(JSON.stringify(state));
+      if (redoStack.length > MAX_HISTORY_STACK) {
+        redoStack.shift();
+      }
+
+      try {
+        state = JSON.parse(previousStateJson);
+      } catch (e) {
+        console.error('Gagal undo:', e);
+        return;
+      }
+
+      if (!state.tierStatus || typeof state.tierStatus !== 'object') {
+        state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
+      }
+      if (!state.topRecord || typeof state.topRecord !== 'object') {
+        state.topRecord = { name: '-', char: '-', ws: 0 };
+      }
+
+      saveState(true);
+      showToast('↩ Perubahan dibatalkan (Undo)');
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      const nextStateJson = redoStack.pop();
+      undoStack.push(JSON.stringify(state));
+      if (undoStack.length > MAX_HISTORY_STACK) {
+        undoStack.shift();
+      }
+
+      try {
+        state = JSON.parse(nextStateJson);
+      } catch (e) {
+        console.error('Gagal redo:', e);
+        return;
+      }
+
+      if (!state.tierStatus || typeof state.tierStatus !== 'object') {
+        state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
+      }
+      if (!state.topRecord || typeof state.topRecord !== 'object') {
+        state.topRecord = { name: '-', char: '-', ws: 0 };
+      }
+
+      saveState(true);
+      showToast('↪ Perubahan dipulihkan (Redo)');
+    }
+
+    function updateUndoRedoUI() {
+      const canUndo = (undoStack.length > 0);
+      const canRedo = (redoStack.length > 0);
+
+      document.querySelectorAll('.btn-undo-action').forEach(btn => {
+        btn.disabled = !canUndo;
+        btn.title = canUndo ? `Undo perubahan terakhir (${undoStack.length} langkah tersimpan) [Ctrl+Z]` : 'Tidak ada riwayat untuk Undo';
+      });
+
+      document.querySelectorAll('.btn-redo-action').forEach(btn => {
+        btn.disabled = !canRedo;
+        btn.title = canRedo ? `Redo perubahan (${redoStack.length} langkah tersimpan) [Ctrl+Y]` : 'Tidak ada riwayat untuk Redo';
+      });
+    }
+
+    function showToast(message) {
+      let toast = document.getElementById('koth-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'koth-toast';
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 999999;
+          background: #0f172a;
+          color: #ffffff;
+          padding: 10px 18px;
+          border-radius: 8px;
+          font-weight: 800;
+          font-size: 0.92rem;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+          border: 1px solid rgba(255,255,255,0.2);
+          pointer-events: none;
+          opacity: 0;
+          transform: translateY(12px);
+          transition: all 0.22s ease;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.innerText = message;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      if (toast._timer) clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(12px)';
+      }, 2000);
     }
 
     function setupSync() {
@@ -1603,6 +1784,7 @@
               const remoteData = JSON.parse(payload.toString());
               if (JSON.stringify(remoteData) !== JSON.stringify(state)) {
                 state = remoteData;
+                lastSavedStateJson = JSON.stringify(state);
                 localStorage.setItem('koth_naruto_state', JSON.stringify(state));
                 renderAll();
               }
@@ -1629,6 +1811,7 @@
             const data = JSON.parse(e.data);
             if (JSON.stringify(data) !== JSON.stringify(state)) {
               state = data;
+              lastSavedStateJson = JSON.stringify(state);
               localStorage.setItem('koth_naruto_state', JSON.stringify(state));
               renderAll();
             }
@@ -1639,6 +1822,7 @@
           if (e.key === 'koth_naruto_state' && e.newValue) {
             try {
               state = JSON.parse(e.newValue);
+              lastSavedStateJson = JSON.stringify(state);
               renderAll();
             } catch (err) { }
           }
@@ -2368,6 +2552,7 @@
       updateModeButtons();
       renderCharacterDatalist();
       renderTopRecordAdmin();
+      updateUndoRedoUI();
 
       const annInput = document.getElementById('input-announcement');
       if (annInput && state.announcement !== undefined) {
@@ -2930,6 +3115,28 @@
       const btn = document.getElementById('theme-toggle-btn');
       if (btn) btn.innerText = savedTheme === 'dark' ? 'Tema: Gelap' : 'Tema: Terang';
     })();
+
+    // Keyboard Shortcuts: Ctrl+Z untuk Undo, Ctrl+Y / Ctrl+Shift+Z untuk Redo
+    window.addEventListener('keydown', (e) => {
+      const activeEl = document.activeElement;
+      const tag = activeEl ? activeEl.tagName.toLowerCase() : '';
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || (activeEl && activeEl.isContentEditable)) {
+        return; // Jangan cegat saat mengetik di input form
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey) {
+          e.preventDefault();
+          redo();
+        } else {
+          e.preventDefault();
+          undo();
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        redo();
+      }
+    });
 
     // Inisialisasi
     loadState();

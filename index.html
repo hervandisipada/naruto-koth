@@ -1007,7 +1007,7 @@
           <div class="form-row">
             <div class="form-group" style="flex: 1;">
               <label>Tiket *</label>
-              <input type="number" id="input-matches" class="form-control" value="3" min="1" required>
+              <input type="number" id="input-matches" class="form-control" value="1" min="1" required>
             </div>
             <div class="form-group" style="flex: 1;">
               <label>Tier *</label>
@@ -1926,6 +1926,7 @@
       // Reset form
       document.getElementById('input-username').value = '';
       document.getElementById('input-char').value = '';
+      document.getElementById('input-matches').value = '1';
       const picker = document.getElementById('select-char-picker');
       if (picker) picker.value = '';
 

@@ -1910,7 +1910,7 @@
       saveState();
     }
 
-    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (VVIP/VIP/FREE)
+    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (VIP / FREE)
     function moveSavedToQueue(id, overrideType) {
       const index = state.saved.findIndex(p => p.id === id);
       if (index !== -1) {
@@ -1929,7 +1929,7 @@
       }
     }
 
-    // Move Active Queue to Save: MEMPERTAHANKAN TIER (VVIP/VIP/FREE)
+    // Move Active Queue to Save: MEMPERTAHANKAN TIER (VIP / FREE)
     function moveQueueToSave(id) {
       const index = state.queue.findIndex(p => p.id === id);
       if (index !== -1) {
@@ -2332,7 +2332,7 @@
         } else {
           const saveDulu = confirm(`Simpan [ ${loser.name} ] ke tab SAVED?`);
           if (saveDulu) {
-            // PERTAHANKAN TIER: VVIP, VIP, atau FREE tetap melekat!
+            // PERTAHANKAN TIER: VIP atau FREE tetap melekat!
             if (!loser.type || loser.type === 'SAVE') loser.type = 'FREE';
             state.saved.push(loser);
             sortSaved();

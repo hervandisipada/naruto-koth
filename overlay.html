@@ -76,7 +76,7 @@
       border-radius: 6px;
       padding: 4px 8px;
       margin-bottom: 6px;
-      font-size: 0.78rem;
+      font-size: 0.88rem;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -92,7 +92,7 @@
     .ticker-label {
       color: var(--c-slate);
       font-weight: 800;
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       white-space: nowrap;
     }
 
@@ -145,10 +145,10 @@
 
     /* ROLE BADGE = TIER BADGE IN ARENA */
     .p-role-tag {
-      font-size: 0.65rem;
+      font-size: 0.76rem;
       font-weight: 800;
       text-transform: uppercase;
-      padding: 2px 6px;
+      padding: 3px 7px;
       border-radius: 3px;
       display: inline-block;
       margin-bottom: 2px;
@@ -180,7 +180,7 @@
     /* LARGE PLAYER NAME */
     .p-name {
       font-weight: 800;
-      font-size: 1.22rem;
+      font-size: 1.35rem;
       color: var(--c-white);
       white-space: nowrap;
       overflow: hidden;
@@ -191,7 +191,7 @@
 
     /* LARGE CHARACTER NAME */
     .p-char {
-      font-size: 0.85rem;
+      font-size: 0.98rem;
       color: var(--c-slate);
       font-weight: 600;
       white-space: nowrap;
@@ -213,7 +213,7 @@
     /* PROMINENT WIN STREAK */
     .p-ws {
       font-weight: 800;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       color: var(--c-white);
       display: flex;
       align-items: center;
@@ -221,7 +221,7 @@
     }
 
     .free-streak {
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       background: var(--c-light);
       color: var(--c-dark);
       padding: 1px 5px;
@@ -231,7 +231,7 @@
     }
 
     .bonus-badge {
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       background: var(--c-slate);
       color: var(--c-white);
       padding: 1px 5px;
@@ -241,7 +241,7 @@
     }
 
     .p-ticket {
-      font-size: 0.8rem;
+      font-size: 0.92rem;
       color: var(--c-light);
       font-weight: 600;
     }
@@ -254,7 +254,7 @@
 
     .vs-tag {
       text-align: center;
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       font-weight: 900;
       color: var(--c-slate);
       letter-spacing: 1px;
@@ -275,7 +275,7 @@
     }
 
     .queue-title {
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       font-weight: 800;
       color: var(--c-slate);
       text-transform: uppercase;
@@ -326,12 +326,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 3px 6px;
+      padding: 4px 7px;
       border-radius: 4px;
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       font-weight: 900;
       letter-spacing: 0.8px;
       text-transform: uppercase;
+    }
+
+    .th-ticket {
+      font-size: 0.76rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: var(--c-white);
+      margin-right: 2px;
+      min-width: 32px;
+      text-align: center;
     }
 
     .tier-header.vvip {
@@ -434,10 +444,10 @@
     }
 
     .q-idx {
-      font-weight: 700;
+      font-weight: 800;
       color: var(--c-slate);
-      font-size: 0.82rem;
-      min-width: 18px;
+      font-size: 0.95rem;
+      min-width: 20px;
     }
 
     .queue-row.vvip .q-idx {
@@ -449,13 +459,13 @@
     }
 
     .q-name {
-      font-weight: 700;
+      font-weight: 800;
       color: var(--c-white);
-      font-size: 0.92rem;
+      font-size: 1.05rem;
     }
 
     .q-char {
-      font-size: 0.82rem;
+      font-size: 0.92rem;
       color: var(--c-slate);
       font-weight: 600;
     }
@@ -463,27 +473,29 @@
     .q-right {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       flex-shrink: 0;
       margin-left: 8px;
     }
 
     /* USER TICKET DISPLAY IN QUEUE */
     .q-ticket {
-      font-size: 0.78rem;
-      font-weight: 700;
+      font-size: 0.92rem;
+      font-weight: 900;
       color: var(--c-white);
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid var(--c-slate);
-      padding: 2px 6px;
+      padding: 2px 7px;
       border-radius: 4px;
       white-space: nowrap;
+      min-width: 28px;
+      text-align: center;
     }
 
     .q-badge {
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       font-weight: 800;
-      padding: 2px 5px;
+      padding: 2px 6px;
       border-radius: 3px;
       letter-spacing: 0.5px;
       flex-shrink: 0;
@@ -768,8 +780,8 @@
             tierDiv.className = `tier-section ${tier.cls}`;
             tierDiv.innerHTML = `
               <div class="tier-header ${tier.cls}">
-                <span>${tier.label}</span>
-                <span>${players.length}</span>
+                <span>${tier.label} (${players.length})</span>
+                <span class="th-ticket">TIKET</span>
               </div>
             `;
 
@@ -793,8 +805,8 @@
                     </div>
                   </div>
                   <div class="q-right">
-                    <span class="q-ticket">${p.matchesLeft} Tiket</span>
                     <span class="q-badge ${tier.cls}">${p.type || 'FREE'}</span>
+                    <span class="q-ticket">${p.matchesLeft}</span>
                   </div>
                 `;
                 tierDiv.appendChild(row);
@@ -845,8 +857,8 @@
             tierDiv.className = `tier-section ${tier.cls}`;
             tierDiv.innerHTML = `
               <div class="tier-header ${tier.cls}">
-                <span>${tier.label}</span>
-                <span>${players.length}</span>
+                <span>${tier.label} (${players.length})</span>
+                <span class="th-ticket">TIKET</span>
               </div>
             `;
 
@@ -869,8 +881,8 @@
                     </div>
                   </div>
                   <div class="q-right">
-                    <span class="q-ticket">${p.matchesLeft} Tiket</span>
                     <span class="q-badge ${tier.cls}">${p.type || 'FREE'}</span>
+                    <span class="q-ticket">${p.matchesLeft}</span>
                   </div>
                 `;
                 tierDiv.appendChild(row);
@@ -1003,6 +1015,7 @@
     }
 
     // Initialize
+    loadFromLocalStorage();
     connectCloudMQTT();
     connectSSE();
   </script>

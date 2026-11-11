@@ -64,6 +64,7 @@
       background-color: var(--bg-dark);
       color: var(--text-light);
       min-height: 100vh;
+      font-size: 15px;
       font-family: 'Consolas', 'Courier New', Courier, monospace;
       transition: background-color 0.2s ease, color 0.2s ease;
     }
@@ -135,7 +136,7 @@
     }
 
     .card-title {
-      font-size: 1.15rem;
+      font-size: 1.25rem;
       font-weight: 800;
       margin-bottom: 14px;
       display: flex;
@@ -154,10 +155,10 @@
 
     .form-group label {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.92rem;
       color: var(--text-muted);
       margin-bottom: 4px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .form-control {
@@ -167,7 +168,7 @@
       border: 1px solid var(--border-strong);
       background-color: var(--panel-bg);
       color: var(--text-light);
-      font-size: 0.92rem;
+      font-size: 1rem;
       transition: border-color 0.2s ease;
     }
 
@@ -186,14 +187,14 @@
       padding: 8px 14px;
       border: none;
       border-radius: 6px;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
       transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      font-size: 0.88rem;
+      font-size: 0.95rem;
     }
 
     .btn-primary {
@@ -232,7 +233,7 @@
 
     .btn-sm {
       padding: 5px 10px;
-      font-size: 0.8rem;
+      font-size: 0.88rem;
     }
     .btn-block {
       width: 100%;
@@ -281,9 +282,9 @@
     }
 
     .role-badge {
-      font-size: 0.75rem;
+      font-size: 0.82rem;
       font-weight: 800;
-      padding: 3px 8px;
+      padding: 4px 9px;
       border-radius: 4px;
       text-transform: uppercase;
       display: inline-block;
@@ -316,43 +317,76 @@
       font-weight: 700;
     }
 
-    /* DROPDOWN TIER & NOMOR URUTAN */
-    .tier-select, .pos-select {
-      padding: 3px 6px;
-      font-size: 0.74rem;
-      font-weight: 800;
-      border-radius: 4px;
+    /* DROPDOWN ICON BUTTONS (URUTAN # & ROLE 👤) */
+    .dropdown-icon-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 33px;
+    }
+    .btn-select-face {
+      font-size: 0.95rem;
+      font-weight: 900;
+      padding: 6px 14px;
+      min-width: 44px;
+      height: 33px;
+      border-radius: 6px;
       background: var(--panel-subtle);
       color: var(--text-light);
       border: 1px solid var(--border-color);
       cursor: pointer;
-      outline: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
     }
-    .pos-select {
-      font-weight: 900;
-      min-width: 44px;
-      text-align: center;
+    .dropdown-icon-btn:hover .btn-select-face,
+    .dropdown-icon-btn:focus-within .btn-select-face {
+      border-color: var(--border-strong);
+      background: var(--border-color);
+    }
+    .dropdown-icon-btn select.icon-select-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+      -webkit-appearance: menulist;
+      margin: 0;
+      padding: 0;
+    }
+    .dropdown-icon-btn select.icon-select-overlay option {
+      background-color: var(--panel-bg);
+      color: var(--text-light);
+      font-size: 0.92rem;
+      padding: 6px 10px;
     }
 
     .player-name {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 800;
       color: var(--text-light);
       word-break: break-word;
     }
 
     .player-char {
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: var(--c-slate);
       margin-top: 2px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .player-stats {
       margin-top: 10px;
       display: flex;
       gap: 12px;
-      font-size: 0.85rem;
+      font-size: 0.92rem;
       color: var(--text-muted);
     }
 
@@ -410,25 +444,37 @@
     }
 
     .item-name {
-      font-weight: 700;
-      font-size: 0.95rem;
+      font-weight: 800;
+      font-size: 1.05rem;
       color: var(--text-light);
     }
 
     .item-char {
-      font-size: 0.8rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
     }
 
     .item-meta {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       margin-right: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .item-meta .btn {
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      min-width: 44px;
+      height: 33px;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .badge {
-      font-size: 0.7rem;
+      font-size: 0.76rem;
       padding: 2px 6px;
       border-radius: 4px;
       font-weight: bold;
@@ -696,14 +742,14 @@
               <span>WS: <span id="p1-ws" class="stat-val">0</span> <span id="p1-bonus-badge" class="badge" style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.72rem; border:1px solid var(--c-slate);">+1 Tiket</span></span>
               <span style="cursor:pointer;" onclick="promptEditTickets('p1')" title="Klik untuk edit tiket">Tiket: <span id="p1-matches" class="stat-val">0</span></span>
             </div>
-            <div id="p1-btn-group" style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
-              <button class="btn btn-sm btn-success" onclick="triggerWin('p1')">P1 WIN</button>
-              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p1')">Char</button>
-              <button class="btn btn-sm btn-danger" id="p1-demote-btn" onclick="removeSlotToQueue('p1')" title="Kembalikan ke antrean">Turunkan</button>
+            <div id="p1-btn-group" style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="btn btn-sm btn-success" onclick="triggerWin('p1')" title="Pemenang P1">W</button>
+              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p1')" title="Ubah Karakter">🎮</button>
+              <button class="btn btn-sm btn-danger" id="p1-demote-btn" onclick="removeSlotToQueue('p1')" title="Kembalikan / Turunkan ke antrean">⬇</button>
             </div>
-            <div id="p1-empty-notice" style="display:none; margin-top: 10px; font-size: 0.82rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <div id="p1-empty-notice" style="display:none; margin-top: 10px; font-size: 0.88rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
               <div id="p1-empty-text">Slot P1 Kosong.</div>
-              <button id="p1-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p1')">Naikkan #1 ke P1</button>
+              <button id="p1-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p1')">⬆ #1 ke P1</button>
             </div>
           </div>
 
@@ -715,17 +761,17 @@
             <div id="p2-name" class="player-name">Kosong</div>
             <div id="p2-char" class="player-char">-</div>
             <div class="player-stats">
-              <span>WS: <span id="p2-ws" class="stat-val">0</span> <span id="p2-bonus-badge" class="badge" style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.72rem; border:1px solid var(--c-slate);">+1 Tiket</span></span>
+              <span>WS: <span id="p2-ws" class="stat-val">0</span> <span id="p2-bonus-badge" class="badge" style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.75rem; border:1px solid var(--c-slate);">+1 Tiket</span></span>
               <span style="cursor:pointer;" onclick="promptEditTickets('p2')" title="Klik untuk edit tiket">Tiket: <span id="p2-matches" class="stat-val">0</span></span>
             </div>
-            <div id="p2-btn-group" style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
-              <button class="btn btn-sm btn-success" onclick="triggerWin('p2')">P2 WIN</button>
-              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p2')">Char</button>
-              <button class="btn btn-sm btn-danger" id="p2-demote-btn" onclick="removeSlotToQueue('p2')" title="Kembalikan ke antrean">Turunkan</button>
+            <div id="p2-btn-group" style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="btn btn-sm btn-success" onclick="triggerWin('p2')" title="Pemenang P2">W</button>
+              <button class="btn btn-sm btn-blue" onclick="promptEditChar('p2')" title="Ubah Karakter">🎮</button>
+              <button class="btn btn-sm btn-danger" id="p2-demote-btn" onclick="removeSlotToQueue('p2')" title="Kembalikan / Turunkan ke antrean">⬇</button>
             </div>
-            <div id="p2-empty-notice" style="display:none; margin-top: 10px; font-size: 0.82rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <div id="p2-empty-notice" style="display:none; margin-top: 10px; font-size: 0.88rem; color: var(--text-muted); background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
               <div id="p2-empty-text">Slot P2 Kosong.</div>
-              <button id="p2-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p2')">Naikkan #1 ke P2</button>
+              <button id="p2-quick-btn" class="btn btn-sm btn-success btn-block" style="margin-top: 6px;" onclick="quickAssignSlot('p2')">⬆ #1 ke P2</button>
             </div>
           </div>
         </div>
@@ -1200,6 +1246,20 @@
 
       renderAll();
       setupSync();
+
+      // Initial GET from Local Python Server if running locally
+      if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('github.io')) {
+        fetch('/api/state')
+          .then(res => res.json())
+          .then(serverState => {
+            if (serverState && typeof serverState === 'object' && JSON.stringify(serverState) !== JSON.stringify(state)) {
+              state = serverState;
+              localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+              renderAll();
+            }
+          })
+          .catch(() => {});
+      }
     }
 
     function saveState() {
@@ -1215,8 +1275,8 @@
         }
       }
 
-      // Local Python Server Sync (If running via start.bat)
-      if (window.location.protocol.startsWith('http') && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.'))) {
+      // Local Python Server Sync (If running via start.bat / local server)
+      if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('github.io')) {
         fetch('/api/state', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1988,7 +2048,7 @@
           if (p1QuickBtn) {
             if (state.queue.length > 0) {
               p1QuickBtn.style.display = 'block';
-              p1QuickBtn.innerText = `Naikkan Antrean #1 (${state.queue[0].name}) ke P1`;
+              p1QuickBtn.innerHTML = `⬆ #1 (${escapeHtml(state.queue[0].name)}) ke P1`;
             } else {
               p1QuickBtn.style.display = 'none';
             }
@@ -2061,7 +2121,7 @@
           if (p2QuickBtn) {
             if (state.queue.length > 0) {
               p2QuickBtn.style.display = 'block';
-              p2QuickBtn.innerText = `Naikkan Antrean #1 (${state.queue[0].name}) ke P2`;
+              p2QuickBtn.innerHTML = `⬆ #1 (${escapeHtml(state.queue[0].name)}) ke P2`;
             } else {
               p2QuickBtn.style.display = 'none';
             }
@@ -2120,15 +2180,16 @@
             const posInTier = rankInTier + 1;
             const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
 
-            let posOptions = '';
+            let posOptions = '<option value="" disabled selected style="display:none;">Pilih Posisi</option>';
             for (let i = 1; i <= totalInTier; i++) {
-              posOptions += `<option value="${i}" ${i === posInTier ? 'selected' : ''}>#${i}</option>`;
+              posOptions += `<option value="${i}">#${i}${i === posInTier ? ' (Saat ini)' : ''}</option>`;
             }
 
             const tierOptions = `
-              <option value="VVIP" ${pTier === 'VVIP' ? 'selected' : ''}>VVIP</option>
-              <option value="VIP" ${pTier === 'VIP' ? 'selected' : ''}>VIP</option>
-              <option value="FREE" ${pTier === 'FREE' ? 'selected' : ''}>FREE</option>
+              <option value="" disabled selected style="display:none;">Pilih Role</option>
+              <option value="VVIP">⭐ VVIP${pTier === 'VVIP' ? ' (Saat ini)' : ''}</option>
+              <option value="VIP">VIP${pTier === 'VIP' ? ' (Saat ini)' : ''}</option>
+              <option value="FREE">FREE${pTier === 'FREE' ? ' (Saat ini)' : ''}</option>
             `;
 
             const item = document.createElement('div');
@@ -2137,13 +2198,13 @@
             let arenaBtn = '';
             if (!state.p1 && !state.p2) {
               arenaBtn = `
-                <button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')">P1</button>
-                <button class="btn btn-sm btn-primary" onclick="assignToArena('${p.id}', 'p2')">P2</button>
+                <button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')" title="Naikkan ke P1">⬆ P1</button>
+                <button class="btn btn-sm btn-primary" onclick="assignToArena('${p.id}', 'p2')" title="Naikkan ke P2">⬆ P2</button>
               `;
             } else if (!state.p1 && state.p2) {
-              arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')">P1</button>`;
+              arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')" title="Naikkan ke P1">⬆ P1</button>`;
             } else if (state.p1 && !state.p2) {
-              arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p2')">P2</button>`;
+              arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p2')" title="Naikkan ke P2">⬆ P2</button>`;
             }
 
             item.innerHTML = `
@@ -2151,17 +2212,23 @@
                 <div class="item-name">#${globalIdx} ${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span></div>
                 <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft}</b></div>
               </div>
-              <div class="item-meta" style="display:flex; gap:5px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
+              <div class="item-meta">
                 ${arenaBtn}
-                <select class="pos-select" title="Ubah urutan posisi dalam tier ini" onchange="reorderPlayerWithinTier('${p.id}', 'queue', parseInt(this.value))">
-                  ${posOptions}
-                </select>
-                <select class="tier-select" title="Ganti Tier" onchange="changePlayerTier('${p.id}', 'queue', this.value)">
-                  ${tierOptions}
-                </select>
-                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${originalIdx}])">Char</button>
-                <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')">Save</button>
-                <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')">Hapus</button>
+                <div class="dropdown-icon-btn" title="Ubah Posisi Urutan (#${posInTier})">
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">#</button>
+                  <select class="icon-select-overlay" onchange="reorderPlayerWithinTier('${p.id}', 'queue', parseInt(this.value))">
+                    ${posOptions}
+                  </select>
+                </div>
+                <div class="dropdown-icon-btn" title="Ganti Role (${pTier})">
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">👤</button>
+                  <select class="icon-select-overlay" onchange="changePlayerTier('${p.id}', 'queue', this.value)">
+                    ${tierOptions}
+                  </select>
+                </div>
+                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${originalIdx}])" title="Ubah Karakter">🎮</button>
+                <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')" title="Simpan ke Saved">💾</button>
+                <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')" title="Hapus Pemain">🗑</button>
               </div>
             `;
             tierSec.appendChild(item);
@@ -2222,15 +2289,16 @@
             const posInTier = rankInTier + 1;
             const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
 
-            let posOptions = '';
+            let posOptions = '<option value="" disabled selected style="display:none;">Pilih Posisi</option>';
             for (let i = 1; i <= totalInTier; i++) {
-              posOptions += `<option value="${i}" ${i === posInTier ? 'selected' : ''}>#${i}</option>`;
+              posOptions += `<option value="${i}">#${i}${i === posInTier ? ' (Saat ini)' : ''}</option>`;
             }
 
             const tierOptions = `
-              <option value="VVIP" ${pTier === 'VVIP' ? 'selected' : ''}>VVIP</option>
-              <option value="VIP" ${pTier === 'VIP' ? 'selected' : ''}>VIP</option>
-              <option value="FREE" ${pTier === 'FREE' ? 'selected' : ''}>FREE</option>
+              <option value="" disabled selected style="display:none;">Pilih Role</option>
+              <option value="VVIP">⭐ VVIP${pTier === 'VVIP' ? ' (Saat ini)' : ''}</option>
+              <option value="VIP">VIP${pTier === 'VIP' ? ' (Saat ini)' : ''}</option>
+              <option value="FREE">FREE${pTier === 'FREE' ? ' (Saat ini)' : ''}</option>
             `;
 
             const item = document.createElement('div');
@@ -2240,16 +2308,22 @@
                 <div class="item-name">${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span></div>
                 <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft}</b></div>
               </div>
-              <div class="item-meta" style="display:flex; gap:5px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
-                <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}')">+ Antrean</button>
-                <select class="pos-select" title="Ubah urutan posisi dalam tier ini" onchange="reorderPlayerWithinTier('${p.id}', 'saved', parseInt(this.value))">
-                  ${posOptions}
-                </select>
-                <select class="tier-select" title="Ganti Tier" onchange="changePlayerTier('${p.id}', 'saved', this.value)">
-                  ${tierOptions}
-                </select>
-                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${originalIdx}])">Char</button>
-                <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')">Hapus</button>
+              <div class="item-meta">
+                <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}')" title="Naikkan ke Antrean">⬆</button>
+                <div class="dropdown-icon-btn" title="Ubah Posisi Urutan (#${posInTier})">
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">#</button>
+                  <select class="icon-select-overlay" onchange="reorderPlayerWithinTier('${p.id}', 'saved', parseInt(this.value))">
+                    ${posOptions}
+                  </select>
+                </div>
+                <div class="dropdown-icon-btn" title="Ganti Role (${pTier})">
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">👤</button>
+                  <select class="icon-select-overlay" onchange="changePlayerTier('${p.id}', 'saved', this.value)">
+                    ${tierOptions}
+                  </select>
+                </div>
+                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${originalIdx}])" title="Ubah Karakter">🎮</button>
+                <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')" title="Hapus Pemain">🗑</button>
               </div>
             `;
             tierSec.appendChild(item);
@@ -2338,8 +2412,8 @@
           if (players.length > 0) {
             const tierHeader = document.createElement('div');
             tierHeader.className = `tier-header ${tier.cls}`;
-            tierHeader.style.cssText = 'margin-top:6px; margin-bottom:3px; padding:2px 6px; font-size:0.7rem;';
-            tierHeader.innerHTML = `<span>${tier.label}</span><span>${players.length}</span>`;
+            tierHeader.style.cssText = 'margin-top:6px; margin-bottom:3px; padding:3px 8px; font-size:0.78rem; font-weight:900;';
+            tierHeader.innerHTML = `<span>${tier.label} (${players.length})</span><span style="letter-spacing:0.8px;">TIKET</span>`;
             qContainer.appendChild(tierHeader);
 
             players.slice(0, 4).forEach(({ player: p, globalIdx }) => {
@@ -2349,8 +2423,8 @@
               qEl.innerHTML = `
                 <span style="font-weight:700;">${numPrefix}${escapeHtml(p.name)} | <span style="font-weight:400; color:var(--c-slate);">${escapeHtml(formatChar(p.char))}</span></span>
                 <span style="display:flex; gap:6px; align-items:center;">
-                  <span style="font-size:0.75rem; color:var(--c-white); background:rgba(255,255,255,0.12); padding:1px 5px; border-radius:3px; border:1px solid var(--c-slate);">${p.matchesLeft} Tiket</span>
                   <span class="badge badge-${tier.cls}">${p.type || 'FREE'}</span>
+                  <span style="font-size:0.85rem; font-weight:900; color:var(--c-white); background:rgba(255,255,255,0.12); padding:1px 6px; border-radius:3px; border:1px solid var(--c-slate); min-width:28px; text-align:center;">${p.matchesLeft}</span>
                 </span>
               `;
               qContainer.appendChild(qEl);

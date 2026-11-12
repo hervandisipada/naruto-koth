@@ -467,7 +467,6 @@
       overflow-y: auto;
       flex: 1;
       padding-right: 2px;
-      scroll-behavior: smooth;
     }
 
     .queue-list::-webkit-scrollbar {
@@ -628,16 +627,9 @@
       align-items: center;
       gap: 5px;
       white-space: nowrap;
-      overflow-x: auto;
-      overflow-y: hidden;
+      overflow: hidden;
       flex: 1;
       min-width: 0;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-
-    .q-left::-webkit-scrollbar {
-      display: none;
     }
 
     .q-text-wrap {
@@ -645,6 +637,7 @@
       align-items: center;
       gap: 5px;
       white-space: nowrap;
+      flex-shrink: 0;
       will-change: transform;
     }
 
@@ -889,6 +882,43 @@
       return c;
     }
 
+    function applyMarquee(wrap, container) {
+      if (!wrap || !container) return;
+      if (wrap._marqueeAnim) {
+        try { wrap._marqueeAnim.cancel(); } catch (e) { }
+        wrap._marqueeAnim = null;
+      }
+      wrap.style.transform = 'none';
+
+      const diff = wrap.scrollWidth - container.clientWidth;
+      if (diff <= 3) return; // Tidak overflow, tidak perlu scroll
+
+      const dist = -(diff + 16);
+      // Durasi berjalan: minimum 3 detik, kecepatan ~35px/s
+      const walkDuration = Math.max(3000, Math.min(8000, (diff / 35) * 1000));
+      const totalDuration = 3000 + walkDuration + 3000;
+
+      const p1 = 3000 / totalDuration; // tahan 3 detik di kiri
+      const p2 = (3000 + walkDuration) / totalDuration; // sampai di ujung kanan
+
+      try {
+        wrap._marqueeAnim = wrap.animate([
+          { transform: 'translateX(0px)', offset: 0 },
+          { transform: 'translateX(0px)', offset: p1 },
+          { transform: `translateX(${dist}px)`, offset: p2 },
+          { transform: `translateX(${dist}px)`, offset: 0.999 },
+          { transform: 'translateX(0px)', offset: 1.0 }
+        ], {
+          duration: totalDuration,
+          iterations: Infinity,
+          easing: 'linear'
+        });
+      } catch (err) {
+        wrap.style.setProperty('--marquee-dist', `${dist}px`);
+        wrap.classList.add('marquee-active');
+      }
+    }
+
     function render(data) {
       if (!data) return;
       state = data;
@@ -900,16 +930,6 @@
       if (state.announcement && state.announcement.trim()) {
         tickerText.innerText = state.announcement.trim();
         tickerEl.style.display = 'flex';
-        // Marquee scroll untuk ticker jika teks panjang
-        tickerText.classList.remove('marquee-active');
-        tickerText.style.removeProperty('--marquee-dist');
-        requestAnimationFrame(() => {
-          if (tickerWrap && tickerText.scrollWidth > tickerWrap.clientWidth) {
-            const diff = tickerText.scrollWidth - tickerWrap.clientWidth;
-            tickerText.style.setProperty('--marquee-dist', `-${diff + 16}px`);
-            tickerText.classList.add('marquee-active');
-          }
-        });
       } else {
         tickerEl.style.display = 'none';
       }
@@ -928,18 +948,6 @@
       if (recChar) recChar.innerText = formatChar(topRec.char);
       const wsCount = (topRec.ws !== undefined && topRec.ws !== null) ? topRec.ws : 0;
       if (recWs) recWs.innerText = `${wsCount} WS`;
-
-      if (recWrap && recContent) {
-        recContent.classList.remove('marquee-active');
-        recContent.style.removeProperty('--marquee-dist');
-        requestAnimationFrame(() => {
-          if (recContent.scrollWidth > recWrap.clientWidth) {
-            const diff = recContent.scrollWidth - recWrap.clientWidth;
-            recContent.style.setProperty('--marquee-dist', `-${diff + 12}px`);
-            recContent.classList.add('marquee-active');
-          }
-        });
-      }
 
       // Slot 1 (P1) - Menggunakan Label Tier (Bukan King/Penantang)
       const slot1 = document.getElementById('slot-p1');
@@ -1116,18 +1124,6 @@
 
             qContainer.appendChild(tierDiv);
           });
-
-          // Horizontal scroll animation jika teks panjang
-          document.querySelectorAll('.q-left').forEach(el => {
-            const wrap = el.querySelector('.q-text-wrap');
-            if (wrap && el.scrollWidth > el.clientWidth) {
-              const diff = el.scrollWidth - el.clientWidth;
-              wrap.style.setProperty('--marquee-dist', `-${diff + 14}px`);
-              wrap.classList.add('marquee-active');
-            }
-          });
-
-          startSmartAutoScroll();
         }
       } else {
         if (qSectionTitle) qSectionTitle.innerText = 'ANTREAN LIVE';
@@ -1199,20 +1195,34 @@
 
             qContainer.appendChild(tierDiv);
           });
-
-          // Horizontal scroll animation jika teks panjang
-          document.querySelectorAll('.q-left').forEach(el => {
-            const wrap = el.querySelector('.q-text-wrap');
-            if (wrap && el.scrollWidth > el.clientWidth) {
-              const diff = el.scrollWidth - el.clientWidth;
-              wrap.style.setProperty('--marquee-dist', `-${diff + 14}px`);
-              wrap.classList.add('marquee-active');
-            }
-          });
-
-          startSmartAutoScroll();
         }
       }
+
+      // Marquee & auto-scroll triggers after DOM paint
+      requestAnimationFrame(() => {
+        // TOP WS Marquee
+        const recWrap = document.querySelector('.record-marquee-wrap');
+        const recContent = document.getElementById('record-text');
+        if (recWrap && recContent) {
+          applyMarquee(recContent, recWrap);
+        }
+
+        // Ticker Marquee
+        if (tickerWrap && tickerText && state.announcement && state.announcement.trim()) {
+          applyMarquee(tickerText, tickerWrap);
+        }
+
+        // Queue Items Marquee
+        document.querySelectorAll('.q-left').forEach(el => {
+          const wrap = el.querySelector('.q-text-wrap');
+          if (wrap) {
+            applyMarquee(wrap, el);
+          }
+        });
+
+        // Start vertical scroll
+        startSmartAutoScroll();
+      });
     }
 
     function escapeHtml(str) {
@@ -1230,42 +1240,46 @@
 
       clearInterval(autoScrollTimer);
 
-      let stateMode = 'scrolling'; // 'scrolling', 'paused_at_bottom', 'paused_at_top'
-      let pauseTicks = 60; // 3 detik awal di posisi atas
+      let stateMode = 'paused_at_top'; // 'paused_at_top', 'scrolling', 'paused_at_bottom'
+      let pauseTicks = 60; // 3 detik awal di posisi atas (60 * 50ms = 3000ms)
+      let currentScrollY = container.scrollTop || 0;
 
       autoScrollTimer = setInterval(() => {
         if (isUserInteracting) return;
         const maxScroll = container.scrollHeight - container.clientHeight;
-        if (maxScroll <= 8) return;
+        if (maxScroll <= 4) return;
 
         if (pauseTicks > 0) {
           pauseTicks--;
           if (pauseTicks === 0) {
-            if (stateMode === 'paused_at_bottom') {
-              // LANGSUNG JUMP KE ATAS! BUKAN SCROLL KE ATAS!
+            if (stateMode === 'paused_at_top') {
+              stateMode = 'scrolling';
+            } else if (stateMode === 'paused_at_bottom') {
+              // LANGSUNG JUMP KE PALING ATAS! (bukan scroll balik)
+              currentScrollY = 0;
               container.scrollTop = 0;
               stateMode = 'paused_at_top';
-              pauseTicks = 60; // Berhenti 3 detik di paling atas
-            } else if (stateMode === 'paused_at_top') {
-              stateMode = 'scrolling';
+              pauseTicks = 60; // Tahan 3 detik di paling atas
             }
           }
           return;
         }
 
         if (stateMode === 'scrolling') {
-          container.scrollTop += 1;
-          if (container.scrollTop >= maxScroll - 2) {
+          currentScrollY += 1;
+          container.scrollTop = Math.round(currentScrollY);
+
+          if (container.scrollTop >= maxScroll - 1 || currentScrollY >= maxScroll) {
             stateMode = 'paused_at_bottom';
-            pauseTicks = 60; // Berhenti 3 detik di bawah (60 * 50ms = 3000ms = 3 detik)
+            pauseTicks = 60; // Tahan 3 detik di bawah
           }
         }
       }, 50);
 
       container.onmouseenter = () => { isUserInteracting = true; };
-      container.onmouseleave = () => { isUserInteracting = false; };
+      container.onmouseleave = () => { isUserInteracting = false; currentScrollY = container.scrollTop; };
       container.ontouchstart = () => { isUserInteracting = true; };
-      container.ontouchend = () => { setTimeout(() => { isUserInteracting = false; }, 2000); };
+      container.ontouchend = () => { setTimeout(() => { isUserInteracting = false; currentScrollY = container.scrollTop; }, 2000); };
     }
 
     // Connect Local SSE

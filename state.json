@@ -64,7 +64,8 @@
       "char": "Gggg",
       "matchesLeft": 1,
       "ws": 0,
-      "type": "FREE"
+      "type": "FREE",
+      "savedAt": 1794249179429
     },
     {
       "id": "1794255269035",
@@ -72,7 +73,8 @@
       "char": "Hhhh",
       "matchesLeft": 66,
       "ws": 0,
-      "type": "VIP"
+      "type": "VIP",
+      "savedAt": 1794255269035
     }
   ],
   "overlayListMode": "saved",

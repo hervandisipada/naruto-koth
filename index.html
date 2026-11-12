@@ -1649,7 +1649,21 @@
       fixP(st.p1);
       fixP(st.p2);
       if (Array.isArray(st.queue)) st.queue.forEach(fixP);
-      if (Array.isArray(st.saved)) st.saved.forEach(fixP);
+      if (Array.isArray(st.saved)) {
+        st.saved.forEach(p => {
+          fixP(p);
+          if (!p.savedAt) {
+            const numId = Number(p.id);
+            if (!isNaN(numId) && numId > 1600000000000 && numId < 2500000000000) {
+              p.savedAt = numId;
+              changed = true;
+            } else {
+              p.savedAt = Date.now();
+              changed = true;
+            }
+          }
+        });
+      }
 
       if (!st.tierStatus || typeof st.tierStatus !== 'object') {
         st.tierStatus = { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
@@ -1971,6 +1985,28 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // Helper Format Durasi Saved
+    function formatSavedDuration(savedAt) {
+      if (!savedAt) return '0m';
+      const now = Date.now();
+      const diffMs = Math.max(0, now - Number(savedAt));
+      const totalSec = Math.floor(diffMs / 1000);
+      const totalMin = Math.floor(totalSec / 60);
+      const hours = Math.floor(totalMin / 60);
+      const days = Math.floor(hours / 24);
+
+      if (days > 0) {
+        return `${days}h ${hours % 24}j`;
+      }
+      if (hours > 0) {
+        return `${hours}j ${totalMin % 60}m`;
+      }
+      if (totalMin > 0) {
+        return `${totalMin}m`;
+      }
+      return `${totalSec}d`;
+    }
+
     // Rank Tier Prioritas: FAST / VVIP (1) -> VIP (2) -> FREE (3)
     const tierRank = { 'FAST': 1, 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
 
@@ -2025,6 +2061,7 @@
       const newPlayer = { id: Date.now().toString(), name, char, matchesLeft, ws: 0, type };
 
       if (target === 'saved') {
+        newPlayer.savedAt = Date.now();
         state.saved.push(newPlayer);
         sortSaved();
       } else {
@@ -2043,9 +2080,9 @@
       saveState();
     }
 
-    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (VVIP / VIP / FREE)
+    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (FAST / VIP / FREE)
     function moveSavedToQueue(id, overrideType) {
-      const index = state.saved.findIndex(p => p.id === id);
+      const index = state.saved.findIndex(p => String(p.id) === String(id));
       if (index !== -1) {
         const player = state.saved[index];
         if (!confirm(`Naikkan [ ${player.name} ] (${player.type}) dari Saved ke Antrean Aktif?`)) return;
@@ -2055,21 +2092,22 @@
         } else if (!player.type || player.type === 'SAVE') {
           player.type = 'FREE';
         }
+        delete player.savedAt;
         state.queue.push(player);
         sortQueue();
         saveState();
-        checkAutoFillArena();
       }
     }
 
-    // Move Active Queue to Save: MEMPERTAHANKAN TIER (VVIP / VIP / FREE)
+    // Move Active Queue to Save: MEMPERTAHANKAN TIER (FAST / VIP / FREE)
     function moveQueueToSave(id) {
-      const index = state.queue.findIndex(p => p.id === id);
+      const index = state.queue.findIndex(p => String(p.id) === String(id));
       if (index !== -1) {
         const player = state.queue[index];
         if (!confirm(`Simpan [ ${player.name} ] (${player.type}) ke daftar Saved?`)) return;
         state.queue.splice(index, 1);
         if (!player.type || player.type === 'SAVE') player.type = 'FREE';
+        player.savedAt = Date.now();
         state.saved.push(player);
         sortSaved();
         saveState();
@@ -2088,7 +2126,7 @@
     // Dropdown Ganti Tier Pemain
     function changePlayerTier(id, listType, newTier) {
       const list = listType === 'queue' ? state.queue : state.saved;
-      const player = list.find(p => p.id === id);
+      const player = list.find(p => String(p.id) === String(id));
       if (!player) return;
       if (!confirm(`Ubah tier [ ${player.name} ] menjadi ${newTier}?`)) {
         renderAll();
@@ -2106,7 +2144,7 @@
     // Dropdown Ubah Urutan Pemain Dalam Tier (Tidak Mengganggu Tier Lain)
     function reorderPlayerWithinTier(id, listType, newPosInTier) {
       const list = listType === 'queue' ? state.queue : state.saved;
-      const player = list.find(p => p.id === id);
+      const player = list.find(p => String(p.id) === String(id));
       if (!player) return;
 
       const pTier = (player.type === 'FAST' || player.type === 'VVIP') ? 'FAST' : ((player.type === 'VIP') ? 'VIP' : 'FREE');
@@ -2116,7 +2154,7 @@
       const freeList = list.filter(p => p.type !== 'FAST' && p.type !== 'VVIP' && p.type !== 'VIP');
 
       let targetList = (pTier === 'FAST') ? fastList : ((pTier === 'VIP') ? vipList : freeList);
-      const curIdx = targetList.findIndex(p => p.id === id);
+      const curIdx = targetList.findIndex(p => String(p.id) === String(id));
       if (curIdx === -1) return;
 
       if (!confirm(`Ubah posisi urutan [ ${player.name} ] menjadi #${newPosInTier}?`)) {
@@ -2140,7 +2178,7 @@
     // Quick Switch Tier fallback
     function togglePlayerTier(id, listType) {
       const list = listType === 'queue' ? state.queue : state.saved;
-      const player = list.find(p => p.id === id);
+      const player = list.find(p => String(p.id) === String(id));
       if (!player) return;
       let nextTier = 'FREE';
       if (player.type === 'FREE') {
@@ -2162,13 +2200,13 @@
 
     function deletePlayer(listType, id) {
       const list = listType === 'queue' ? state.queue : state.saved;
-      const p = list.find(x => x.id === id);
+      const p = list.find(x => String(x.id) === String(id));
       const pName = p ? p.name : 'pemain ini';
       if (!confirm(`Hapus [ ${pName} ] dari ${listType === 'queue' ? 'antrean' : 'saved'}?`)) return;
       if (listType === 'queue') {
-        state.queue = state.queue.filter(x => x.id !== id);
+        state.queue = state.queue.filter(x => String(x.id) !== String(id));
       } else if (listType === 'saved') {
-        state.saved = state.saved.filter(x => x.id !== id);
+        state.saved = state.saved.filter(x => String(x.id) !== String(id));
       }
       saveState();
     }
@@ -2299,7 +2337,7 @@
 
     // Assign Player Manual ke Arena
     function assignToArena(playerId, targetSlot) {
-      const index = state.queue.findIndex(p => p.id === playerId);
+      const index = state.queue.findIndex(p => String(p.id) === String(playerId));
       if (index === -1) return;
 
       const playerCandidate = state.queue[index];
@@ -2430,13 +2468,15 @@
         );
 
         if (backToQueue) {
+          delete loser.savedAt;
           state.queue.push(loser);
           sortQueue();
         } else {
           const saveDulu = confirm(`Simpan [ ${loser.name} ] ke tab SAVED?`);
           if (saveDulu) {
-            // PERTAHANKAN TIER: VVIP, VIP, atau FREE tetap melekat!
+            // PERTAHANKAN TIER: FAST, VIP, atau FREE tetap melekat!
             if (!loser.type || loser.type === 'SAVE') loser.type = 'FREE';
+            loser.savedAt = Date.now();
             state.saved.push(loser);
             sortSaved();
           }
@@ -2605,7 +2645,7 @@
     }
 
     function promptEditPlayerTickets(id) {
-      const p = state.queue.find(x => x.id === id) || state.saved.find(x => x.id === id);
+      const p = state.queue.find(x => String(x.id) === String(id)) || state.saved.find(x => String(x.id) === String(id));
       if (!p) return;
       const val = prompt(`Ubah Jumlah Tiket untuk [ ${p.name} ]:`, p.matchesLeft);
       if (val !== null) {
@@ -3049,7 +3089,7 @@
             item.innerHTML = `
               <div class="item-info">
                 <div class="item-name">${escapeHtml(p.name)} <span class="badge badge-${tier.cls}">${pTier}</span>${wsBadge}</div>
-                <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft}</b></div>
+                <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Tiket: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit tiket">${p.matchesLeft}</b> | Tersimpan: <b style="color:var(--c-accent); font-family:monospace;">⏱️ ${formatSavedDuration(p.savedAt)}</b></div>
               </div>
               <div class="item-meta">
                 <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}')" title="Naikkan ke Antrean">📋 ANTREAN</button>
@@ -3175,7 +3215,7 @@
                 <span class="tier-status-tag ${statusClass}">${tStatus}</span>
                 <span>(${players.length})</span>
               </div>
-              <span style="letter-spacing:0.8px;">TIKET</span>
+              <span style="letter-spacing:0.8px;">${isSaved ? 'SAVED | TIKET' : 'TIKET'}</span>
             `;
             tierSection.appendChild(tierHeader);
 
@@ -3184,9 +3224,11 @@
               const qEl = document.createElement('div');
               qEl.className = 'overlay-qitem';
               const numPrefix = isSaved ? '' : `#${globalIdx} `;
+              const savedDurationBadge = isSaved ? `<span style="font-size:0.75rem; font-weight:800; color:#ffd32a; background:rgba(0,0,0,0.45); padding:1px 5px; border-radius:3px; border:1px solid rgba(255,211,42,0.4); font-family:monospace;">⏱️ ${formatSavedDuration(p.savedAt)}</span>` : '';
               qEl.innerHTML = `
                 <span style="font-weight:700;">${numPrefix}${escapeHtml(p.name)} | <span style="font-weight:400; color:var(--c-slate);">${escapeHtml(formatChar(p.char))}</span></span>
                 <span style="display:flex; gap:6px; align-items:center;">
+                  ${savedDurationBadge}
                   <span class="badge badge-${tier.cls}">${pTier}</span>
                   <span style="font-size:0.85rem; font-weight:900; color:var(--c-white); background:rgba(255,255,255,0.12); padding:1px 6px; border-radius:3px; border:1px solid var(--c-slate); min-width:28px; text-align:center;">${p.matchesLeft}</span>
                 </span>
@@ -3240,6 +3282,14 @@
 
     // Inisialisasi
     loadState();
+
+    // Auto-refresh timer Saved setiap 15 detik jika tab Saved aktif
+    setInterval(() => {
+      const sContent = document.getElementById('subtab-saved-content');
+      if (sContent && sContent.style.display !== 'none' && state.saved && state.saved.length > 0) {
+        renderSaved();
+      }
+    }, 15000);
   </script>
 </body>
 

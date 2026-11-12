@@ -763,6 +763,23 @@
       font-weight: 800;
     }
 
+    /* SAVED DURATION BADGE */
+    .q-saved-time {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #ffd32a;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 211, 42, 0.4);
+      border-radius: 3px;
+      padding: 1px 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+
     .empty-queue {
       color: #ffffff;
       font-size: 0.85rem;
@@ -929,6 +946,27 @@
       }
     }
 
+    function formatSavedDuration(savedAt) {
+      if (!savedAt) return '0m';
+      const now = Date.now();
+      const diffMs = Math.max(0, now - Number(savedAt));
+      const totalSec = Math.floor(diffMs / 1000);
+      const totalMin = Math.floor(totalSec / 60);
+      const hours = Math.floor(totalMin / 60);
+      const days = Math.floor(hours / 24);
+
+      if (days > 0) {
+        return `${days}h ${hours % 24}j`;
+      }
+      if (hours > 0) {
+        return `${hours}j ${totalMin % 60}m`;
+      }
+      if (totalMin > 0) {
+        return `${totalMin}m`;
+      }
+      return `${totalSec}d`;
+    }
+
     function sanitizeState(st) {
       if (!st || typeof st !== 'object') return;
       const fixP = (p) => {
@@ -941,7 +979,19 @@
       fixP(st.p1);
       fixP(st.p2);
       if (Array.isArray(st.queue)) st.queue.forEach(fixP);
-      if (Array.isArray(st.saved)) st.saved.forEach(fixP);
+      if (Array.isArray(st.saved)) {
+        st.saved.forEach(p => {
+          fixP(p);
+          if (!p.savedAt) {
+            const numId = Number(p.id);
+            if (!isNaN(numId) && numId > 1600000000000 && numId < 2500000000000) {
+              p.savedAt = numId;
+            } else {
+              p.savedAt = Date.now();
+            }
+          }
+        });
+      }
       if (!st.tierStatus || typeof st.tierStatus !== 'object') {
         st.tierStatus = { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
       } else {
@@ -1130,7 +1180,7 @@
                   <span class="tier-status-tag ${statusClass}">${tStatus}</span>
                   <span>(${players.length})</span>
                 </div>
-                <span class="th-ticket">TIKET</span>
+                <span class="th-ticket">SAVED | TIKET</span>
               </div>
             `;
 
@@ -1155,6 +1205,7 @@
                     </div>
                   </div>
                   <div class="q-right">
+                    <span class="q-saved-time" title="Lama Tersimpan">⏱️ ${formatSavedDuration(p.savedAt)}</span>
                     <span class="q-badge ${tier.cls}">${pTier}</span>
                     <span class="q-ticket">${p.matchesLeft}</span>
                   </div>
@@ -1337,10 +1388,6 @@
           evtSource.close();
           setTimeout(connectSSE, 3000);
         };
-      } else {
-        loadFromLocalStorage();
-        window.addEventListener('storage', loadFromLocalStorage);
-        setInterval(loadFromLocalStorage, 1000);
       }
     }
 
@@ -1349,6 +1396,12 @@
         const raw = localStorage.getItem('koth_naruto_state');
         if (raw) render(JSON.parse(raw));
       } catch (e) { }
+    }
+
+    function initLocalStorageSync() {
+      loadFromLocalStorage();
+      window.addEventListener('storage', loadFromLocalStorage);
+      setInterval(loadFromLocalStorage, 1000);
     }
 
     // Cloud Realtime Sync (MQTT over WebSockets)
@@ -1378,10 +1431,17 @@
       } catch (err) { }
     }
 
-    // Initialize
-    loadFromLocalStorage();
+    // Initialize (Dual/Triple Realtime Sync)
+    initLocalStorageSync();
     connectCloudMQTT();
     connectSSE();
+
+    // Auto-refresh timer durasi Saved setiap 10 detik
+    setInterval(() => {
+      if (state && state.overlayListMode === 'saved') {
+        render(state);
+      }
+    }, 10000);
   </script>
 </body>
 

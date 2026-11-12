@@ -332,13 +332,15 @@
     }
 
     .player-slot.vvip {
-      border: 2px solid #C084FC;
-      background: rgba(168, 85, 247, 0.04);
+      border: 2px solid #a855f7;
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(168, 85, 247, 0.03) 100%);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.15);
     }
 
     [data-theme="dark"] .player-slot.vvip {
-      border: 2px solid #C084FC;
-      background: rgba(168, 85, 247, 0.08);
+      border: 2px solid #c084fc;
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.16) 0%, rgba(88, 28, 135, 0.2) 100%);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.25);
     }
 
     .player-slot.vip {
@@ -370,19 +372,24 @@
 
     .role-badge.vvip,
     .role-badge.badge-vvip {
-      background-color: #241433;
-      color: #C084FC;
+      background: linear-gradient(135deg, #581c87 0%, #7e22ce 50%, #9333ea 100%);
+      color: #ffffff;
       font-weight: 900;
-      border: 1px solid #C084FC;
+      border: 1.5px solid #d8b4fe;
       letter-spacing: 0.8px;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     }
 
     [data-theme="dark"] .role-badge.vvip,
     [data-theme="dark"] .role-badge.badge-vvip {
-      background-color: rgba(168, 85, 247, 0.18);
-      color: #C084FC;
-      border: 1px solid #C084FC;
+      background: linear-gradient(135deg, #581c87 0%, #7e22ce 50%, #a855f7 100%);
+      color: #ffffff;
+      font-weight: 900;
+      border: 1.5px solid #d8b4fe;
       letter-spacing: 0.8px;
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
     }
 
     .role-badge.vip,
@@ -539,8 +546,8 @@
     }
 
     .list-item.vvip {
-      border-left-color: #C084FC;
-      background-color: var(--panel-subtle);
+      border-left-color: #a855f7;
+      background: linear-gradient(90deg, rgba(147, 51, 234, 0.07) 0%, var(--panel-subtle) 100%);
     }
 
     .list-item.vip {
@@ -557,8 +564,8 @@
     }
 
     [data-theme="dark"] .list-item.vvip {
-      border-left-color: #C084FC;
-      background-color: rgba(168, 85, 247, 0.05);
+      border-left-color: #c084fc;
+      background: linear-gradient(90deg, rgba(147, 51, 234, 0.15) 0%, rgba(20, 20, 30, 0.5) 100%);
     }
 
     [data-theme="dark"] .list-item.vip {
@@ -613,19 +620,23 @@
     }
 
     .badge-vvip {
-      background-color: #241433;
-      color: #C084FC;
+      background: linear-gradient(135deg, #581c87 0%, #7e22ce 50%, #9333ea 100%);
+      color: #ffffff;
       font-weight: 900;
-      border: 1px solid #C084FC;
+      border: 1.5px solid #d8b4fe;
       letter-spacing: 0.8px;
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.45);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     }
 
     [data-theme="dark"] .badge-vvip {
-      background-color: rgba(168, 85, 247, 0.18);
-      color: #C084FC;
+      background: linear-gradient(135deg, #581c87 0%, #7e22ce 50%, #a855f7 100%);
+      color: #ffffff;
       font-weight: 900;
-      border: 1px solid #C084FC;
+      border: 1.5px solid #d8b4fe;
       letter-spacing: 0.8px;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.55);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
     }
 
     .badge-vip {
@@ -702,22 +713,24 @@
     }
 
     .tier-header.vvip {
-      background: #241433;
-      color: #C084FC;
-      border-left: 3px solid #C084FC;
+      background: linear-gradient(135deg, #581c87 0%, #7e22ce 100%);
+      color: #ffffff;
+      border-left: 3px solid #d8b4fe;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.08);
     }
 
     .tier-header.vvip span:first-child,
     .tier-header.vvip .tier-title {
-      color: #C084FC;
+      color: #ffffff;
       font-weight: 900;
       letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(216, 180, 254, 0.6);
     }
 
     [data-theme="dark"] .tier-header.vvip {
-      background: rgba(168, 85, 247, 0.16);
-      color: #C084FC;
-      border-left: 3px solid #C084FC;
+      background: linear-gradient(135deg, #581c87 0%, #9333ea 100%);
+      color: #ffffff;
+      border-left: 3px solid #d8b4fe;
     }
 
     .tier-header.vip {
@@ -2338,31 +2351,6 @@
       state.p1 = state.p2;
       state.p2 = temp;
       saveState();
-    }
-
-    // Ubah WS Manual Pemain di Arena
-    function promptEditWs(slot) {
-      const p = slot === 'p1' ? state.p1 : state.p2;
-      if (!p) {
-        alert(`Slot ${slot.toUpperCase()} kosong!`);
-        return;
-      }
-      const val = prompt(`Ubah Jumlah Win Streak (WS) untuk [ ${p.name} ]:`, p.ws || 0);
-      if (val !== null) {
-        const parsed = parseInt(val);
-        if (!isNaN(parsed) && parsed >= 0) {
-          if (confirm(`Ubah WS [ ${p.name} ] dari ${p.ws || 0} menjadi ${parsed}?`)) {
-            const oldWs = p.ws || 0;
-            p.ws = parsed;
-            if (state.topRecord && state.topRecord.name === p.name && oldWs === state.topRecord.ws && parsed < oldWs) {
-              state.topRecord.ws = parsed;
-            } else {
-              checkAndUpdateTopRecord(p);
-            }
-            saveState();
-          }
-        }
-      }
     }
 
     function checkAndUpdateTopRecord(candidate) {

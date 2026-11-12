@@ -257,6 +257,7 @@
       min-width: 0;
     }
 
+    .player-slot.fast,
     .player-slot.vvip {
       background: rgba(168, 85, 247, 0.12);
       border-left: 3px solid #a855f7;
@@ -278,6 +279,7 @@
       border-left: none;
       border-right: 3px solid var(--c-slate);
     }
+    #slot-p2.fast,
     #slot-p2.vvip {
       border-left: none;
       border-right: 3px solid #a855f7;
@@ -308,6 +310,7 @@
       line-height: 1.3;
     }
 
+    .p-role-tag.fast,
     .p-role-tag.vvip {
       background: linear-gradient(135deg, #581c87 0%, #7e22ce 60%, #9333ea 100%);
       border: 1px solid #d8b4fe;
@@ -491,6 +494,7 @@
       margin-bottom: 5px;
     }
 
+    .tier-section.fast,
     .tier-section.vvip {
       margin-bottom: 14px;
       padding-bottom: 10px;
@@ -526,6 +530,7 @@
       text-align: center;
     }
 
+    .tier-header.fast,
     .tier-header.vvip {
       background: linear-gradient(135deg, #581c87 0%, #7e22ce 100%);
       color: #ffffff;
@@ -533,6 +538,8 @@
       box-shadow: inset 0 1px 1px rgba(255,255,255,0.08);
     }
 
+    .tier-header.fast span:first-child,
+    .tier-header.fast .th-title,
     .tier-header.vvip span:first-child,
     .tier-header.vvip .th-title {
       color: #ffffff;
@@ -601,6 +608,7 @@
       flex-shrink: 0;
     }
 
+    .queue-row.fast,
     .queue-row.vvip {
       border-left-color: #a855f7;
       background: linear-gradient(90deg, rgba(168, 85, 247, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
@@ -667,6 +675,7 @@
       min-width: 20px;
     }
 
+    .queue-row.fast .q-idx,
     .queue-row.vvip .q-idx {
       color: #d8b4fe;
       font-weight: 900;
@@ -721,6 +730,7 @@
       color: #ffffff;
     }
 
+    .q-badge.fast,
     .q-badge.vvip {
       background: linear-gradient(135deg, #581c87 0%, #7e22ce 60%, #9333ea 100%);
       border: 1px solid #d8b4fe;
@@ -859,7 +869,7 @@
       announcement: '',
       topRecord: { name: '-', char: '-', ws: 0 },
       overlayListMode: 'queue',
-      tierStatus: { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
+      tierStatus: { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
     };
 
     // Helper deteksi peran King vs Penantang
@@ -959,10 +969,10 @@
       const p1Bonus = document.getElementById('p1-bonus');
 
       if (state.p1) {
-        const t1 = (state.p1.type === 'VVIP' || state.p1.type === 'VIP') ? state.p1.type : 'FREE';
-        slot1.className = 'player-slot ' + t1.toLowerCase();
-        p1RoleTag.className = 'p-role-tag ' + t1.toLowerCase();
-        p1RoleTag.innerText = (t1 === 'VVIP') ? '⭐ VVIP' : t1;
+        const rawT1 = (state.p1.type === 'FAST' || state.p1.type === 'VVIP') ? 'FAST' : ((state.p1.type === 'VIP') ? 'VIP' : 'FREE');
+        slot1.className = 'player-slot ' + rawT1.toLowerCase();
+        p1RoleTag.className = 'p-role-tag ' + rawT1.toLowerCase();
+        p1RoleTag.innerText = rawT1;
 
         p1Name.innerText = state.p1.name;
         p1Char.innerText = formatChar(state.p1.char);
@@ -1007,10 +1017,10 @@
       const p2Bonus = document.getElementById('p2-bonus');
 
       if (state.p2) {
-        const t2 = (state.p2.type === 'VVIP' || state.p2.type === 'VIP') ? state.p2.type : 'FREE';
-        slot2.className = 'player-slot ' + t2.toLowerCase();
-        p2RoleTag.className = 'p-role-tag ' + t2.toLowerCase();
-        p2RoleTag.innerText = (t2 === 'VVIP') ? '⭐ VVIP' : t2;
+        const rawT2 = (state.p2.type === 'FAST' || state.p2.type === 'VVIP') ? 'FAST' : ((state.p2.type === 'VIP') ? 'VIP' : 'FREE');
+        slot2.className = 'player-slot ' + rawT2.toLowerCase();
+        p2RoleTag.className = 'p-role-tag ' + rawT2.toLowerCase();
+        p2RoleTag.innerText = rawT2;
 
         p2Name.innerText = state.p2.name;
         p2Char.innerText = formatChar(state.p2.char);
@@ -1045,15 +1055,15 @@
         if (p2Bonus) p2Bonus.style.display = 'none';
       }
 
-      // Render Queue or Saved list with Ticket Count & 3 Vertical Tiers (VVIP, VIP, FREE)
+      // Render Queue or Saved list with Ticket Count & 3 Vertical Tiers (FAST, VIP, FREE)
       const isSavedMode = (state.overlayListMode === 'saved');
       const qSectionTitle = document.getElementById('queue-section-title');
       const qContainer = document.getElementById('queue-list');
       const qTotal = document.getElementById('queue-total-count');
 
-      const tierRank = { 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
+      const tierRank = { 'FAST': 1, 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
       const tiers = [
-        { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
+        { key: 'FAST', label: 'FAST', cls: 'fast' },
         { key: 'VIP', label: 'VIP', cls: 'vip' },
         { key: 'FREE', label: 'FREE', cls: 'free' }
       ];
@@ -1076,9 +1086,12 @@
           qContainer.innerHTML = '';
           let globalSavedIdx = 0;
           tiers.forEach(tier => {
-            const players = sList.filter(p => ((p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE') === tier.key);
+            const players = sList.filter(p => {
+              const pTier = (p.type === 'FAST' || p.type === 'VVIP') ? 'FAST' : ((p.type === 'VIP') ? 'VIP' : 'FREE');
+              return pTier === tier.key;
+            });
 
-            const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
+            const tStatus = (state.tierStatus && (state.tierStatus[tier.key] || (tier.key === 'FAST' && state.tierStatus['VVIP']))) || 'OPEN';
             const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
 
             const tierDiv = document.createElement('div');
@@ -1144,13 +1157,13 @@
           tiers.forEach(tier => {
             const players = [];
             qList.forEach((p, idx) => {
-              const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
+              const pTier = (p.type === 'FAST' || p.type === 'VVIP') ? 'FAST' : ((p.type === 'VIP') ? 'VIP' : 'FREE');
               if (pTier === tier.key) {
                 players.push({ player: p, globalIdx: idx + 1 });
               }
             });
 
-            const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
+            const tStatus = (state.tierStatus && (state.tierStatus[tier.key] || (tier.key === 'FAST' && state.tierStatus['VVIP']))) || 'OPEN';
             const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
 
             const tierDiv = document.createElement('div');

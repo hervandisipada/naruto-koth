@@ -82,7 +82,7 @@
     "ws": 1
   },
   "tierStatus": {
-    "VVIP": "OPEN",
+    "FAST": "OPEN",
     "VIP": "OPEN",
     "FREE": "OPEN"
   }

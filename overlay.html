@@ -763,23 +763,6 @@
       font-weight: 800;
     }
 
-    /* SAVED DURATION BADGE */
-    .q-saved-time {
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: #ffd32a;
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(255, 211, 42, 0.4);
-      border-radius: 3px;
-      padding: 1px 5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      white-space: nowrap;
-      letter-spacing: 0.3px;
-    }
-
     .empty-queue {
       color: #ffffff;
       font-size: 0.85rem;
@@ -946,27 +929,6 @@
       }
     }
 
-    function formatSavedDuration(savedAt) {
-      if (!savedAt) return '0m';
-      const now = Date.now();
-      const diffMs = Math.max(0, now - Number(savedAt));
-      const totalSec = Math.floor(diffMs / 1000);
-      const totalMin = Math.floor(totalSec / 60);
-      const hours = Math.floor(totalMin / 60);
-      const days = Math.floor(hours / 24);
-
-      if (days > 0) {
-        return `${days}h ${hours % 24}j`;
-      }
-      if (hours > 0) {
-        return `${hours}j ${totalMin % 60}m`;
-      }
-      if (totalMin > 0) {
-        return `${totalMin}m`;
-      }
-      return `${totalSec}d`;
-    }
-
     function sanitizeState(st) {
       if (!st || typeof st !== 'object') return;
       const fixP = (p) => {
@@ -1005,10 +967,27 @@
       }
     }
 
-    function render(data) {
-      if (!data) return;
-      state = data;
+    // Timestamp state terbaru yang diterima
+    let _lastStateTs = 0;
+
+    // Terapkan state baru hanya jika lebih baru atau sama fresh-nya
+    function applyState(incoming) {
+      if (!incoming || typeof incoming !== 'object') return;
+      // Gunakan timestamp MQTT/SSE payload atau waktu sekarang
+      const incomingTs = incoming._ts || 0;
+      if (incomingTs && incomingTs < _lastStateTs) return; // abaikan state lama
+      _lastStateTs = incomingTs || Date.now();
+      state = incoming;
       sanitizeState(state);
+      // Tulis ke localStorage agar tab lain sync
+      try {
+        localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+      } catch (e) { }
+      renderOverlay();
+    }
+
+    function renderOverlay() {
+      if (!state) return;
 
       // Announcement Ticker
       const tickerEl = document.getElementById('overlay-ticker');
@@ -1060,7 +1039,7 @@
         if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
           p1TicketText = `${state.p1.bonusBase}+1`;
           const msLeft = state.p1.bonusAnimUntil - Date.now();
-          setTimeout(() => render(state), msLeft + 50);
+          setTimeout(() => renderOverlay(), msLeft + 50);
         }
         p1Tickets.innerText = p1TicketText;
 
@@ -1108,7 +1087,7 @@
         if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
           p2TicketText = `${state.p2.bonusBase}+1`;
           const msLeft = state.p2.bonusAnimUntil - Date.now();
-          setTimeout(() => render(state), msLeft + 50);
+          setTimeout(() => renderOverlay(), msLeft + 50);
         }
         p2Tickets.innerText = p2TicketText;
 
@@ -1180,7 +1159,7 @@
                   <span class="tier-status-tag ${statusClass}">${tStatus}</span>
                   <span>(${players.length})</span>
                 </div>
-                <span class="th-ticket">SAVED | TIKET</span>
+                <span class="th-ticket">TIKET</span>
               </div>
             `;
 
@@ -1205,7 +1184,6 @@
                     </div>
                   </div>
                   <div class="q-right">
-                    <span class="q-saved-time" title="Lama Tersimpan">⏱️ ${formatSavedDuration(p.savedAt)}</span>
                     <span class="q-badge ${tier.cls}">${pTier}</span>
                     <span class="q-ticket">${p.matchesLeft}</span>
                   </div>
@@ -1381,7 +1359,7 @@
         const evtSource = new EventSource('/api/events');
         evtSource.onmessage = function (e) {
           try {
-            render(JSON.parse(e.data));
+            applyState(JSON.parse(e.data));
           } catch (err) { }
         };
         evtSource.onerror = function () {
@@ -1394,14 +1372,15 @@
     function loadFromLocalStorage() {
       try {
         const raw = localStorage.getItem('koth_naruto_state');
-        if (raw) render(JSON.parse(raw));
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') {
+            state = parsed;
+            sanitizeState(state);
+            renderOverlay();
+          }
+        }
       } catch (e) { }
-    }
-
-    function initLocalStorageSync() {
-      loadFromLocalStorage();
-      window.addEventListener('storage', loadFromLocalStorage);
-      setInterval(loadFromLocalStorage, 1000);
     }
 
     // Cloud Realtime Sync (MQTT over WebSockets)
@@ -1425,23 +1404,28 @@
         client.on('message', (topic, payload) => {
           try {
             const data = JSON.parse(payload.toString());
-            render(data);
+            applyState(data);
           } catch (err) { }
         });
       } catch (err) { }
     }
 
-    // Initialize (Dual/Triple Realtime Sync)
-    initLocalStorageSync();
+    // Initialize (Dual/Triple Realtime Sync tanpa timer polling yang menimpa state)
+    loadFromLocalStorage();
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'koth_naruto_state' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed && typeof parsed === 'object') {
+            state = parsed;
+            sanitizeState(state);
+            renderOverlay();
+          }
+        } catch (err) { }
+      }
+    });
     connectCloudMQTT();
     connectSSE();
-
-    // Auto-refresh timer durasi Saved setiap 10 detik
-    setInterval(() => {
-      if (state && state.overlayListMode === 'saved') {
-        render(state);
-      }
-    }, 10000);
   </script>
 </body>
 

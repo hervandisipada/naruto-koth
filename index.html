@@ -331,6 +331,16 @@
       position: relative;
     }
 
+    .player-slot.vvip {
+      border: 2px solid #C084FC;
+      background: rgba(168, 85, 247, 0.04);
+    }
+
+    [data-theme="dark"] .player-slot.vvip {
+      border: 2px solid #C084FC;
+      background: rgba(168, 85, 247, 0.08);
+    }
+
     .player-slot.vip {
       border: 2px solid #FFD700;
       background: rgba(255, 215, 0, 0.04);
@@ -356,6 +366,23 @@
       letter-spacing: 0.5px;
       background-color: var(--c-slate);
       color: var(--c-white);
+    }
+
+    .role-badge.vvip,
+    .role-badge.badge-vvip {
+      background-color: #241433;
+      color: #C084FC;
+      font-weight: 900;
+      border: 1px solid #C084FC;
+      letter-spacing: 0.8px;
+    }
+
+    [data-theme="dark"] .role-badge.vvip,
+    [data-theme="dark"] .role-badge.badge-vvip {
+      background-color: rgba(168, 85, 247, 0.18);
+      color: #C084FC;
+      border: 1px solid #C084FC;
+      letter-spacing: 0.8px;
     }
 
     .role-badge.vip,
@@ -511,6 +538,11 @@
       border-left: 4px solid var(--c-slate);
     }
 
+    .list-item.vvip {
+      border-left-color: #C084FC;
+      background-color: var(--panel-subtle);
+    }
+
     .list-item.vip {
       border-left-color: #FFD700;
       background-color: var(--panel-subtle);
@@ -522,6 +554,11 @@
 
     .list-item.save {
       border-left-color: var(--c-slate);
+    }
+
+    [data-theme="dark"] .list-item.vvip {
+      border-left-color: #C084FC;
+      background-color: rgba(168, 85, 247, 0.05);
     }
 
     [data-theme="dark"] .list-item.vip {
@@ -575,6 +612,22 @@
       font-weight: bold;
     }
 
+    .badge-vvip {
+      background-color: #241433;
+      color: #C084FC;
+      font-weight: 900;
+      border: 1px solid #C084FC;
+      letter-spacing: 0.8px;
+    }
+
+    [data-theme="dark"] .badge-vvip {
+      background-color: rgba(168, 85, 247, 0.18);
+      color: #C084FC;
+      font-weight: 900;
+      border: 1px solid #C084FC;
+      letter-spacing: 0.8px;
+    }
+
     .badge-vip {
       background-color: #1e242b;
       color: #FFD700;
@@ -615,6 +668,16 @@
       margin-bottom: 14px;
     }
 
+    .tier-section.vvip {
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 2px dashed rgba(168, 85, 247, 0.45);
+    }
+
+    [data-theme="dark"] .tier-section.vvip {
+      border-bottom: 2px dashed rgba(192, 132, 252, 0.4);
+    }
+
     .tier-section.vip {
       margin-bottom: 22px;
       padding-bottom: 16px;
@@ -636,6 +699,25 @@
       font-weight: 900;
       letter-spacing: 0.8px;
       text-transform: uppercase;
+    }
+
+    .tier-header.vvip {
+      background: #241433;
+      color: #C084FC;
+      border-left: 3px solid #C084FC;
+    }
+
+    .tier-header.vvip span:first-child,
+    .tier-header.vvip .tier-title {
+      color: #C084FC;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    [data-theme="dark"] .tier-header.vvip {
+      background: rgba(168, 85, 247, 0.16);
+      color: #C084FC;
+      border-left: 3px solid #C084FC;
     }
 
     .tier-header.vip {
@@ -931,7 +1013,7 @@
             <div id="p1-name" class="player-name">Kosong</div>
             <div id="p1-char" class="player-char">-</div>
             <div class="player-stats">
-              <span style="cursor:pointer;" onclick="promptEditWs('p1')" title="Klik untuk ubah WS P1">WS: <span id="p1-ws" class="stat-val">0</span> ✏️ <span id="p1-bonus-badge" class="badge"
+              <span>WS: <span id="p1-ws" class="stat-val">0</span> <span id="p1-bonus-badge" class="badge"
                   style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.72rem; border:1px solid var(--c-slate);">+1
                   Tiket</span></span>
               <span style="cursor:pointer;" onclick="promptEditTickets('p1')" title="Klik untuk edit tiket">Tiket: <span
@@ -964,7 +1046,7 @@
             <div id="p2-name" class="player-name">Kosong</div>
             <div id="p2-char" class="player-char">-</div>
             <div class="player-stats">
-              <span style="cursor:pointer;" onclick="promptEditWs('p2')" title="Klik untuk ubah WS P2">WS: <span id="p2-ws" class="stat-val">0</span> ✏️ <span id="p2-bonus-badge" class="badge"
+              <span>WS: <span id="p2-ws" class="stat-val">0</span> <span id="p2-bonus-badge" class="badge"
                   style="display:none; background:var(--c-dark); color:var(--c-white); font-size:0.75rem; border:1px solid var(--c-slate);">+1
                   Tiket</span></span>
               <span style="cursor:pointer;" onclick="promptEditTickets('p2')" title="Klik untuk edit tiket">Tiket: <span
@@ -1012,6 +1094,7 @@
             <div class="form-group" style="flex: 1;">
               <label>Tier *</label>
               <select id="input-type" class="form-control">
+                <option value="VVIP">⭐ VVIP</option>
                 <option value="VIP">VIP</option>
                 <option value="FREE" selected>FREE</option>
               </select>
@@ -1393,7 +1476,7 @@
       topRecord: { name: '-', char: '-', ws: 0 },
       overlayListMode: 'queue',
       customCharacters: [],
-      tierStatus: { VIP: 'OPEN', FREE: 'OPEN' }
+      tierStatus: { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
     };
 
     // Daftar 148 Karakter Bawaan
@@ -1485,13 +1568,6 @@
         modalSelect.innerHTML = optionsHtml;
         if (curVal) modalSelect.value = curVal;
       }
-
-      const recPicker = document.getElementById('select-record-char-picker');
-      if (recPicker) {
-        const curVal = recPicker.value;
-        recPicker.innerHTML = optionsHtml;
-        if (curVal) recPicker.value = curVal;
-      }
     }
 
     function registerCharacter(charName) {
@@ -1537,11 +1613,10 @@
           state = JSON.parse(data);
         } catch (e) { }
       }
-      // Sanitize: pastikan label VIP/FREE valid, migrasikan VVIP -> VIP
+      // Sanitize: pastikan label VVIP/VIP/FREE valid dan tidak ada 'SAVE'
       const sanitizePlayer = (p) => {
         if (!p) return;
-        if (p.type === 'VVIP') p.type = 'VIP';
-        if (!p.type || p.type === 'SAVE' || (p.type !== 'VIP' && p.type !== 'FREE')) p.type = 'FREE';
+        if (!p.type || p.type === 'SAVE' || (p.type !== 'VVIP' && p.type !== 'VIP' && p.type !== 'FREE')) p.type = 'FREE';
       };
       if (Array.isArray(state.queue)) state.queue.forEach(sanitizePlayer);
       if (Array.isArray(state.saved)) state.saved.forEach(sanitizePlayer);
@@ -1549,9 +1624,9 @@
       sanitizePlayer(state.p2);
 
       if (!state.tierStatus || typeof state.tierStatus !== 'object') {
-        state.tierStatus = { VIP: 'OPEN', FREE: 'OPEN' };
+        state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
       } else {
-        if (state.tierStatus.VVIP) delete state.tierStatus.VVIP;
+        if (!state.tierStatus.VVIP) state.tierStatus.VVIP = 'OPEN';
         if (!state.tierStatus.VIP) state.tierStatus.VIP = 'OPEN';
         if (!state.tierStatus.FREE) state.tierStatus.FREE = 'OPEN';
       }
@@ -1575,9 +1650,9 @@
               sanitizePlayer(state.p1);
               sanitizePlayer(state.p2);
               if (!state.tierStatus || typeof state.tierStatus !== 'object') {
-                state.tierStatus = { VIP: 'OPEN', FREE: 'OPEN' };
+                state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
               } else {
-                if (state.tierStatus.VVIP) delete state.tierStatus.VVIP;
+                if (!state.tierStatus.VVIP) state.tierStatus.VVIP = 'OPEN';
                 if (!state.tierStatus.VIP) state.tierStatus.VIP = 'OPEN';
                 if (!state.tierStatus.FREE) state.tierStatus.FREE = 'OPEN';
               }
@@ -1595,7 +1670,7 @@
 
     function toggleTierStatus(tierKey) {
       if (!state.tierStatus) {
-        state.tierStatus = { VIP: 'OPEN', FREE: 'OPEN' };
+        state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
       }
       const next = (state.tierStatus[tierKey] === 'CLOSED') ? 'OPEN' : 'CLOSED';
       if (!confirm(`Ubah status tier ${tierKey} menjadi ${next}?`)) return;
@@ -1655,9 +1730,9 @@
       }
 
       if (!state.tierStatus || typeof state.tierStatus !== 'object') {
-        state.tierStatus = { VIP: 'OPEN', FREE: 'OPEN' };
+        state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
       } else {
-        if (state.tierStatus.VVIP) delete state.tierStatus.VVIP;
+        if (!state.tierStatus.VVIP) state.tierStatus.VVIP = 'OPEN';
         if (!state.tierStatus.VIP) state.tierStatus.VIP = 'OPEN';
         if (!state.tierStatus.FREE) state.tierStatus.FREE = 'OPEN';
       }
@@ -1685,9 +1760,9 @@
       }
 
       if (!state.tierStatus || typeof state.tierStatus !== 'object') {
-        state.tierStatus = { VIP: 'OPEN', FREE: 'OPEN' };
+        state.tierStatus = { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
       } else {
-        if (state.tierStatus.VVIP) delete state.tierStatus.VVIP;
+        if (!state.tierStatus.VVIP) state.tierStatus.VVIP = 'OPEN';
         if (!state.tierStatus.VIP) state.tierStatus.VIP = 'OPEN';
         if (!state.tierStatus.FREE) state.tierStatus.FREE = 'OPEN';
       }
@@ -1869,13 +1944,13 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Rank Tier Prioritas: VIP (1) -> FREE (2)
-    const tierRank = { 'VIP': 1, 'FREE': 2 };
+    // Rank Tier Prioritas: VVIP (1) -> VIP (2) -> FREE (3)
+    const tierRank = { 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
 
     function sortQueue() {
       state.queue.sort((a, b) => {
-        const rankA = tierRank[a.type] || 2;
-        const rankB = tierRank[b.type] || 2;
+        const rankA = tierRank[a.type] || 3;
+        const rankB = tierRank[b.type] || 3;
         if (rankA !== rankB) return rankA - rankB;
         return 0; // FIFO dalam tier yang sama
       });
@@ -1883,8 +1958,8 @@
 
     function sortSaved() {
       state.saved.sort((a, b) => {
-        const rankA = tierRank[a.type] || 2;
-        const rankB = tierRank[b.type] || 2;
+        const rankA = tierRank[a.type] || 3;
+        const rankB = tierRank[b.type] || 3;
         if (rankA !== rankB) return rankA - rankB;
         return 0; // FIFO dalam tier yang sama
       });
@@ -1941,7 +2016,7 @@
       saveState();
     }
 
-    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (VIP / FREE)
+    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (VVIP / VIP / FREE)
     function moveSavedToQueue(id, overrideType) {
       const index = state.saved.findIndex(p => p.id === id);
       if (index !== -1) {
@@ -1960,7 +2035,7 @@
       }
     }
 
-    // Move Active Queue to Save: MEMPERTAHANKAN TIER (VIP / FREE)
+    // Move Active Queue to Save: MEMPERTAHANKAN TIER (VVIP / VIP / FREE)
     function moveQueueToSave(id) {
       const index = state.queue.findIndex(p => p.id === id);
       if (index !== -1) {
@@ -2007,12 +2082,13 @@
       const player = list.find(p => p.id === id);
       if (!player) return;
 
-      const pTier = (player.type === 'VIP') ? 'VIP' : 'FREE';
+      const pTier = (player.type === 'VVIP' || player.type === 'VIP') ? player.type : 'FREE';
 
+      const vvipList = list.filter(p => p.type === 'VVIP');
       const vipList = list.filter(p => p.type === 'VIP');
-      const freeList = list.filter(p => p.type !== 'VIP');
+      const freeList = list.filter(p => p.type !== 'VVIP' && p.type !== 'VIP');
 
-      let targetList = (pTier === 'VIP') ? vipList : freeList;
+      let targetList = (pTier === 'VVIP') ? vvipList : ((pTier === 'VIP') ? vipList : freeList);
       const curIdx = targetList.findIndex(p => p.id === id);
       if (curIdx === -1) return;
 
@@ -2025,7 +2101,7 @@
       targetList.splice(curIdx, 1);
       targetList.splice(newPosInTier - 1, 0, player);
 
-      const combined = [...vipList, ...freeList];
+      const combined = [...vvipList, ...vipList, ...freeList];
       if (listType === 'queue') {
         state.queue = combined;
       } else {
@@ -2039,7 +2115,14 @@
       const list = listType === 'queue' ? state.queue : state.saved;
       const player = list.find(p => p.id === id);
       if (!player) return;
-      const nextTier = (player.type === 'VIP') ? 'FREE' : 'VIP';
+      let nextTier = 'FREE';
+      if (player.type === 'FREE') {
+        nextTier = 'VIP';
+      } else if (player.type === 'VIP') {
+        nextTier = 'VVIP';
+      } else {
+        nextTier = 'FREE';
+      }
       if (!confirm(`Ubah tier [ ${player.name} ] menjadi ${nextTier}?`)) return;
       player.type = nextTier;
       if (listType === 'queue') {
@@ -2341,7 +2424,7 @@
       if (loser.matchesLeft > 0) {
         loser.char = '-'; // Auto reset karakter ke '-'
         const backToQueue = confirm(
-          `[ ${loser.name} ] KALAH!\nSisa Tiket: ${loser.matchesLeft}.\n\nKembalikan ke ANTREAN AKTIF?`
+          `[ ${loser.name} ] KALAH!\nWS di-reset ke 0.\nSisa Tiket: ${loser.matchesLeft}.\n\nKembalikan ke ANTREAN AKTIF?`
         );
 
         if (backToQueue) {
@@ -2350,7 +2433,7 @@
         } else {
           const saveDulu = confirm(`Simpan [ ${loser.name} ] ke tab SAVED?`);
           if (saveDulu) {
-            // PERTAHANKAN TIER: VIP atau FREE tetap melekat!
+            // PERTAHANKAN TIER: VVIP, VIP, atau FREE tetap melekat!
             if (!loser.type || loser.type === 'SAVE') loser.type = 'FREE';
             state.saved.push(loser);
             sortSaved();
@@ -2402,7 +2485,7 @@
           topRecord: { name: '-', char: '-', ws: 0 },
           overlayListMode: state.overlayListMode || 'queue',
           customCharacters: state.customCharacters || [],
-          tierStatus: state.tierStatus || { VIP: 'OPEN', FREE: 'OPEN' }
+          tierStatus: state.tierStatus || { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
         };
         saveState();
       }
@@ -2633,10 +2716,10 @@
       const p1DemoteBtn = document.getElementById('p1-demote-btn');
 
       if (state.p1) {
-        const p1Tier = (state.p1.type === 'VIP') ? 'VIP' : 'FREE';
+        const p1Tier = (state.p1.type === 'VVIP' || state.p1.type === 'VIP') ? state.p1.type : 'FREE';
         if (p1SlotCard) p1SlotCard.className = 'player-slot ' + p1Tier.toLowerCase();
         if (p1RoleBadge) {
-          p1RoleBadge.innerText = `${p1Tier} (P1)`;
+          p1RoleBadge.innerText = `${p1Tier === 'VVIP' ? '⭐ VVIP' : p1Tier} (P1)`;
           p1RoleBadge.className = 'role-badge badge-' + p1Tier.toLowerCase();
         }
         document.getElementById('p1-name').innerText = state.p1.name;
@@ -2706,10 +2789,10 @@
       const p2DemoteBtn = document.getElementById('p2-demote-btn');
 
       if (state.p2) {
-        const p2Tier = (state.p2.type === 'VIP') ? 'VIP' : 'FREE';
+        const p2Tier = (state.p2.type === 'VVIP' || state.p2.type === 'VIP') ? state.p2.type : 'FREE';
         if (p2SlotCard) p2SlotCard.className = 'player-slot ' + p2Tier.toLowerCase();
         if (p2RoleBadge) {
-          p2RoleBadge.innerText = `${p2Tier} (P2)`;
+          p2RoleBadge.innerText = `${p2Tier === 'VVIP' ? '⭐ VVIP' : p2Tier} (P2)`;
           p2RoleBadge.className = 'role-badge badge-' + p2Tier.toLowerCase();
         }
         document.getElementById('p2-name').innerText = state.p2.name;
@@ -2784,6 +2867,7 @@
       sortQueue();
 
       const tiers = [
+        { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
         { key: 'VIP', label: 'VIP', cls: 'vip' },
         { key: 'FREE', label: 'FREE', cls: 'free' }
       ];
@@ -2791,7 +2875,7 @@
       tiers.forEach(tier => {
         const playersWithIndex = [];
         state.queue.forEach((p, idx) => {
-          const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
+          const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
           if (pTier === tier.key) {
             playersWithIndex.push({ player: p, globalIdx: idx + 1, originalIdx: idx });
           }
@@ -2824,7 +2908,7 @@
           const totalInTier = playersWithIndex.length;
           playersWithIndex.forEach(({ player: p, globalIdx, originalIdx }, rankInTier) => {
             const posInTier = rankInTier + 1;
-            const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
+            const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
 
             let posOptions = '<option value="" disabled selected style="display:none;">Pilih Posisi</option>';
             for (let i = 1; i <= totalInTier; i++) {
@@ -2833,6 +2917,7 @@
 
             const tierOptions = `
               <option value="" disabled selected style="display:none;">Pilih Role</option>
+              <option value="VVIP">⭐ VVIP${pTier === 'VVIP' ? ' (Saat ini)' : ''}</option>
               <option value="VIP">VIP${pTier === 'VIP' ? ' (Saat ini)' : ''}</option>
               <option value="FREE">FREE${pTier === 'FREE' ? ' (Saat ini)' : ''}</option>
             `;
@@ -2900,6 +2985,7 @@
       sortSaved();
 
       const tiers = [
+        { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
         { key: 'VIP', label: 'VIP', cls: 'vip' },
         { key: 'FREE', label: 'FREE', cls: 'free' }
       ];
@@ -2907,7 +2993,7 @@
       tiers.forEach(tier => {
         const playersInTier = [];
         state.saved.forEach((p, idx) => {
-          const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
+          const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
           if (pTier === tier.key) {
             playersInTier.push({ player: p, originalIdx: idx });
           }
@@ -2940,7 +3026,7 @@
           const totalInTier = playersInTier.length;
           playersInTier.forEach(({ player: p, originalIdx }, rankInTier) => {
             const posInTier = rankInTier + 1;
-            const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
+            const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
 
             let posOptions = '<option value="" disabled selected style="display:none;">Pilih Posisi</option>';
             for (let i = 1; i <= totalInTier; i++) {
@@ -2949,6 +3035,7 @@
 
             const tierOptions = `
               <option value="" disabled selected style="display:none;">Pilih Role</option>
+              <option value="VVIP">⭐ VVIP${pTier === 'VVIP' ? ' (Saat ini)' : ''}</option>
               <option value="VIP">VIP${pTier === 'VIP' ? ' (Saat ini)' : ''}</option>
               <option value="FREE">FREE${pTier === 'FREE' ? ' (Saat ini)' : ''}</option>
             `;
@@ -3046,7 +3133,7 @@
         if (ovB2El) ovB2El.style.display = 'none';
       }
 
-      // List Overlay (Queue vs Saved) - 2 Vertical Tiers (VIP, FREE)
+      // List Overlay (Queue vs Saved) - 3 Vertical Tiers (VVIP, VIP, FREE)
       const qContainer = document.getElementById('ov-queue-list');
       qContainer.innerHTML = '';
       const isSaved = state.overlayListMode === 'saved';
@@ -3056,6 +3143,7 @@
         qContainer.innerHTML = `<div style="font-size:0.8rem; color:#aaa; padding:10px 0;">(${isSaved ? 'Saved Kosong' : 'Antrean Kosong'})</div>`;
       } else {
         const tiers = [
+          { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
           { key: 'VIP', label: 'VIP', cls: 'vip' },
           { key: 'FREE', label: 'FREE', cls: 'free' }
         ];
@@ -3063,7 +3151,7 @@
         tiers.forEach(tier => {
           const players = [];
           listData.forEach((p, idx) => {
-            const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
+            const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
             if (pTier === tier.key) {
               players.push({ player: p, globalIdx: idx + 1 });
             }

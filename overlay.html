@@ -212,6 +212,11 @@
       border-left: 3px solid var(--c-slate);
     }
 
+    .player-slot.vvip {
+      background: rgba(168, 85, 247, 0.08);
+      border-left: 3px solid #C084FC;
+    }
+
     .player-slot.vip {
       background: rgba(255, 215, 0, 0.05);
       border-left: 3px solid #FFD700;
@@ -226,6 +231,10 @@
     #slot-p2 {
       border-left: none;
       border-right: 3px solid var(--c-slate);
+    }
+    #slot-p2.vvip {
+      border-left: none;
+      border-right: 3px solid #C084FC;
     }
     #slot-p2.vip {
       border-left: none;
@@ -248,6 +257,15 @@
       letter-spacing: 0.5px;
       background: rgba(255, 255, 255, 0.15);
       color: #ffffff;
+    }
+
+    .p-role-tag.vvip {
+      background-color: rgba(168, 85, 247, 0.22);
+      border: 1px solid #C084FC;
+      color: #C084FC;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-shadow: 0 0 6px rgba(192, 132, 252, 0.4);
     }
 
     .p-role-tag.vip {
@@ -413,6 +431,12 @@
       margin-bottom: 5px;
     }
 
+    .tier-section.vvip {
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed rgba(192, 132, 252, 0.45);
+    }
+
     .tier-section.vip {
       margin-bottom: 14px;
       padding-bottom: 10px;
@@ -440,6 +464,18 @@
       margin-right: 2px;
       min-width: 32px;
       text-align: center;
+    }
+
+    .tier-header.vvip {
+      background: rgba(168, 85, 247, 0.16);
+      color: #C084FC;
+      border-left: 3px solid #C084FC;
+    }
+
+    .tier-header.vvip span:first-child,
+    .tier-header.vvip .th-title {
+      color: #C084FC;
+      font-weight: 900;
     }
 
     .tier-header.vip {
@@ -501,6 +537,11 @@
       background: rgba(255, 255, 255, 0.04);
       border-left: 3px solid var(--c-slate);
       flex-shrink: 0;
+    }
+
+    .queue-row.vvip {
+      border-left-color: #C084FC;
+      background: rgba(168, 85, 247, 0.06);
     }
 
     .queue-row.vip {
@@ -575,6 +616,11 @@
       min-width: 20px;
     }
 
+    .queue-row.vvip .q-idx {
+      color: #C084FC;
+      font-weight: 900;
+    }
+
     .queue-row.vip .q-idx {
       color: #FFD700;
       font-weight: 900;
@@ -622,6 +668,14 @@
       letter-spacing: 0.5px;
       flex-shrink: 0;
       color: #ffffff;
+    }
+
+    .q-badge.vvip {
+      background-color: rgba(168, 85, 247, 0.22);
+      border: 1px solid #C084FC;
+      color: #C084FC;
+      font-weight: 900;
+      letter-spacing: 0.8px;
     }
 
     .q-badge.vip {
@@ -746,7 +800,7 @@
       announcement: '',
       topRecord: { name: '-', char: '-', ws: 0 },
       overlayListMode: 'queue',
-      tierStatus: { VIP: 'OPEN', FREE: 'OPEN' }
+      tierStatus: { VVIP: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
     };
 
     // Helper deteksi peran King vs Penantang
@@ -772,12 +826,6 @@
     function render(data) {
       if (!data) return;
       state = data;
-      if (state.tierStatus && state.tierStatus.VVIP) {
-        delete state.tierStatus.VVIP;
-      }
-      [state.p1, state.p2, ...(state.queue || []), ...(state.saved || [])].forEach(p => {
-        if (p && p.type === 'VVIP') p.type = 'VIP';
-      });
 
       // Announcement Ticker
       const tickerEl = document.getElementById('overlay-ticker');
@@ -826,10 +874,10 @@
       const p1Bonus = document.getElementById('p1-bonus');
 
       if (state.p1) {
-        const t1 = (state.p1.type || 'FREE').toUpperCase();
+        const t1 = (state.p1.type === 'VVIP' || state.p1.type === 'VIP') ? state.p1.type : 'FREE';
         slot1.className = 'player-slot ' + t1.toLowerCase();
         p1RoleTag.className = 'p-role-tag ' + t1.toLowerCase();
-        p1RoleTag.innerText = t1;
+        p1RoleTag.innerText = (t1 === 'VVIP') ? '⭐ VVIP' : t1;
 
         p1Name.innerText = state.p1.name;
         p1Char.innerText = formatChar(state.p1.char);
@@ -874,10 +922,10 @@
       const p2Bonus = document.getElementById('p2-bonus');
 
       if (state.p2) {
-        const t2 = (state.p2.type || 'FREE').toUpperCase();
+        const t2 = (state.p2.type === 'VVIP' || state.p2.type === 'VIP') ? state.p2.type : 'FREE';
         slot2.className = 'player-slot ' + t2.toLowerCase();
         p2RoleTag.className = 'p-role-tag ' + t2.toLowerCase();
-        p2RoleTag.innerText = t2;
+        p2RoleTag.innerText = (t2 === 'VVIP') ? '⭐ VVIP' : t2;
 
         p2Name.innerText = state.p2.name;
         p2Char.innerText = formatChar(state.p2.char);
@@ -912,14 +960,15 @@
         if (p2Bonus) p2Bonus.style.display = 'none';
       }
 
-      // Render Queue or Saved list with Ticket Count & 2 Vertical Tiers (VIP, FREE)
+      // Render Queue or Saved list with Ticket Count & 3 Vertical Tiers (VVIP, VIP, FREE)
       const isSavedMode = (state.overlayListMode === 'saved');
       const qSectionTitle = document.getElementById('queue-section-title');
       const qContainer = document.getElementById('queue-list');
       const qTotal = document.getElementById('queue-total-count');
 
-      const tierRank = { 'VIP': 1, 'FREE': 2 };
+      const tierRank = { 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
       const tiers = [
+        { key: 'VVIP', label: '⭐ VVIP', cls: 'vvip' },
         { key: 'VIP', label: 'VIP', cls: 'vip' },
         { key: 'FREE', label: 'FREE', cls: 'free' }
       ];
@@ -928,8 +977,8 @@
         if (qSectionTitle) qSectionTitle.innerText = 'DAFTAR SAVED';
         const sList = (state.saved || []).slice();
         sList.sort((a, b) => {
-          const rankA = tierRank[a.type] || 2;
-          const rankB = tierRank[b.type] || 2;
+          const rankA = tierRank[a.type] || 3;
+          const rankB = tierRank[b.type] || 3;
           if (rankA !== rankB) return rankA - rankB;
           return 0;
         });
@@ -942,7 +991,7 @@
           qContainer.innerHTML = '';
           let globalSavedIdx = 0;
           tiers.forEach(tier => {
-            const players = sList.filter(p => ((p.type === 'VIP') ? 'VIP' : 'FREE') === tier.key);
+            const players = sList.filter(p => ((p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE') === tier.key);
 
             const tStatus = (state.tierStatus && state.tierStatus[tier.key]) || 'OPEN';
             const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
@@ -1007,8 +1056,8 @@
         if (qSectionTitle) qSectionTitle.innerText = 'ANTREAN LIVE';
         const qList = (state.queue || []).slice();
         qList.sort((a, b) => {
-          const rankA = tierRank[a.type] || 2;
-          const rankB = tierRank[b.type] || 2;
+          const rankA = tierRank[a.type] || 3;
+          const rankB = tierRank[b.type] || 3;
           if (rankA !== rankB) return rankA - rankB;
           return 0;
         });
@@ -1022,7 +1071,7 @@
           tiers.forEach(tier => {
             const players = [];
             qList.forEach((p, idx) => {
-              const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
+              const pTier = (p.type === 'VVIP' || p.type === 'VIP') ? p.type : 'FREE';
               if (pTier === tier.key) {
                 players.push({ player: p, globalIdx: idx + 1 });
               }

@@ -21,6 +21,7 @@ default_state = {
         "ws": 0
     },
     "tierStatus": {
+        "VVIP": "OPEN",
         "VIP": "OPEN",
         "FREE": "OPEN"
     }

@@ -201,12 +201,12 @@
     .match-box {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
       background: rgba(0, 0, 0, 0.25);
       border-radius: 8px;
-      padding: 5px;
+      padding: 4px;
       border: 1px solid var(--border-subtle);
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       flex-shrink: 0;
     }
 
@@ -214,11 +214,47 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 8px;
+      padding: 3px 8px;
       border-radius: 6px;
       transition: background 0.15s ease;
       background: rgba(255, 255, 255, 0.03);
       border-left: 3px solid var(--c-slate);
+      min-height: 40px;
+    }
+
+    .p-info-p1 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+      flex: 1;
+      gap: 1px;
+    }
+
+    .p-info-p2 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      text-align: right;
+      min-width: 0;
+      flex: 1;
+      gap: 1px;
+    }
+
+    .p-header-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .p-header-line-p2 {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      min-width: 0;
     }
 
     .player-slot.vvip {
@@ -258,16 +294,18 @@
 
     /* ROLE BADGE = TIER BADGE IN ARENA */
     .p-role-tag {
-      font-size: 0.76rem;
+      font-size: 0.70rem;
       font-weight: 800;
       text-transform: uppercase;
-      padding: 3px 7px;
+      padding: 1px 6px;
       border-radius: 3px;
-      display: inline-block;
-      margin-bottom: 2px;
+      display: inline-flex;
+      align-items: center;
       letter-spacing: 0.5px;
       background: rgba(255, 255, 255, 0.15);
       color: #ffffff;
+      flex-shrink: 0;
+      line-height: 1.3;
     }
 
     .p-role-tag.vvip {
@@ -299,25 +337,23 @@
     /* LARGE PLAYER NAME */
     .p-name {
       font-weight: 800;
-      font-size: 1.3rem;
+      font-size: 1.15rem;
       color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 195px;
-      line-height: 1.2;
+      line-height: 1.15;
     }
 
     /* LARGE CHARACTER NAME */
     .p-char {
-      font-size: 0.92rem;
-      color: #ffffff;
-      font-weight: 700;
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 195px;
-      margin-top: 1px;
+      line-height: 1.1;
     }
 
     .p-right {
@@ -325,61 +361,74 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 3px;
+      gap: 1px;
       flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .p-left-p2 {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+      flex-shrink: 0;
+      margin-right: 8px;
     }
 
     /* PROMINENT WIN STREAK */
     .p-ws {
       font-weight: 800;
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       color: #ffffff;
       display: flex;
       align-items: center;
       gap: 4px;
+      line-height: 1.15;
     }
 
     .free-streak {
-      font-size: 0.72rem;
+      font-size: 0.70rem;
       background: rgba(255, 255, 255, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.4);
       color: #ffffff;
-      padding: 1px 5px;
+      padding: 0 4px;
       border-radius: 3px;
       font-weight: 800;
       letter-spacing: 0.5px;
     }
 
     .bonus-badge {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       background: rgba(255, 255, 255, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.4);
       color: #ffffff;
-      padding: 1px 5px;
+      padding: 0 4px;
       border-radius: 3px;
       font-weight: 800;
       letter-spacing: 0.5px;
     }
 
     .p-ticket {
-      font-size: 0.92rem;
-      color: #ffffff;
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.85);
       font-weight: 600;
+      line-height: 1.1;
     }
 
     .p-ticket b {
       color: #ffffff;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 800;
     }
 
     .vs-tag {
       text-align: center;
-      font-size: 0.74rem;
+      font-size: 0.65rem;
       font-weight: 900;
-      color: #ffffff;
-      letter-spacing: 1px;
-      margin: 1px 0;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 1.5px;
+      margin: 0;
+      line-height: 1;
     }
 
     /* SCROLLABLE QUEUE SECTION */
@@ -755,9 +804,11 @@
     <div class="match-box">
       <!-- Player 1 Slot -->
       <div class="player-slot" id="slot-p1">
-        <div>
-          <span class="p-role-tag" id="p1-role-tag">P1</span>
-          <div id="p1-name" class="p-name">Menunggu...</div>
+        <div class="p-info-p1">
+          <div class="p-header-line">
+            <span class="p-role-tag" id="p1-role-tag">P1</span>
+            <div id="p1-name" class="p-name">Menunggu...</div>
+          </div>
           <div id="p1-char" class="p-char">-</div>
         </div>
         <div class="p-right">
@@ -773,17 +824,19 @@
 
       <!-- Player 2 Slot (Mirrored: WS/Tiket on Left, Tier/Nama/Char on Right) -->
       <div class="player-slot" id="slot-p2">
-        <div class="p-left-p2" style="display: flex; flex-direction: column; align-items: flex-start; gap: 3px; flex-shrink: 0;">
+        <div class="p-left-p2">
           <div class="p-ws">
             WS: <span id="p2-ws">0</span>
             <span id="p2-bonus" class="bonus-badge" style="display:none;">+1 TIKET</span>
           </div>
           <div class="p-ticket">Tiket: <b id="p2-tickets">0</b></div>
         </div>
-        <div class="p-right-p2" style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; min-width: 0; flex: 1;">
-          <span class="p-role-tag" id="p2-role-tag">P2</span>
-          <div id="p2-name" class="p-name" style="text-align: right;">Menunggu...</div>
-          <div id="p2-char" class="p-char" style="text-align: right;">-</div>
+        <div class="p-info-p2">
+          <div class="p-header-line-p2">
+            <div id="p2-name" class="p-name">Menunggu...</div>
+            <span class="p-role-tag" id="p2-role-tag">P2</span>
+          </div>
+          <div id="p2-char" class="p-char">-</div>
         </div>
       </div>
     </div>

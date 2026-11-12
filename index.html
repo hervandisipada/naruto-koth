@@ -1122,7 +1122,10 @@
           </div>
           <div>
             <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Karakter:</label>
-            <input type="text" id="input-record-char" class="form-control" placeholder="Karakter..."
+            <select id="select-record-char-picker" class="form-control" style="background: var(--panel-subtle); cursor: pointer; margin-bottom: 4px;" onchange="if(this.value){ document.getElementById('input-record-char').value = this.value; }">
+              <option value="">▼ PILIH DARI DROPDOWN...</option>
+            </select>
+            <input type="text" id="input-record-char" class="form-control" placeholder="Atau ketik karakter..."
               list="storm-characters" autocomplete="off">
           </div>
         </div>
@@ -1482,6 +1485,13 @@
         modalSelect.innerHTML = optionsHtml;
         if (curVal) modalSelect.value = curVal;
       }
+
+      const recPicker = document.getElementById('select-record-char-picker');
+      if (recPicker) {
+        const curVal = recPicker.value;
+        recPicker.innerHTML = optionsHtml;
+        if (curVal) recPicker.value = curVal;
+      }
     }
 
     function registerCharacter(charName) {
@@ -1548,7 +1558,6 @@
       if (!state.topRecord || typeof state.topRecord !== 'object') {
         state.topRecord = { name: '-', char: '-', ws: 0 };
       }
-      syncTopRecordFromAllPlayers();
 
       lastSavedStateJson = JSON.stringify(state);
       renderAll();
@@ -1575,7 +1584,6 @@
               if (!state.topRecord || typeof state.topRecord !== 'object') {
                 state.topRecord = { name: '-', char: '-', ws: 0 };
               }
-              syncTopRecordFromAllPlayers();
               lastSavedStateJson = JSON.stringify(state);
               localStorage.setItem('koth_naruto_state', JSON.stringify(state));
               renderAll();
@@ -2261,8 +2269,13 @@
         const parsed = parseInt(val);
         if (!isNaN(parsed) && parsed >= 0) {
           if (confirm(`Ubah WS [ ${p.name} ] dari ${p.ws || 0} menjadi ${parsed}?`)) {
+            const oldWs = p.ws || 0;
             p.ws = parsed;
-            checkAndUpdateTopRecord(p);
+            if (state.topRecord && state.topRecord.name === p.name && oldWs === state.topRecord.ws && parsed < oldWs) {
+              state.topRecord.ws = parsed;
+            } else {
+              checkAndUpdateTopRecord(p);
+            }
             saveState();
           }
         }
@@ -2280,24 +2293,6 @@
           char: formatChar(candidate.char),
           ws: candidate.ws
         };
-      }
-    }
-
-    function syncTopRecordFromAllPlayers() {
-      if (!state.topRecord || typeof state.topRecord !== 'object') {
-        state.topRecord = { name: '-', char: '-', ws: 0 };
-      }
-      const allPlayers = [state.p1, state.p2, ...(state.queue || []), ...(state.saved || [])].filter(Boolean);
-      let best = (state.topRecord.ws && state.topRecord.ws > 0) ? { ...state.topRecord } : null;
-      for (const p of allPlayers) {
-        if (p && p.ws && p.ws > 0) {
-          if (!best || p.ws > best.ws) {
-            best = { name: p.name, char: formatChar(p.char), ws: p.ws };
-          }
-        }
-      }
-      if (best && (best.ws > (state.topRecord.ws || 0) || state.topRecord.name === '-' || !state.topRecord.name)) {
-        state.topRecord = best;
       }
     }
 
@@ -2540,7 +2535,6 @@
 
     // RENDER FUNCTIONS
     function renderAll() {
-      syncTopRecordFromAllPlayers();
       renderArena();
       renderQueue();
       renderSaved();
@@ -2570,34 +2564,54 @@
       if (topWsBadge) {
         topWsBadge.innerText = `${state.topRecord.ws || 0} WS`;
       }
-      if (recNameInput && document.activeElement !== recNameInput) {
+
+      // Jangan timpa input jika admin sedang fokus / mengetik di salah satu field rekor
+      const isEditingRecord = (
+        document.activeElement === recNameInput ||
+        document.activeElement === recCharInput ||
+        document.activeElement === recWsInput
+      );
+      if (isEditingRecord) return;
+
+      if (recNameInput) {
         recNameInput.value = (state.topRecord.name === '-' ? '' : (state.topRecord.name || ''));
       }
-      if (recCharInput && document.activeElement !== recCharInput) {
+      if (recCharInput) {
         recCharInput.value = (state.topRecord.char === '-' ? '' : (state.topRecord.char || ''));
       }
-      if (recWsInput && document.activeElement !== recWsInput) {
-        recWsInput.value = state.topRecord.ws || 0;
+      if (recWsInput) {
+        recWsInput.value = (state.topRecord.ws !== undefined && state.topRecord.ws !== null) ? state.topRecord.ws : 0;
       }
     }
 
     function saveTopRecord() {
-      const name = document.getElementById('input-record-name').value.trim() || '-';
-      const char = document.getElementById('input-record-char').value.trim() || '-';
-      const ws = parseInt(document.getElementById('input-record-ws').value) || 0;
+      const nameInput = document.getElementById('input-record-name');
+      const charInput = document.getElementById('input-record-char');
+      const wsInput = document.getElementById('input-record-ws');
+
+      const name = (nameInput ? nameInput.value.trim() : '') || '-';
+      const char = (charInput ? charInput.value.trim() : '') || '-';
+      const ws = Math.max(0, parseInt(wsInput ? wsInput.value : '0') || 0);
 
       if (!confirm(`Simpan TOP WS berikut?\n${name} | ${char} | ${ws} WS`)) return;
-      if (!state.topRecord) state.topRecord = {};
-      state.topRecord = { name, char, ws };
+      state.topRecord = { name, char: formatChar(char), ws };
       saveState();
-      alert(`TOP WS berhasil diperbarui:\n${name} | ${char} | ${ws} WS`);
+      alert(`TOP WS berhasil diperbarui:\n${name} | ${formatChar(char)} | ${ws} WS`);
     }
 
     function resetTopRecord() {
-      if (confirm("Reset TOP WS menjadi 0?")) {
-        state.topRecord = { name: '-', char: '-', ws: 0 };
-        saveState();
-      }
+      if (!confirm("Reset TOP WS menjadi 0?")) return;
+      state.topRecord = { name: '-', char: '-', ws: 0 };
+      const recNameInput = document.getElementById('input-record-name');
+      const recCharInput = document.getElementById('input-record-char');
+      const recWsInput = document.getElementById('input-record-ws');
+      const selectCharPicker = document.getElementById('select-record-char-picker');
+      if (recNameInput) recNameInput.value = '';
+      if (recCharInput) recCharInput.value = '';
+      if (recWsInput) recWsInput.value = '0';
+      if (selectCharPicker) selectCharPicker.value = '';
+      saveState();
+      alert("TOP WS berhasil di-reset menjadi 0.");
     }
 
     function saveAnnouncement() {

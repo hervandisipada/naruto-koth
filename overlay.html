@@ -797,13 +797,7 @@
       const recWrap = document.querySelector('.record-marquee-wrap');
       const recContent = document.getElementById('record-text');
 
-      let topRec = (state.topRecord && typeof state.topRecord === 'object') ? { ...state.topRecord } : { name: '-', char: '-', ws: 0 };
-      const allActivePlayers = [state.p1, state.p2, ...(state.queue || []), ...(state.saved || [])].filter(Boolean);
-      for (const p of allActivePlayers) {
-        if (p && p.ws && p.ws > (topRec.ws || 0)) {
-          topRec = { name: p.name, char: formatChar(p.char), ws: p.ws };
-        }
-      }
+      const topRec = (state.topRecord && typeof state.topRecord === 'object') ? state.topRecord : { name: '-', char: '-', ws: 0 };
 
       if (recUser) recUser.innerText = topRec.name || '-';
       if (recChar) recChar.innerText = formatChar(topRec.char);

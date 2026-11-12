@@ -1142,6 +1142,7 @@
             } else {
               players.forEach(p => {
                 globalSavedIdx++;
+                const pTier = tier.key;
                 const row = document.createElement('div');
                 row.className = `queue-row ${tier.cls}`;
                 row.innerHTML = `
@@ -1213,6 +1214,7 @@
               tierDiv.appendChild(emptyDiv);
             } else {
               players.forEach(({ player: p, globalIdx }) => {
+                const pTier = tier.key;
                 const row = document.createElement('div');
                 row.className = `queue-row ${tier.cls}`;
                 row.innerHTML = `

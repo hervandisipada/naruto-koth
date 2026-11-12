@@ -3180,6 +3180,7 @@
             tierSection.appendChild(tierHeader);
 
             players.slice(0, 4).forEach(({ player: p, globalIdx }) => {
+              const pTier = tier.key;
               const qEl = document.createElement('div');
               qEl.className = 'overlay-qitem';
               const numPrefix = isSaved ? '' : `#${globalIdx} `;

@@ -1634,6 +1634,43 @@
     let lastSavedStateJson = null;
     const MAX_HISTORY_STACK = 50;
 
+    // Sanitize State: pastikan tier FAST/VIP/FREE valid dan migrasikan VVIP -> FAST
+    function sanitizeState(st) {
+      if (!st || typeof st !== 'object') return false;
+      let changed = false;
+      const fixP = (p) => {
+        if (!p) return;
+        if (p.type === 'VVIP') { p.type = 'FAST'; changed = true; }
+        if (!p.type || p.type === 'SAVE' || (p.type !== 'FAST' && p.type !== 'VIP' && p.type !== 'FREE')) {
+          p.type = 'FREE';
+          changed = true;
+        }
+      };
+      fixP(st.p1);
+      fixP(st.p2);
+      if (Array.isArray(st.queue)) st.queue.forEach(fixP);
+      if (Array.isArray(st.saved)) st.saved.forEach(fixP);
+
+      if (!st.tierStatus || typeof st.tierStatus !== 'object') {
+        st.tierStatus = { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
+        changed = true;
+      } else {
+        if (st.tierStatus.VVIP) {
+          if (!st.tierStatus.FAST) st.tierStatus.FAST = st.tierStatus.VVIP;
+          delete st.tierStatus.VVIP;
+          changed = true;
+        }
+        if (!st.tierStatus.FAST) { st.tierStatus.FAST = 'OPEN'; changed = true; }
+        if (!st.tierStatus.VIP) { st.tierStatus.VIP = 'OPEN'; changed = true; }
+        if (!st.tierStatus.FREE) { st.tierStatus.FREE = 'OPEN'; changed = true; }
+      }
+      if (!st.topRecord || typeof st.topRecord !== 'object') {
+        st.topRecord = { name: '-', char: '-', ws: 0 };
+        changed = true;
+      }
+      return changed;
+    }
+
     // Load Data & Server Sync
     function loadState() {
       const data = localStorage.getItem('koth_naruto_state');
@@ -1642,64 +1679,29 @@
           state = JSON.parse(data);
         } catch (e) { }
       }
-      // Sanitize: pastikan label FAST/VIP/FREE valid dan migrasikan VVIP -> FAST
-      const sanitizePlayer = (p) => {
-        if (!p) return;
-        if (p.type === 'VVIP') p.type = 'FAST';
-        if (!p.type || p.type === 'SAVE' || (p.type !== 'FAST' && p.type !== 'VIP' && p.type !== 'FREE')) p.type = 'FREE';
-      };
-      if (Array.isArray(state.queue)) state.queue.forEach(sanitizePlayer);
-      if (Array.isArray(state.saved)) state.saved.forEach(sanitizePlayer);
-      sanitizePlayer(state.p1);
-      sanitizePlayer(state.p2);
-
-      if (!state.tierStatus || typeof state.tierStatus !== 'object') {
-        state.tierStatus = { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
-      } else {
-        if (state.tierStatus.VVIP && !state.tierStatus.FAST) {
-          state.tierStatus.FAST = state.tierStatus.VVIP;
-          delete state.tierStatus.VVIP;
-        }
-        if (!state.tierStatus.FAST) state.tierStatus.FAST = 'OPEN';
-        if (!state.tierStatus.VIP) state.tierStatus.VIP = 'OPEN';
-        if (!state.tierStatus.FREE) state.tierStatus.FREE = 'OPEN';
-      }
-      if (!state.topRecord || typeof state.topRecord !== 'object') {
-        state.topRecord = { name: '-', char: '-', ws: 0 };
-      }
+      const wasMigrated = sanitizeState(state);
 
       lastSavedStateJson = JSON.stringify(state);
       renderAll();
       setupSync();
+      if (wasMigrated) {
+        saveState();
+      }
 
       // Initial GET from Local Python Server if running locally
       if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('github.io')) {
         fetch('/api/state')
           .then(res => res.json())
           .then(serverState => {
-            if (serverState && typeof serverState === 'object' && JSON.stringify(serverState) !== JSON.stringify(state)) {
-              state = serverState;
-              if (Array.isArray(state.queue)) state.queue.forEach(sanitizePlayer);
-              if (Array.isArray(state.saved)) state.saved.forEach(sanitizePlayer);
-              sanitizePlayer(state.p1);
-              sanitizePlayer(state.p2);
-              if (!state.tierStatus || typeof state.tierStatus !== 'object') {
-                state.tierStatus = { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
-              } else {
-                if (state.tierStatus.VVIP && !state.tierStatus.FAST) {
-                  state.tierStatus.FAST = state.tierStatus.VVIP;
-                  delete state.tierStatus.VVIP;
-                }
-                if (!state.tierStatus.FAST) state.tierStatus.FAST = 'OPEN';
-                if (!state.tierStatus.VIP) state.tierStatus.VIP = 'OPEN';
-                if (!state.tierStatus.FREE) state.tierStatus.FREE = 'OPEN';
+            if (serverState && typeof serverState === 'object') {
+              const serverMigrated = sanitizeState(serverState);
+              if (JSON.stringify(serverState) !== JSON.stringify(state) || serverMigrated) {
+                state = serverState;
+                lastSavedStateJson = JSON.stringify(state);
+                localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+                renderAll();
+                if (serverMigrated) saveState();
               }
-              if (!state.topRecord || typeof state.topRecord !== 'object') {
-                state.topRecord = { name: '-', char: '-', ws: 0 };
-              }
-              lastSavedStateJson = JSON.stringify(state);
-              localStorage.setItem('koth_naruto_state', JSON.stringify(state));
-              renderAll();
             }
           })
           .catch(() => { });
@@ -1767,20 +1769,7 @@
         return;
       }
 
-      if (!state.tierStatus || typeof state.tierStatus !== 'object') {
-        state.tierStatus = { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
-      } else {
-        if (state.tierStatus.VVIP && !state.tierStatus.FAST) {
-          state.tierStatus.FAST = state.tierStatus.VVIP;
-          delete state.tierStatus.VVIP;
-        }
-        if (!state.tierStatus.FAST) state.tierStatus.FAST = 'OPEN';
-        if (!state.tierStatus.VIP) state.tierStatus.VIP = 'OPEN';
-        if (!state.tierStatus.FREE) state.tierStatus.FREE = 'OPEN';
-      }
-      if (!state.topRecord || typeof state.topRecord !== 'object') {
-        state.topRecord = { name: '-', char: '-', ws: 0 };
-      }
+      sanitizeState(state);
 
       saveState(true);
       showToast('↩ Perubahan dibatalkan (Undo)');
@@ -1801,20 +1790,7 @@
         return;
       }
 
-      if (!state.tierStatus || typeof state.tierStatus !== 'object') {
-        state.tierStatus = { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
-      } else {
-        if (state.tierStatus.VVIP && !state.tierStatus.FAST) {
-          state.tierStatus.FAST = state.tierStatus.VVIP;
-          delete state.tierStatus.VVIP;
-        }
-        if (!state.tierStatus.FAST) state.tierStatus.FAST = 'OPEN';
-        if (!state.tierStatus.VIP) state.tierStatus.VIP = 'OPEN';
-        if (!state.tierStatus.FREE) state.tierStatus.FREE = 'OPEN';
-      }
-      if (!state.topRecord || typeof state.topRecord !== 'object') {
-        state.topRecord = { name: '-', char: '-', ws: 0 };
-      }
+      sanitizeState(state);
 
       saveState(true);
       showToast('↪ Perubahan dipulihkan (Redo)');
@@ -1912,11 +1888,13 @@
           cloudMqttClient.on('message', (topic, payload) => {
             try {
               const remoteData = JSON.parse(payload.toString());
-              if (JSON.stringify(remoteData) !== JSON.stringify(state)) {
+              const hadMigration = sanitizeState(remoteData);
+              if (JSON.stringify(remoteData) !== JSON.stringify(state) || hadMigration) {
                 state = remoteData;
                 lastSavedStateJson = JSON.stringify(state);
                 localStorage.setItem('koth_naruto_state', JSON.stringify(state));
                 renderAll();
+                if (hadMigration) saveState();
               }
             } catch (e) { }
           });
@@ -1939,11 +1917,13 @@
         evtSource.onmessage = (e) => {
           try {
             const data = JSON.parse(e.data);
-            if (JSON.stringify(data) !== JSON.stringify(state)) {
+            const hadMigration = sanitizeState(data);
+            if (JSON.stringify(data) !== JSON.stringify(state) || hadMigration) {
               state = data;
               lastSavedStateJson = JSON.stringify(state);
               localStorage.setItem('koth_naruto_state', JSON.stringify(state));
               renderAll();
+              if (hadMigration) saveState();
             }
           } catch (err) { }
         };
@@ -1952,6 +1932,7 @@
           if (e.key === 'koth_naruto_state' && e.newValue) {
             try {
               state = JSON.parse(e.newValue);
+              sanitizeState(state);
               lastSavedStateJson = JSON.stringify(state);
               renderAll();
             } catch (err) { }
@@ -3205,7 +3186,7 @@
               qEl.innerHTML = `
                 <span style="font-weight:700;">${numPrefix}${escapeHtml(p.name)} | <span style="font-weight:400; color:var(--c-slate);">${escapeHtml(formatChar(p.char))}</span></span>
                 <span style="display:flex; gap:6px; align-items:center;">
-                  <span class="badge badge-${tier.cls}">${p.type || 'FREE'}</span>
+                  <span class="badge badge-${tier.cls}">${pTier}</span>
                   <span style="font-size:0.85rem; font-weight:900; color:var(--c-white); background:rgba(255,255,255,0.12); padding:1px 6px; border-radius:3px; border:1px solid var(--c-slate); min-width:28px; text-align:center;">${p.matchesLeft}</span>
                 </span>
               `;

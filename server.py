@@ -15,6 +15,11 @@ default_state = {
     "queue": [],
     "saved": [],
     "announcement": "",
+    "topRecords": [
+        {"rank": 1, "name": "-", "char": "-", "ws": 0},
+        {"rank": 2, "name": "-", "char": "-", "ws": 0},
+        {"rank": 3, "name": "-", "char": "-", "ws": 0}
+    ],
     "topRecord": {
         "name": "-",
         "char": "-",

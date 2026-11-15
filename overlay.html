@@ -170,6 +170,24 @@
       will-change: transform;
     }
 
+    .rec-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .rec-medal {
+      font-size: 0.95rem;
+      filter: drop-shadow(0 0 2px rgba(255,255,255,0.4));
+    }
+
+    .rec-divider {
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 900;
+      margin: 0 4px;
+    }
+
     .rec-username {
       font-weight: 800;
       color: #ffffff;
@@ -566,6 +584,23 @@
       font-weight: 700;
     }
 
+    .tier-section.vipfree {
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+    }
+
+    .tier-header.vipfree {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.16) 0%, rgba(56, 189, 248, 0.12) 100%);
+      color: #FFD700;
+      border-left: 3px solid #FFD700;
+    }
+
+    .tier-header.vipfree span:first-child,
+    .tier-header.vipfree .th-title {
+      color: #FFD700;
+      font-weight: 900;
+    }
+
     .tier-status-tag {
       font-size: 0.68rem;
       font-weight: 900;
@@ -789,16 +824,18 @@
       </div>
     </div>
 
-    <!-- Top Record WS Banner -->
+    <!-- Top Record WS Banner (Top 3) -->
     <div id="overlay-top-record" class="overlay-top-record">
-      <span class="record-label">TOP WS:</span>
+      <span class="record-label">TOP 3 WS:</span>
       <div class="record-marquee-wrap">
         <span id="record-text" class="record-content">
-          <span id="rec-username" class="rec-username">-</span>
-          <span class="rec-sep">|</span>
-          <span id="rec-char" class="rec-char">-</span>
-          <span class="rec-sep">|</span>
-          <span id="rec-ws" class="rec-ws">0 WS</span>
+          <span class="rec-item">
+            <span class="rec-medal">🥇</span>
+            <span class="rec-username">-</span>
+            <span class="rec-sep">|</span>
+            <span class="rec-char">-</span>
+            <span class="rec-ws">0 WS</span>
+          </span>
         </span>
       </div>
     </div>
@@ -965,6 +1002,24 @@
         if (!st.tierStatus.VIP) st.tierStatus.VIP = 'OPEN';
         if (!st.tierStatus.FREE) st.tierStatus.FREE = 'OPEN';
       }
+
+      // Pastikan Top 3 WS selalu siap
+      if (!Array.isArray(st.topRecords) || st.topRecords.length < 3) {
+        const existing = Array.isArray(st.topRecords) ? st.topRecords.slice() : [];
+        if (existing.length === 0 && st.topRecord && typeof st.topRecord === 'object' && st.topRecord.name && st.topRecord.name !== '-') {
+          existing.push({ rank: 1, name: st.topRecord.name, char: formatChar(st.topRecord.char), ws: Number(st.topRecord.ws) || 0 });
+        }
+        while (existing.length < 3) {
+          existing.push({ rank: existing.length + 1, name: '-', char: '-', ws: 0 });
+        }
+        st.topRecords = existing.slice(0, 3).map((r, i) => ({
+          rank: i + 1,
+          name: r.name || '-',
+          char: formatChar(r.char),
+          ws: Number(r.ws) || 0
+        }));
+      }
+      st.topRecord = st.topRecords[0];
     }
 
     // Timestamp state terbaru yang diterima
@@ -986,6 +1041,21 @@
       renderOverlay();
     }
 
+    function interleaveVipFree(vipList, freeList) {
+      const result = [];
+      let vIdx = 0;
+      let fIdx = 0;
+      while (vIdx < vipList.length || fIdx < freeList.length) {
+        for (let i = 0; i < 5 && vIdx < vipList.length; i++) {
+          result.push(vipList[vIdx++]);
+        }
+        for (let i = 0; i < 2 && fIdx < freeList.length; i++) {
+          result.push(freeList[fIdx++]);
+        }
+      }
+      return result;
+    }
+
     function renderOverlay() {
       if (!state) return;
 
@@ -1000,20 +1070,34 @@
         tickerEl.style.display = 'none';
       }
 
-      // Top Record WS Banner (Auto-Resolved to Highest WS)
-      const recordEl = document.getElementById('overlay-top-record');
-      const recUser = document.getElementById('rec-username');
-      const recChar = document.getElementById('rec-char');
-      const recWs = document.getElementById('rec-ws');
-      const recWrap = document.querySelector('.record-marquee-wrap');
+      // Top Record WS Banner (Top 3 WS)
       const recContent = document.getElementById('record-text');
+      if (recContent) {
+        const recs = (Array.isArray(state.topRecords) && state.topRecords.length >= 3)
+          ? state.topRecords
+          : [
+              state.topRecord || { rank: 1, name: '-', char: '-', ws: 0 },
+              { rank: 2, name: '-', char: '-', ws: 0 },
+              { rank: 3, name: '-', char: '-', ws: 0 }
+            ];
 
-      const topRec = (state.topRecord && typeof state.topRecord === 'object') ? state.topRecord : { name: '-', char: '-', ws: 0 };
-
-      if (recUser) recUser.innerText = topRec.name || '-';
-      if (recChar) recChar.innerText = formatChar(topRec.char);
-      const wsCount = (topRec.ws !== undefined && topRec.ws !== null) ? topRec.ws : 0;
-      if (recWs) recWs.innerText = `${wsCount} WS`;
+        const medals = ['🥇', '🥈', '🥉'];
+        recContent.innerHTML = recs.slice(0, 3).map((r, i) => {
+          const medal = medals[i] || `#${i + 1}`;
+          const rName = escapeHtml(r.name && r.name !== '-' ? r.name : '-');
+          const rChar = escapeHtml(formatChar(r.char));
+          const rWs = (r.ws !== undefined && r.ws !== null) ? r.ws : 0;
+          return `
+            <span class="rec-item">
+              <span class="rec-medal">${medal}</span>
+              <span class="rec-username">${rName}</span>
+              <span class="rec-sep">|</span>
+              <span class="rec-char">${rChar}</span>
+              <span class="rec-ws">${rWs} WS</span>
+            </span>
+          `;
+        }).join('<span class="rec-divider">•</span>');
+      }
 
       // Slot 1 (P1) - Menggunakan Label Tier (Bukan King/Penantang)
       const slot1 = document.getElementById('slot-p1');
@@ -1111,28 +1195,17 @@
         if (p2Bonus) p2Bonus.style.display = 'none';
       }
 
-      // Render Queue or Saved list with Ticket Count & 3 Vertical Tiers (FAST, VIP, FREE)
+      // Render Queue or Saved list with Ticket Count
       const isSavedMode = (state.overlayListMode === 'saved');
       const qSectionTitle = document.getElementById('queue-section-title');
       const qContainer = document.getElementById('queue-list');
       const qTotal = document.getElementById('queue-total-count');
 
-      const tierRank = { 'FAST': 1, 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
-      const tiers = [
-        { key: 'FAST', label: 'FAST', cls: 'fast' },
-        { key: 'VIP', label: 'VIP', cls: 'vip' },
-        { key: 'FREE', label: 'FREE', cls: 'free' }
-      ];
-
       if (isSavedMode) {
         if (qSectionTitle) qSectionTitle.innerText = 'DAFTAR SAVED';
         const sList = (state.saved || []).slice();
-        sList.sort((a, b) => {
-          const rankA = tierRank[a.type] || 3;
-          const rankB = tierRank[b.type] || 3;
-          if (rankA !== rankB) return rankA - rankB;
-          return 0;
-        });
+        // Urutkan sesuai abjad username (A-Z)
+        sList.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base', numeric: true }));
 
         qTotal.innerText = `${sList.length} Pemain`;
 
@@ -1141,39 +1214,54 @@
         } else {
           qContainer.innerHTML = '';
           let globalSavedIdx = 0;
-          tiers.forEach(tier => {
-            const players = sList.filter(p => {
-              const pTier = (p.type === 'FAST' || p.type === 'VVIP') ? 'FAST' : ((p.type === 'VIP') ? 'VIP' : 'FREE');
-              return pTier === tier.key;
-            });
 
-            const tStatus = (state.tierStatus && (state.tierStatus[tier.key] || (tier.key === 'FAST' && state.tierStatus['VVIP']))) || 'OPEN';
-            const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
+          // FAST tetap dipisahkan section-nya jika ada
+          const fastSaved = sList.filter(p => (p.type === 'FAST' || p.type === 'VVIP'));
+          const vipFreeSaved = sList.filter(p => (p.type !== 'FAST' && p.type !== 'VVIP'));
+
+          const savedSections = [];
+          if (fastSaved.length > 0) {
+            savedSections.push({
+              key: 'FAST',
+              label: 'FAST',
+              cls: 'fast',
+              players: fastSaved
+            });
+          }
+          savedSections.push({
+            key: 'VIPFREE',
+            label: 'VIP & FREE',
+            cls: 'vipfree',
+            players: vipFreeSaved
+          });
+
+          savedSections.forEach(sec => {
+            if (sec.players.length === 0 && sec.key === 'FAST') return;
 
             const tierDiv = document.createElement('div');
-            tierDiv.className = `tier-section ${tier.cls}`;
+            tierDiv.className = `tier-section ${sec.cls}`;
             tierDiv.innerHTML = `
-              <div class="tier-header ${tier.cls}">
+              <div class="tier-header ${sec.cls}">
                 <div style="display:flex; align-items:center; gap:6px;">
-                  <span>${tier.label}</span>
-                  <span class="tier-status-tag ${statusClass}">${tStatus}</span>
-                  <span>(${players.length})</span>
+                  <span>${sec.label}</span>
+                  <span>(${sec.players.length})</span>
                 </div>
                 <span class="th-ticket">TIKET</span>
               </div>
             `;
 
-            if (players.length === 0) {
+            if (sec.players.length === 0) {
               const emptyDiv = document.createElement('div');
               emptyDiv.className = 'tier-empty';
               emptyDiv.innerText = '(Kosong)';
               tierDiv.appendChild(emptyDiv);
             } else {
-              players.forEach(p => {
+              sec.players.forEach(p => {
                 globalSavedIdx++;
-                const pTier = tier.key;
+                const pTier = (p.type === 'FAST' || p.type === 'VVIP') ? 'FAST' : ((p.type === 'VIP') ? 'VIP' : 'FREE');
+                const rowCls = pTier.toLowerCase();
                 const row = document.createElement('div');
-                row.className = `queue-row ${tier.cls}`;
+                row.className = `queue-row ${rowCls}`;
                 row.innerHTML = `
                   <div class="q-left">
                     <div class="q-text-wrap">
@@ -1184,7 +1272,7 @@
                     </div>
                   </div>
                   <div class="q-right">
-                    <span class="q-badge ${tier.cls}">${pTier}</span>
+                    <span class="q-badge ${rowCls}">${pTier}</span>
                     <span class="q-ticket">${p.matchesLeft}</span>
                   </div>
                 `;
@@ -1197,13 +1285,21 @@
         }
       } else {
         if (qSectionTitle) qSectionTitle.innerText = 'ANTREAN LIVE';
-        const qList = (state.queue || []).slice();
-        qList.sort((a, b) => {
-          const rankA = tierRank[a.type] || 3;
-          const rankB = tierRank[b.type] || 3;
-          if (rankA !== rankB) return rankA - rankB;
-          return 0;
+        
+        // FAST tetap dipisahkan; VIP & FREE disatukan dengan pola 5 VIP : 2 FREE
+        const fastPlayers = [];
+        const vipPlayers = [];
+        const freePlayers = [];
+
+        (state.queue || []).forEach(p => {
+          const pTier = (p.type === 'FAST' || p.type === 'VVIP') ? 'FAST' : ((p.type === 'VIP') ? 'VIP' : 'FREE');
+          if (pTier === 'FAST') fastPlayers.push(p);
+          else if (pTier === 'VIP') vipPlayers.push(p);
+          else freePlayers.push(p);
         });
+
+        const interleavedVipFree = interleaveVipFree(vipPlayers, freePlayers);
+        const qList = [...fastPlayers, ...interleavedVipFree];
 
         qTotal.innerText = `${qList.length} Pemain`;
 
@@ -1211,61 +1307,105 @@
           qContainer.innerHTML = '<div class="empty-queue">(Antrean Kosong)</div>';
         } else {
           qContainer.innerHTML = '';
-          tiers.forEach(tier => {
-            const players = [];
-            qList.forEach((p, idx) => {
-              const pTier = (p.type === 'FAST' || p.type === 'VVIP') ? 'FAST' : ((p.type === 'VIP') ? 'VIP' : 'FREE');
-              if (pTier === tier.key) {
-                players.push({ player: p, globalIdx: idx + 1 });
-              }
-            });
+          let globalIdx = 0;
 
-            const tStatus = (state.tierStatus && (state.tierStatus[tier.key] || (tier.key === 'FAST' && state.tierStatus['VVIP']))) || 'OPEN';
-            const statusClass = tStatus.toLowerCase() === 'closed' ? 'closed' : 'open';
+          // 1. Section FAST
+          const tStatusFast = (state.tierStatus && (state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'OPEN';
+          const statusClassFast = tStatusFast.toLowerCase() === 'closed' ? 'closed' : 'open';
 
-            const tierDiv = document.createElement('div');
-            tierDiv.className = `tier-section ${tier.cls}`;
-            tierDiv.innerHTML = `
-              <div class="tier-header ${tier.cls}">
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <span>${tier.label}</span>
-                  <span class="tier-status-tag ${statusClass}">${tStatus}</span>
-                  <span>(${players.length})</span>
-                </div>
-                <span class="th-ticket">TIKET</span>
+          const fastSec = document.createElement('div');
+          fastSec.className = 'tier-section fast';
+          fastSec.innerHTML = `
+            <div class="tier-header fast">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span>FAST</span>
+                <span class="tier-status-tag ${statusClassFast}">${tStatusFast}</span>
+                <span>(${fastPlayers.length})</span>
               </div>
-            `;
+              <span class="th-ticket">TIKET</span>
+            </div>
+          `;
 
-            if (players.length === 0) {
-              const emptyDiv = document.createElement('div');
-              emptyDiv.className = 'tier-empty';
-              emptyDiv.innerText = '(Kosong)';
-              tierDiv.appendChild(emptyDiv);
-            } else {
-              players.forEach(({ player: p, globalIdx }) => {
-                const pTier = tier.key;
-                const row = document.createElement('div');
-                row.className = `queue-row ${tier.cls}`;
-                row.innerHTML = `
-                  <div class="q-left">
-                    <div class="q-text-wrap">
-                      <span class="q-idx">#${globalIdx}</span>
-                      <span class="q-name">${escapeHtml(p.name)}</span>
-                      <span class="q-sep">|</span>
-                      <span class="q-char">${escapeHtml(formatChar(p.char))}</span>
-                    </div>
+          if (fastPlayers.length === 0) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'tier-empty';
+            emptyDiv.innerText = '(Kosong)';
+            fastSec.appendChild(emptyDiv);
+          } else {
+            fastPlayers.forEach(p => {
+              globalIdx++;
+              const row = document.createElement('div');
+              row.className = 'queue-row fast';
+              row.innerHTML = `
+                <div class="q-left">
+                  <div class="q-text-wrap">
+                    <span class="q-idx">#${globalIdx}</span>
+                    <span class="q-name">${escapeHtml(p.name)}</span>
+                    <span class="q-sep">|</span>
+                    <span class="q-char">${escapeHtml(formatChar(p.char))}</span>
                   </div>
-                  <div class="q-right">
-                    <span class="q-badge ${tier.cls}">${pTier}</span>
-                    <span class="q-ticket">${p.matchesLeft}</span>
-                  </div>
-                `;
-                tierDiv.appendChild(row);
-              });
-            }
+                </div>
+                <div class="q-right">
+                  <span class="q-badge fast">FAST</span>
+                  <span class="q-ticket">${p.matchesLeft}</span>
+                </div>
+              `;
+              fastSec.appendChild(row);
+            });
+          }
+          qContainer.appendChild(fastSec);
 
-            qContainer.appendChild(tierDiv);
-          });
+          // 2. Section VIP & FREE (Gabungan 5 VIP : 2 FREE)
+          const vipFreeSec = document.createElement('div');
+          vipFreeSec.className = 'tier-section vipfree';
+
+          const tStatusVip = (state.tierStatus && state.tierStatus['VIP']) || 'OPEN';
+          const tStatusFree = (state.tierStatus && state.tierStatus['FREE']) || 'OPEN';
+          const statusClassVip = tStatusVip.toLowerCase() === 'closed' ? 'closed' : 'open';
+          const statusClassFree = tStatusFree.toLowerCase() === 'closed' ? 'closed' : 'open';
+
+          vipFreeSec.innerHTML = `
+            <div class="tier-header vipfree">
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span>VIP & FREE (5:2)</span>
+                <span class="tier-status-tag ${statusClassVip}">VIP: ${tStatusVip}</span>
+                <span class="tier-status-tag ${statusClassFree}">FREE: ${tStatusFree}</span>
+                <span>(${interleavedVipFree.length})</span>
+              </div>
+              <span class="th-ticket">TIKET</span>
+            </div>
+          `;
+
+          if (interleavedVipFree.length === 0) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'tier-empty';
+            emptyDiv.innerText = '(Kosong)';
+            vipFreeSec.appendChild(emptyDiv);
+          } else {
+            interleavedVipFree.forEach(p => {
+              globalIdx++;
+              const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
+              const rowCls = pTier.toLowerCase();
+              const row = document.createElement('div');
+              row.className = `queue-row ${rowCls}`;
+              row.innerHTML = `
+                <div class="q-left">
+                  <div class="q-text-wrap">
+                    <span class="q-idx">#${globalIdx}</span>
+                    <span class="q-name">${escapeHtml(p.name)}</span>
+                    <span class="q-sep">|</span>
+                    <span class="q-char">${escapeHtml(formatChar(p.char))}</span>
+                  </div>
+                </div>
+                <div class="q-right">
+                  <span class="q-badge ${rowCls}">${pTier}</span>
+                  <span class="q-ticket">${p.matchesLeft}</span>
+                </div>
+              `;
+              vipFreeSec.appendChild(row);
+            });
+          }
+          qContainer.appendChild(vipFreeSec);
         }
       }
 

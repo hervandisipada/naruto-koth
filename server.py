@@ -29,7 +29,8 @@ default_state = {
         "SROBOT": "AKTIF",
         "VIP": "AKTIF",
         "FREE": "AKTIF"
-    }
+    },
+    "registeredUsers": []
 }
 
 # In-memory state

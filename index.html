@@ -1128,8 +1128,17 @@
         <div class="card-title">Tambah Pemain</div>
         <form id="add-player-form" onsubmit="handleAddPlayer(event)">
           <div class="form-group">
-            <label>Username *</label>
-            <input type="text" id="input-username" class="form-control" placeholder="Nama pemain" required>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label style="margin: 0;">Username * (Pilih Terdaftar / Ketik Baru)</label>
+              <span id="registered-user-count" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;"></span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <select id="select-registered-user" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleSelectRegisteredUser(this.value)">
+                <option value="">▼ PILIH DARI USER TERDAFTAR (A-Z)...</option>
+              </select>
+              <input type="text" id="input-username" class="form-control" placeholder="Atau ketik username pemain di sini..." list="registered-users-datalist" autocomplete="off" required>
+              <datalist id="registered-users-datalist"></datalist>
+            </div>
           </div>
           <div class="form-group">
             <label>Karakter (Pilih Dropdown / Ketik Baru)</label>
@@ -1668,6 +1677,132 @@
       }
     }
 
+    // === SISTEM USER TERDAFTAR SEBELUMNYA (RIWAYAT USER) ===
+    function getRegisteredUsersSorted() {
+      const map = new Map();
+
+      // 1. Dari state.registeredUsers
+      if (Array.isArray(state.registeredUsers)) {
+        state.registeredUsers.forEach(u => {
+          if (u && u.name && u.name.trim() && u.name !== '-' && u.name !== 'Menunggu...') {
+            const cleanName = u.name.trim();
+            map.set(cleanName.toLowerCase(), {
+              name: cleanName,
+              type: (u.type === 'SROBOT' || u.type === 'VIP') ? u.type : 'FREE',
+              char: formatChar(u.char),
+              lastSeen: Number(u.lastSeen) || 0
+            });
+          }
+        });
+      }
+
+      // 2. Gabungkan pemain aktif dari p1, p2, queue, saved, dan topRecords
+      const harvest = (p) => {
+        if (!p || !p.name || !p.name.trim() || p.name === '-' || p.name === 'Menunggu...') return;
+        const cleanName = p.name.trim();
+        const key = cleanName.toLowerCase();
+        const existing = map.get(key);
+        const pType = (p.type === 'SROBOT' || p.type === 'VIP') ? p.type : 'FREE';
+        const pChar = formatChar(p.char);
+        if (!existing) {
+          map.set(key, { name: cleanName, type: pType, char: pChar, lastSeen: Date.now() });
+        } else {
+          if (pType && pType !== 'FREE') existing.type = pType;
+          if (pChar && pChar !== '-') existing.char = pChar;
+          map.set(key, existing);
+        }
+      };
+
+      harvest(state.p1);
+      harvest(state.p2);
+      if (Array.isArray(state.queue)) state.queue.forEach(harvest);
+      if (Array.isArray(state.saved)) state.saved.forEach(harvest);
+      if (Array.isArray(state.topRecords)) state.topRecords.forEach(harvest);
+
+      const list = Array.from(map.values());
+      // Urutkan sesuai abjad nama pemain (A-Z)
+      list.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base', numeric: true }));
+      return list;
+    }
+
+    function registerUserHistory(name, type, char) {
+      if (!name || !name.trim() || name.trim() === '-' || name.trim() === 'Menunggu...') return;
+      const cleanName = name.trim();
+      const key = cleanName.toLowerCase();
+      if (!Array.isArray(state.registeredUsers)) {
+        state.registeredUsers = [];
+      }
+      const cleanType = (type === 'SROBOT' || type === 'VIP' || type === 'FREE') ? type : 'FREE';
+      const cleanChar = formatChar(char);
+      const idx = state.registeredUsers.findIndex(u => u && u.name && u.name.trim().toLowerCase() === key);
+      const userObj = {
+        name: cleanName,
+        type: cleanType,
+        char: cleanChar,
+        lastSeen: Date.now()
+      };
+      if (idx !== -1) {
+        state.registeredUsers[idx] = { ...state.registeredUsers[idx], ...userObj };
+      } else {
+        state.registeredUsers.push(userObj);
+      }
+      state.registeredUsers.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base', numeric: true }));
+      try {
+        localStorage.setItem('koth_registered_users', JSON.stringify(state.registeredUsers));
+      } catch (e) { }
+    }
+
+    function renderRegisteredUsersDropdown() {
+      const users = getRegisteredUsersSorted();
+      const selectEl = document.getElementById('select-registered-user');
+      const datalistEl = document.getElementById('registered-users-datalist');
+      const countEl = document.getElementById('registered-user-count');
+
+      if (countEl) {
+        countEl.innerText = `${users.length} user terdaftar`;
+      }
+
+      if (datalistEl) {
+        datalistEl.innerHTML = users.map(u => `<option value="${escapeHtml(u.name)}">`).join('\n');
+      }
+
+      if (selectEl) {
+        const curVal = selectEl.value;
+        let html = `<option value="">▼ PILIH DARI USER TERDAFTAR (${users.length} PEMAIN A-Z)...</option>`;
+        users.forEach(u => {
+          const tierBadge = u.type || 'FREE';
+          const charInfo = (u.char && u.char !== '-') ? ` • ${u.char}` : '';
+          html += `<option value="${escapeHtml(u.name)}">${escapeHtml(u.name)} — [${tierBadge}]${escapeHtml(charInfo)}</option>`;
+        });
+        selectEl.innerHTML = html;
+        if (curVal) selectEl.value = curVal;
+      }
+    }
+
+    function handleSelectRegisteredUser(userName) {
+      if (!userName) return;
+      const users = getRegisteredUsersSorted();
+      const user = users.find(u => u.name.toLowerCase() === userName.toLowerCase());
+
+      const usernameInput = document.getElementById('input-username');
+      if (usernameInput) {
+        usernameInput.value = userName;
+      }
+
+      if (user) {
+        if (user.char && user.char !== '-') {
+          const charInput = document.getElementById('input-char');
+          if (charInput) charInput.value = user.char;
+          const charPicker = document.getElementById('select-char-picker');
+          if (charPicker) charPicker.value = user.char;
+        }
+        if (user.type) {
+          const typeSelect = document.getElementById('input-type');
+          if (typeSelect) typeSelect.value = user.type;
+        }
+      }
+    }
+
     let editingTarget = null; // for modal
 
     let cloudMqttClient = null;
@@ -1774,6 +1909,44 @@
         changed = true;
       }
       st.topRecord = st.topRecords[0];
+
+      if (!Array.isArray(st.registeredUsers)) {
+        st.registeredUsers = [];
+        changed = true;
+      }
+      const harvestUser = (p) => {
+        if (!p || !p.name || !p.name.trim() || p.name === '-' || p.name === 'Menunggu...') return;
+        const cleanName = p.name.trim();
+        const key = cleanName.toLowerCase();
+        const existing = st.registeredUsers.find(u => u && u.name && u.name.trim().toLowerCase() === key);
+        const pType = (p.type === 'SROBOT' || p.type === 'VIP') ? p.type : 'FREE';
+        const pChar = formatChar(p.char);
+        if (!existing) {
+          st.registeredUsers.push({
+            name: cleanName,
+            type: pType,
+            char: pChar,
+            lastSeen: Date.now()
+          });
+          changed = true;
+        } else {
+          if (pType && pType !== 'FREE' && existing.type === 'FREE') {
+            existing.type = pType;
+            changed = true;
+          }
+          if (pChar && pChar !== '-' && (!existing.char || existing.char === '-')) {
+            existing.char = pChar;
+            changed = true;
+          }
+        }
+      };
+      harvestUser(st.p1);
+      harvestUser(st.p2);
+      if (Array.isArray(st.queue)) st.queue.forEach(harvestUser);
+      if (Array.isArray(st.saved)) st.saved.forEach(harvestUser);
+      if (Array.isArray(st.topRecords)) st.topRecords.forEach(harvestUser);
+      st.registeredUsers.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base', numeric: true }));
+
       return changed;
     }
 
@@ -2175,6 +2348,9 @@
         return;
       }
 
+      // Catat ke riwayat user terdaftar sebelumnya
+      registerUserHistory(name, type, char);
+
       const newPlayer = { id: Date.now().toString(), name, char, matchesLeft, ws: 0, type };
 
       if (target === 'saved') {
@@ -2193,6 +2369,8 @@
       document.getElementById('input-matches').value = '1';
       const picker = document.getElementById('select-char-picker');
       if (picker) picker.value = '';
+      const userPicker = document.getElementById('select-registered-user');
+      if (userPicker) userPicker.value = '';
 
       saveState();
     }
@@ -2680,6 +2858,7 @@
           topRecord: { name: '-', char: '-', ws: 0 },
           overlayListMode: state.overlayListMode || 'queue',
           customCharacters: state.customCharacters || [],
+          registeredUsers: state.registeredUsers || [],
           tierStatus: state.tierStatus || { SROBOT: 'AKTIF', VIP: 'AKTIF', FREE: 'AKTIF' }
         };
         saveState();
@@ -2826,6 +3005,7 @@
       renderOverlay();
       updateModeButtons();
       renderCharacterDatalist();
+      renderRegisteredUsersDropdown();
       renderTopRecordAdmin();
       updateUndoRedoUI();
 

@@ -1012,6 +1012,35 @@
       line-height: 1.4;
       margin-top: 10px;
     }
+
+    /* BANNER FREE TUTUP DIBAWAH LIST ANTRIAN */
+    .free-closed-banner {
+      margin-top: 8px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+      color: #ffffff;
+      border: 2px solid #ef4444;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 16px rgba(220, 38, 38, 0.6);
+      animation: pulseFreeClosed 2s infinite ease-in-out;
+      user-select: none;
+    }
+
+    @keyframes pulseFreeClosed {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 16px rgba(220, 38, 38, 0.6);
+      }
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 6px 24px rgba(239, 68, 68, 0.9);
+      }
+    }
   </style>
 </head>
 
@@ -1369,6 +1398,7 @@
 
       <div class="overlay-queue-title">MATCH QUEUE:</div>
       <div id="ov-queue-list"></div>
+      <div id="ov-free-closed-banner" class="free-closed-banner" style="display:none;">FREE TUTUP</div>
     </div>
   </div>
 
@@ -1906,6 +1936,14 @@
         changed = true;
       }
 
+      if (typeof st.vipConsecutiveCount !== 'number' || isNaN(st.vipConsecutiveCount) || st.vipConsecutiveCount < 0) {
+        st.vipConsecutiveCount = 0;
+        changed = true;
+      } else if (st.vipConsecutiveCount > 3) {
+        st.vipConsecutiveCount = 3;
+        changed = true;
+      }
+
       return changed;
     }
 
@@ -2235,19 +2273,31 @@
     // Rank Tier Prioritas: SROBOT (1) -> VIP (2) -> FREE (3)
     const tierRank = { 'SROBOT': 1, 'SB': 1, 'SROBOT++': 1, 'FAST': 1, 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
 
-    // Helper Interleave 5 VIP : 2 FREE
-    function interleaveVipFree(vipList, freeList) {
+    // Helper Interleave Aturan Mutlak: Maksimal 3x VIP naik arena -> 1x FREE -> 3x VIP dst
+    function interleaveVipFree(vipList, freeList, currentVipStreak = 0) {
       const result = [];
       let vIdx = 0;
       let fIdx = 0;
-      while (vIdx < vipList.length || fIdx < freeList.length) {
-        for (let i = 0; i < 5 && vIdx < vipList.length; i++) {
+
+      // Jatah VIP ronde pertama sebelum giliran 1x FREE (maksimal 3x VIP berturut-turut)
+      const firstBlockVipCount = Math.max(0, 3 - (currentVipStreak || 0));
+      if (firstBlockVipCount > 0) {
+        for (let i = 0; i < firstBlockVipCount && vIdx < vipList.length; i++) {
           result.push(vipList[vIdx++]);
         }
-        for (let i = 0; i < 2 && fIdx < freeList.length; i++) {
+      }
+
+      while (vIdx < vipList.length || fIdx < freeList.length) {
+        // Giliran 1x FREE
+        for (let i = 0; i < 1 && fIdx < freeList.length; i++) {
           result.push(freeList[fIdx++]);
         }
+        // Giliran 3x VIP
+        for (let i = 0; i < 3 && vIdx < vipList.length; i++) {
+          result.push(vipList[vIdx++]);
+        }
       }
+
       return result;
     }
 
@@ -2264,7 +2314,7 @@
         else freePlayers.push(p);
       });
 
-      const interleaved = interleaveVipFree(vipPlayers, freePlayers);
+      const interleaved = interleaveVipFree(vipPlayers, freePlayers, state.vipConsecutiveCount || 0);
       state.queue = [...fastPlayers, ...interleaved];
     }
 
@@ -2421,7 +2471,7 @@
       targetList.splice(newPosInTier - 1, 0, player);
 
       if (listType === 'queue') {
-        const interleaved = interleaveVipFree(vipList, freeList);
+        const interleaved = interleaveVipFree(vipList, freeList, state.vipConsecutiveCount || 0);
         state.queue = [...fastList, ...interleaved];
       } else {
         state.saved = [...fastList, ...vipList, ...freeList];
@@ -2596,7 +2646,17 @@
       if (index === -1) return;
 
       const playerCandidate = state.queue[index];
-      if (!confirm(`Naikkan [ ${playerCandidate.name} ] (${getTierLabel(playerCandidate.type)}, ${playerCandidate.matchesLeft} match) ke arena ${targetSlot.toUpperCase()}?`)) {
+      const pTier = getTierLabel(playerCandidate.type);
+
+      // Validasi Aturan Mutlak: Maksimal 3x VIP berturut-turut, lalu 1x FREE
+      const hasFreeInQueue = state.queue.some(p => getTierLabel(p.type) === 'FREE');
+      if (pTier === 'VIP' && (state.vipConsecutiveCount || 0) >= 3 && hasFreeInQueue) {
+        if (!confirm(`⚠️ ATURAN MUTLAK:\nSudah 3x pemain VIP naik ke arena berturut-turut!\nGiliran saat ini seharusnya adalah pemain FREE (1x).\n\nTetap paksa naikkan [ ${playerCandidate.name} ] (VIP)?`)) {
+          return;
+        }
+      }
+
+      if (!confirm(`Naikkan [ ${playerCandidate.name} ] (${pTier}, ${playerCandidate.matchesLeft} match) ke arena ${targetSlot.toUpperCase()}?`)) {
         return;
       }
 
@@ -2605,12 +2665,20 @@
       player.matchesLeft = Math.max(0, player.matchesLeft - 1);
       player.ws = (player.ws !== undefined && player.ws !== null) ? player.ws : 0;
 
+      // Update Aturan Mutlak Hitungan Naik Arena:
+      if (pTier === 'VIP') {
+        state.vipConsecutiveCount = Math.min(3, (state.vipConsecutiveCount || 0) + 1);
+      } else if (pTier === 'FREE') {
+        state.vipConsecutiveCount = 0; // Reset ke 0 karena FREE sudah naik!
+      }
+
       if (targetSlot === 'p1') {
         state.p1 = player;
       } else {
         state.p2 = player;
       }
 
+      sortQueue();
       saveState();
     }
 
@@ -2619,6 +2687,7 @@
         alert("Match queue kosong! Belum ada pemain lain yang mengantre.");
         return;
       }
+      sortQueue();
       assignToArena(state.queue[0].id, slot);
     }
 
@@ -2634,11 +2703,30 @@
         player.matchesLeft += 1;
         // PENTING: BUKAN KALAH! player.ws dan player.char TIDAK DIRESET!
         // Diturunkan admin -> otomatis masuk ke urutan terakhir sesuai tier-nya
+        const pTier = getTierLabel(player.type);
+        if (pTier === 'VIP' && (state.vipConsecutiveCount || 0) > 0) {
+          state.vipConsecutiveCount -= 1;
+        } else if (pTier === 'FREE') {
+          state.vipConsecutiveCount = 3;
+        }
         state.queue.push(player);
         sortQueue();
         if (slot === 'p1') state.p1 = null;
         else state.p2 = null;
         saveState();
+      }
+    }
+
+    function promptSetVipStreak() {
+      const cur = state.vipConsecutiveCount || 0;
+      const val = prompt("Atur giliran VIP berturut-turut saat ini (0 - 3):\n0 = Giliran 3x VIP baru dimulai\n1 = Sudah 1x VIP naik (sisa 2x VIP)\n2 = Sudah 2x VIP naik (sisa 1x VIP)\n3 = Sudah 3x VIP naik (Giliran 1x FREE berikutnya)", cur);
+      if (val !== null) {
+        const num = parseInt(val);
+        if (!isNaN(num) && num >= 0 && num <= 3) {
+          state.vipConsecutiveCount = num;
+          sortQueue();
+          saveState();
+        }
       }
     }
 
@@ -2788,6 +2876,8 @@
       if (confirm("Kosongkan arena pertandingan? Pemain di arena saat ini akan dikosongkan.")) {
         state.p1 = null;
         state.p2 = null;
+        state.vipConsecutiveCount = 0;
+        sortQueue();
         saveState();
       }
     }
@@ -2795,6 +2885,7 @@
     function clearQueue() {
       if (confirm("Kosongkan semua daftar match queue aktif?")) {
         state.queue = [];
+        state.vipConsecutiveCount = 0;
         saveState();
       }
     }
@@ -2818,6 +2909,7 @@
           overlayListMode: state.overlayListMode || 'queue',
           customCharacters: state.customCharacters || [],
           registeredUsers: state.registeredUsers || [],
+          vipConsecutiveCount: 0,
           tierStatus: state.tierStatus || { SROBOT: 'AKTIF', VIP: 'AKTIF', FREE: 'AKTIF' }
         };
         saveState();
@@ -3287,9 +3379,11 @@
           const statusFreeLabel = getStatusLabel(rawStatusFree);
           const scVip = getStatusCls(rawStatusVip);
           const scFree = getStatusCls(rawStatusFree);
+          const streakText = (state.vipConsecutiveCount >= 3) ? '🔴 Giliran: 1x FREE' : `🟢 VIP: ${state.vipConsecutiveCount || 0}/3`;
           headerControls = `
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
               <span>${sec.label}</span>
+              <button class="tier-status-btn open" onclick="promptSetVipStreak()" title="Atur/Reset Giliran VIP/FREE (Klik untuk ubah)">${streakText}</button>
               <button class="tier-status-btn ${scVip}" onclick="toggleTierStatus('VIP')" title="Klik status VIP">VIP: ${statusVipLabel}</button>
               <button class="tier-status-btn ${scFree}" onclick="toggleTierStatus('FREE')" title="Klik status FREE">FREE: ${statusFreeLabel}</button>
             </div>
@@ -3645,7 +3739,7 @@
           else freePlayers.push(p);
         });
 
-        const interleavedVipFree = interleaveVipFree(vipPlayers, freePlayers);
+        const interleavedVipFree = interleaveVipFree(vipPlayers, freePlayers, state.vipConsecutiveCount || 0);
         const qList = [...fastPlayers, ...interleavedVipFree];
 
         if (qList.length === 0) {
@@ -3726,6 +3820,14 @@
             qContainer.appendChild(tierSection);
           }
         }
+      }
+
+      // Tampilkan banner FREE TUTUP jika status tier FREE tutup/penuh
+      const rawStatusFree = (state.tierStatus && state.tierStatus['FREE']) || 'AKTIF';
+      const isFreeClosed = (rawStatusFree === 'CLOSED' || rawStatusFree === 'PENUH' || rawStatusFree === 'TUTUP');
+      const ovFreeBanner = document.getElementById('ov-free-closed-banner');
+      if (ovFreeBanner) {
+        ovFreeBanner.style.display = isFreeClosed ? 'block' : 'none';
       }
     }
 

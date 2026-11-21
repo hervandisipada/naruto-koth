@@ -810,6 +810,36 @@
       color: #ffffff;
       font-weight: 700;
     }
+
+    /* BANNER FREE TUTUP DIBAWAH LIST ANTRIAN */
+    .free-closed-banner {
+      flex-shrink: 0;
+      margin-top: 6px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+      color: #ffffff;
+      border: 2px solid #ef4444;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 16px rgba(220, 38, 38, 0.6);
+      animation: pulseFreeClosed 2s infinite ease-in-out;
+      user-select: none;
+    }
+
+    @keyframes pulseFreeClosed {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 16px rgba(220, 38, 38, 0.6);
+      }
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 6px 24px rgba(239, 68, 68, 0.9);
+      }
+    }
   </style>
 </head>
 
@@ -894,6 +924,9 @@
       <div id="queue-list" class="queue-list">
         <div class="empty-queue">(Match Queue Kosong)</div>
       </div>
+
+      <!-- BANNER STATUS FREE TUTUP DIBAWAH LIST ANTRIAN -->
+      <div id="free-closed-banner" class="free-closed-banner" style="display:none;">FREE TUTUP</div>
     </div>
   </div>
 
@@ -1048,6 +1081,12 @@
         }));
       }
       st.topRecord = st.topRecords[0];
+
+      if (typeof st.vipConsecutiveCount !== 'number' || isNaN(st.vipConsecutiveCount) || st.vipConsecutiveCount < 0) {
+        st.vipConsecutiveCount = 0;
+      } else if (st.vipConsecutiveCount > 3) {
+        st.vipConsecutiveCount = 3;
+      }
     }
 
     // Timestamp state terbaru yang diterima
@@ -1069,18 +1108,31 @@
       renderOverlay();
     }
 
-    function interleaveVipFree(vipList, freeList) {
+    // Aturan Mutlak Antrean: Maks 3x VIP naik arena -> 1x FREE -> 3x VIP dst
+    function interleaveVipFree(vipList, freeList, currentVipStreak = 0) {
       const result = [];
       let vIdx = 0;
       let fIdx = 0;
-      while (vIdx < vipList.length || fIdx < freeList.length) {
-        for (let i = 0; i < 5 && vIdx < vipList.length; i++) {
+
+      // Jatah VIP ronde pertama sebelum giliran 1x FREE (maksimal 3x VIP berturut-turut)
+      const firstBlockVipCount = Math.max(0, 3 - (currentVipStreak || 0));
+      if (firstBlockVipCount > 0) {
+        for (let i = 0; i < firstBlockVipCount && vIdx < vipList.length; i++) {
           result.push(vipList[vIdx++]);
         }
-        for (let i = 0; i < 2 && fIdx < freeList.length; i++) {
+      }
+
+      while (vIdx < vipList.length || fIdx < freeList.length) {
+        // Giliran 1x FREE
+        for (let i = 0; i < 1 && fIdx < freeList.length; i++) {
           result.push(freeList[fIdx++]);
         }
+        // Giliran 3x VIP
+        for (let i = 0; i < 3 && vIdx < vipList.length; i++) {
+          result.push(vipList[vIdx++]);
+        }
       }
+
       return result;
     }
 
@@ -1316,7 +1368,7 @@
       } else {
         if (qSectionTitle) qSectionTitle.innerText = 'MATCH QUEUE';
         
-        // SROBOT dipisahkan; VIP & FREE disatukan dengan pola 5 VIP : 2 FREE
+        // SROBOT dipisahkan; VIP & FREE disatukan dengan aturan mutlak: maks 3x VIP naik arena -> 1x FREE -> 3x VIP dst
         const fastPlayers = [];
         const vipPlayers = [];
         const freePlayers = [];
@@ -1328,7 +1380,7 @@
           else freePlayers.push(p);
         });
 
-        const interleavedVipFree = interleaveVipFree(vipPlayers, freePlayers);
+        const interleavedVipFree = interleaveVipFree(vipPlayers, freePlayers, state.vipConsecutiveCount || 0);
         const qList = [...fastPlayers, ...interleavedVipFree];
 
         qTotal.innerText = `${qList.length} Pemain`;
@@ -1440,6 +1492,14 @@
           }
           qContainer.appendChild(vipFreeSec);
         }
+      }
+
+      // Tampilkan banner FREE TUTUP jika status tier FREE tutup/penuh
+      const rawStatusFree = (state.tierStatus && state.tierStatus['FREE']) || 'AKTIF';
+      const isFreeClosed = (rawStatusFree === 'CLOSED' || rawStatusFree === 'PENUH' || rawStatusFree === 'TUTUP');
+      const freeBanner = document.getElementById('free-closed-banner');
+      if (freeBanner) {
+        freeBanner.style.display = isFreeClosed ? 'block' : 'none';
       }
 
       // Marquee & auto-scroll triggers after DOM paint

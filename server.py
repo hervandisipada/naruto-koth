@@ -30,6 +30,7 @@ default_state = {
         "VIP": "AKTIF",
         "FREE": "AKTIF"
     },
+    "vipConsecutiveCount": 0,
     "registeredUsers": []
 }
 

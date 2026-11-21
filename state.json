@@ -108,6 +108,7 @@
     "VIP": "AKTIF",
     "FREE": "AKTIF"
   },
+  "vipConsecutiveCount": 0,
   "registeredUsers": [
     "Ddd",
     "Ghhhh",

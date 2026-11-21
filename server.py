@@ -26,9 +26,9 @@ default_state = {
         "ws": 0
     },
     "tierStatus": {
-        "FAST": "OPEN",
-        "VIP": "OPEN",
-        "FREE": "OPEN"
+        "SROBOT++": "AKTIF",
+        "SROBOT": "AKTIF",
+        "FREE": "AKTIF"
     }
 }
 

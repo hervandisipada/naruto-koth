@@ -854,9 +854,9 @@
         <div class="p-right">
           <div class="p-ws">
             WS: <span id="p1-ws">0</span>
-            <span id="p1-bonus" class="bonus-badge" style="display:none;">+1 TIKET</span>
+            <span id="p1-bonus" class="bonus-badge" style="display:none;">+1 MATCH</span>
           </div>
-          <div class="p-ticket">Tiket: <b id="p1-tickets">0</b></div>
+          <div class="p-ticket">Match: <b id="p1-tickets">0</b></div>
         </div>
       </div>
 
@@ -867,9 +867,9 @@
         <div class="p-left-p2">
           <div class="p-ws">
             WS: <span id="p2-ws">0</span>
-            <span id="p2-bonus" class="bonus-badge" style="display:none;">+1 TIKET</span>
+            <span id="p2-bonus" class="bonus-badge" style="display:none;">+1 MATCH</span>
           </div>
-          <div class="p-ticket">Tiket: <b id="p2-tickets">0</b></div>
+          <div class="p-ticket">Match: <b id="p2-tickets">0</b></div>
         </div>
         <div class="p-info-p2">
           <div class="p-header-line-p2">
@@ -884,15 +884,15 @@
     <!-- Scrollable Queue Section -->
     <div class="queue-section">
       <div class="queue-title">
-        <span id="queue-section-title">ANTREAN BERIKUTNYA</span>
+        <span id="queue-section-title">MATCH QUEUE</span>
         <div style="display:flex; align-items:center; gap:6px;">
           <span id="queue-total-count" style="color:#ffffff; font-weight:800; font-size:0.85rem;">0 Pemain</span>
         </div>
       </div>
 
-      <!-- ALL QUEUE OR SAVED ITEMS RENDERED HERE WITH TICKETS -->
+      <!-- ALL QUEUE OR SAVED ITEMS RENDERED HERE WITH MATCHES -->
       <div id="queue-list" class="queue-list">
-        <div class="empty-queue">(Antrean Kosong)</div>
+        <div class="empty-queue">(Match Queue Kosong)</div>
       </div>
     </div>
   </div>
@@ -966,12 +966,35 @@
       }
     }
 
+    function getTierCls(type) {
+      if (type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'fast';
+      if (type === 'SROBOT' || type === 'VIP') return 'vip';
+      return 'free';
+    }
+
+    function getTierLabel(type) {
+      if (type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'SROBOT++';
+      if (type === 'SROBOT' || type === 'VIP') return 'SROBOT';
+      return 'FREE';
+    }
+
+    function getStatusLabel(status) {
+      if (status === 'CLOSED' || status === 'PENUH') return 'PENUH';
+      return 'AKTIF';
+    }
+
+    function getStatusCls(status) {
+      if (status === 'CLOSED' || status === 'PENUH') return 'closed';
+      return 'open';
+    }
+
     function sanitizeState(st) {
       if (!st || typeof st !== 'object') return;
       const fixP = (p) => {
         if (!p) return;
-        if (p.type === 'VVIP') p.type = 'FAST';
-        if (!p.type || p.type === 'SAVE' || (p.type !== 'FAST' && p.type !== 'VIP' && p.type !== 'FREE')) {
+        if (p.type === 'VVIP' || p.type === 'FAST') p.type = 'SROBOT++';
+        if (p.type === 'VIP') p.type = 'SROBOT';
+        if (!p.type || p.type === 'SAVE' || (p.type !== 'SROBOT++' && p.type !== 'SROBOT' && p.type !== 'FREE')) {
           p.type = 'FREE';
         }
       };
@@ -992,15 +1015,22 @@
         });
       }
       if (!st.tierStatus || typeof st.tierStatus !== 'object') {
-        st.tierStatus = { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' };
+        st.tierStatus = { 'SROBOT++': 'AKTIF', 'SROBOT': 'AKTIF', 'FREE': 'AKTIF' };
       } else {
-        if (st.tierStatus.VVIP) {
-          if (!st.tierStatus.FAST) st.tierStatus.FAST = st.tierStatus.VVIP;
+        if (st.tierStatus.FAST || st.tierStatus.VVIP) {
+          if (!st.tierStatus['SROBOT++']) st.tierStatus['SROBOT++'] = st.tierStatus.FAST || st.tierStatus.VVIP;
+          delete st.tierStatus.FAST;
           delete st.tierStatus.VVIP;
         }
-        if (!st.tierStatus.FAST) st.tierStatus.FAST = 'OPEN';
-        if (!st.tierStatus.VIP) st.tierStatus.VIP = 'OPEN';
-        if (!st.tierStatus.FREE) st.tierStatus.FREE = 'OPEN';
+        if (st.tierStatus.VIP) {
+          if (!st.tierStatus['SROBOT']) st.tierStatus['SROBOT'] = st.tierStatus.VIP;
+          delete st.tierStatus.VIP;
+        }
+        ['SROBOT++', 'SROBOT', 'FREE'].forEach(k => {
+          if (st.tierStatus[k] === 'OPEN') st.tierStatus[k] = 'AKTIF';
+          if (st.tierStatus[k] === 'CLOSED') st.tierStatus[k] = 'PENUH';
+          if (!st.tierStatus[k]) st.tierStatus[k] = 'AKTIF';
+        });
       }
 
       // Pastikan Top 3 WS selalu siap
@@ -1109,16 +1139,17 @@
       const p1Bonus = document.getElementById('p1-bonus');
 
       if (state.p1) {
-        const rawT1 = (state.p1.type === 'FAST' || state.p1.type === 'VVIP') ? 'FAST' : ((state.p1.type === 'VIP') ? 'VIP' : 'FREE');
-        slot1.className = 'player-slot ' + rawT1.toLowerCase();
-        p1RoleTag.className = 'p-role-tag ' + rawT1.toLowerCase();
+        const rawT1 = getTierLabel(state.p1.type);
+        const clsT1 = getTierCls(state.p1.type);
+        slot1.className = 'player-slot ' + clsT1;
+        p1RoleTag.className = 'p-role-tag ' + clsT1;
         p1RoleTag.innerText = rawT1;
 
         p1Name.innerText = state.p1.name;
         p1Char.innerText = formatChar(state.p1.char);
         p1Ws.innerText = state.p1.ws || 0;
 
-        // Tiket: 1+1 lalu 5 detik otomatis terjumlah jadi 2
+        // Match: 1+1 lalu 5 detik otomatis terjumlah jadi 2
         let p1TicketText = state.p1.matchesLeft;
         if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
           p1TicketText = `${state.p1.bonusBase}+1`;
@@ -1129,7 +1160,7 @@
 
         if (p1Bonus) {
           if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
-            p1Bonus.innerText = '+1 TIKET';
+            p1Bonus.innerText = '+1 MATCH';
             p1Bonus.style.display = 'inline-block';
           } else {
             p1Bonus.style.display = 'none';
@@ -1157,16 +1188,17 @@
       const p2Bonus = document.getElementById('p2-bonus');
 
       if (state.p2) {
-        const rawT2 = (state.p2.type === 'FAST' || state.p2.type === 'VVIP') ? 'FAST' : ((state.p2.type === 'VIP') ? 'VIP' : 'FREE');
-        slot2.className = 'player-slot ' + rawT2.toLowerCase();
-        p2RoleTag.className = 'p-role-tag ' + rawT2.toLowerCase();
+        const rawT2 = getTierLabel(state.p2.type);
+        const clsT2 = getTierCls(state.p2.type);
+        slot2.className = 'player-slot ' + clsT2;
+        p2RoleTag.className = 'p-role-tag ' + clsT2;
         p2RoleTag.innerText = rawT2;
 
         p2Name.innerText = state.p2.name;
         p2Char.innerText = formatChar(state.p2.char);
         p2Ws.innerText = state.p2.ws || 0;
 
-        // Tiket: 1+1 lalu 5 detik otomatis terjumlah jadi 2
+        // Match: 1+1 lalu 5 detik otomatis terjumlah jadi 2
         let p2TicketText = state.p2.matchesLeft;
         if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
           p2TicketText = `${state.p2.bonusBase}+1`;
@@ -1177,7 +1209,7 @@
 
         if (p2Bonus) {
           if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
-            p2Bonus.innerText = '+1 TIKET';
+            p2Bonus.innerText = '+1 MATCH';
             p2Bonus.style.display = 'inline-block';
           } else {
             p2Bonus.style.display = 'none';
@@ -1195,14 +1227,14 @@
         if (p2Bonus) p2Bonus.style.display = 'none';
       }
 
-      // Render Queue or Saved list with Ticket Count
+      // Render Queue or Saved list with Match Count
       const isSavedMode = (state.overlayListMode === 'saved');
       const qSectionTitle = document.getElementById('queue-section-title');
       const qContainer = document.getElementById('queue-list');
       const qTotal = document.getElementById('queue-total-count');
 
       if (isSavedMode) {
-        if (qSectionTitle) qSectionTitle.innerText = 'DAFTAR SAVED';
+        if (qSectionTitle) qSectionTitle.innerText = 'LIST TABUNGAN';
         const sList = (state.saved || []).slice();
         // Urutkan sesuai abjad username (A-Z)
         sList.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base', numeric: true }));
@@ -1210,33 +1242,33 @@
         qTotal.innerText = `${sList.length} Pemain`;
 
         if (sList.length === 0) {
-          qContainer.innerHTML = '<div class="empty-queue">(Saved Kosong)</div>';
+          qContainer.innerHTML = '<div class="empty-queue">(Tabungan Kosong)</div>';
         } else {
           qContainer.innerHTML = '';
           let globalSavedIdx = 0;
 
-          // FAST tetap dipisahkan section-nya jika ada
-          const fastSaved = sList.filter(p => (p.type === 'FAST' || p.type === 'VVIP'));
-          const vipFreeSaved = sList.filter(p => (p.type !== 'FAST' && p.type !== 'VVIP'));
+          // SROBOT++ tetap dipisahkan section-nya jika ada
+          const fastSaved = sList.filter(p => (p.type === 'SROBOT++' || p.type === 'FAST' || p.type === 'VVIP'));
+          const vipFreeSaved = sList.filter(p => (p.type !== 'SROBOT++' && p.type !== 'FAST' && p.type !== 'VVIP'));
 
           const savedSections = [];
           if (fastSaved.length > 0) {
             savedSections.push({
-              key: 'FAST',
-              label: 'FAST',
+              key: 'SROBOT++',
+              label: 'SROBOT++',
               cls: 'fast',
               players: fastSaved
             });
           }
           savedSections.push({
             key: 'VIPFREE',
-            label: 'VIP & FREE',
+            label: 'SROBOT & FREE',
             cls: 'vipfree',
             players: vipFreeSaved
           });
 
           savedSections.forEach(sec => {
-            if (sec.players.length === 0 && sec.key === 'FAST') return;
+            if (sec.players.length === 0 && sec.key === 'SROBOT++') return;
 
             const tierDiv = document.createElement('div');
             tierDiv.className = `tier-section ${sec.cls}`;
@@ -1246,7 +1278,7 @@
                   <span>${sec.label}</span>
                   <span>(${sec.players.length})</span>
                 </div>
-                <span class="th-ticket">TIKET</span>
+                <span class="th-ticket">MATCH</span>
               </div>
             `;
 
@@ -1258,8 +1290,8 @@
             } else {
               sec.players.forEach(p => {
                 globalSavedIdx++;
-                const pTier = (p.type === 'FAST' || p.type === 'VVIP') ? 'FAST' : ((p.type === 'VIP') ? 'VIP' : 'FREE');
-                const rowCls = pTier.toLowerCase();
+                const pTierLabel = getTierLabel(p.type);
+                const rowCls = getTierCls(p.type);
                 const row = document.createElement('div');
                 row.className = `queue-row ${rowCls}`;
                 row.innerHTML = `
@@ -1272,7 +1304,7 @@
                     </div>
                   </div>
                   <div class="q-right">
-                    <span class="q-badge ${rowCls}">${pTier}</span>
+                    <span class="q-badge ${rowCls}">${pTierLabel}</span>
                     <span class="q-ticket">${p.matchesLeft}</span>
                   </div>
                 `;
@@ -1284,17 +1316,17 @@
           });
         }
       } else {
-        if (qSectionTitle) qSectionTitle.innerText = 'ANTREAN LIVE';
+        if (qSectionTitle) qSectionTitle.innerText = 'MATCH QUEUE';
         
-        // FAST tetap dipisahkan; VIP & FREE disatukan dengan pola 5 VIP : 2 FREE
+        // SROBOT++ dipisahkan; SROBOT & FREE disatukan dengan pola 5 SROBOT : 2 FREE
         const fastPlayers = [];
         const vipPlayers = [];
         const freePlayers = [];
 
         (state.queue || []).forEach(p => {
-          const pTier = (p.type === 'FAST' || p.type === 'VVIP') ? 'FAST' : ((p.type === 'VIP') ? 'VIP' : 'FREE');
-          if (pTier === 'FAST') fastPlayers.push(p);
-          else if (pTier === 'VIP') vipPlayers.push(p);
+          const pTier = getTierLabel(p.type);
+          if (pTier === 'SROBOT++') fastPlayers.push(p);
+          else if (pTier === 'SROBOT') vipPlayers.push(p);
           else freePlayers.push(p);
         });
 
@@ -1304,25 +1336,26 @@
         qTotal.innerText = `${qList.length} Pemain`;
 
         if (qList.length === 0) {
-          qContainer.innerHTML = '<div class="empty-queue">(Antrean Kosong)</div>';
+          qContainer.innerHTML = '<div class="empty-queue">(Match Queue Kosong)</div>';
         } else {
           qContainer.innerHTML = '';
           let globalIdx = 0;
 
-          // 1. Section FAST
-          const tStatusFast = (state.tierStatus && (state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'OPEN';
-          const statusClassFast = tStatusFast.toLowerCase() === 'closed' ? 'closed' : 'open';
+          // 1. Section SROBOT++
+          const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
+          const statusFastLabel = getStatusLabel(rawStatusFast);
+          const statusClassFast = getStatusCls(rawStatusFast);
 
           const fastSec = document.createElement('div');
           fastSec.className = 'tier-section fast';
           fastSec.innerHTML = `
             <div class="tier-header fast">
               <div style="display:flex; align-items:center; gap:6px;">
-                <span>FAST</span>
-                <span class="tier-status-tag ${statusClassFast}">${tStatusFast}</span>
+                <span>SROBOT++</span>
+                <span class="tier-status-tag ${statusClassFast}">${statusFastLabel}</span>
                 <span>(${fastPlayers.length})</span>
               </div>
-              <span class="th-ticket">TIKET</span>
+              <span class="th-ticket">MATCH</span>
             </div>
           `;
 
@@ -1346,7 +1379,7 @@
                   </div>
                 </div>
                 <div class="q-right">
-                  <span class="q-badge fast">FAST</span>
+                  <span class="q-badge fast">SROBOT++</span>
                   <span class="q-ticket">${p.matchesLeft}</span>
                 </div>
               `;
@@ -1355,24 +1388,26 @@
           }
           qContainer.appendChild(fastSec);
 
-          // 2. Section VIP & FREE (Gabungan 5 VIP : 2 FREE)
+          // 2. Section SROBOT & FREE
           const vipFreeSec = document.createElement('div');
           vipFreeSec.className = 'tier-section vipfree';
 
-          const tStatusVip = (state.tierStatus && state.tierStatus['VIP']) || 'OPEN';
-          const tStatusFree = (state.tierStatus && state.tierStatus['FREE']) || 'OPEN';
-          const statusClassVip = tStatusVip.toLowerCase() === 'closed' ? 'closed' : 'open';
-          const statusClassFree = tStatusFree.toLowerCase() === 'closed' ? 'closed' : 'open';
+          const rawStatusVip = (state.tierStatus && (state.tierStatus['SROBOT'] || state.tierStatus['VIP'])) || 'AKTIF';
+          const rawStatusFree = (state.tierStatus && state.tierStatus['FREE']) || 'AKTIF';
+          const statusVipLabel = getStatusLabel(rawStatusVip);
+          const statusFreeLabel = getStatusLabel(rawStatusFree);
+          const statusClassVip = getStatusCls(rawStatusVip);
+          const statusClassFree = getStatusCls(rawStatusFree);
 
           vipFreeSec.innerHTML = `
             <div class="tier-header vipfree">
               <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                <span>VIP & FREE (5:2)</span>
-                <span class="tier-status-tag ${statusClassVip}">VIP: ${tStatusVip}</span>
-                <span class="tier-status-tag ${statusClassFree}">FREE: ${tStatusFree}</span>
+                <span>SROBOT & FREE</span>
+                <span class="tier-status-tag ${statusClassVip}">SROBOT: ${statusVipLabel}</span>
+                <span class="tier-status-tag ${statusClassFree}">FREE: ${statusFreeLabel}</span>
                 <span>(${interleavedVipFree.length})</span>
               </div>
-              <span class="th-ticket">TIKET</span>
+              <span class="th-ticket">MATCH</span>
             </div>
           `;
 
@@ -1384,8 +1419,8 @@
           } else {
             interleavedVipFree.forEach(p => {
               globalIdx++;
-              const pTier = (p.type === 'VIP') ? 'VIP' : 'FREE';
-              const rowCls = pTier.toLowerCase();
+              const pTierLabel = getTierLabel(p.type);
+              const rowCls = getTierCls(p.type);
               const row = document.createElement('div');
               row.className = `queue-row ${rowCls}`;
               row.innerHTML = `
@@ -1398,7 +1433,7 @@
                   </div>
                 </div>
                 <div class="q-right">
-                  <span class="q-badge ${rowCls}">${pTier}</span>
+                  <span class="q-badge ${rowCls}">${pTierLabel}</span>
                   <span class="q-ticket">${p.matchesLeft}</span>
                 </div>
               `;

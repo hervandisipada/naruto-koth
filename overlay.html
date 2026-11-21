@@ -967,14 +967,14 @@
     }
 
     function getTierCls(type) {
-      if (type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'fast';
-      if (type === 'SROBOT' || type === 'VIP') return 'vip';
+      if (type === 'SROBOT' || type === 'SB' || type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'fast';
+      if (type === 'VIP') return 'vip';
       return 'free';
     }
 
     function getTierLabel(type) {
-      if (type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'SROBOT++';
-      if (type === 'SROBOT' || type === 'VIP') return 'SROBOT';
+      if (type === 'SROBOT' || type === 'SB' || type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'SB';
+      if (type === 'VIP') return 'VIP';
       return 'FREE';
     }
 
@@ -992,9 +992,8 @@
       if (!st || typeof st !== 'object') return;
       const fixP = (p) => {
         if (!p) return;
-        if (p.type === 'VVIP' || p.type === 'FAST') p.type = 'SROBOT++';
-        if (p.type === 'VIP') p.type = 'SROBOT';
-        if (!p.type || p.type === 'SAVE' || (p.type !== 'SROBOT++' && p.type !== 'SROBOT' && p.type !== 'FREE')) {
+        if (p.type === 'VVIP' || p.type === 'FAST' || p.type === 'SROBOT++' || p.type === 'SB') p.type = 'SROBOT';
+        if (!p.type || p.type === 'SAVE' || (p.type !== 'SROBOT' && p.type !== 'VIP' && p.type !== 'FREE')) {
           p.type = 'FREE';
         }
       };
@@ -1015,18 +1014,17 @@
         });
       }
       if (!st.tierStatus || typeof st.tierStatus !== 'object') {
-        st.tierStatus = { 'SROBOT++': 'AKTIF', 'SROBOT': 'AKTIF', 'FREE': 'AKTIF' };
+        st.tierStatus = { 'SROBOT': 'AKTIF', 'VIP': 'AKTIF', 'FREE': 'AKTIF' };
       } else {
-        if (st.tierStatus.FAST || st.tierStatus.VVIP) {
-          if (!st.tierStatus['SROBOT++']) st.tierStatus['SROBOT++'] = st.tierStatus.FAST || st.tierStatus.VVIP;
+        if (st.tierStatus['SROBOT++'] || st.tierStatus.FAST || st.tierStatus.VVIP) {
+          if (!st.tierStatus['SROBOT']) st.tierStatus['SROBOT'] = st.tierStatus['SROBOT++'] || st.tierStatus.FAST || st.tierStatus.VVIP;
+          delete st.tierStatus['SROBOT++'];
           delete st.tierStatus.FAST;
           delete st.tierStatus.VVIP;
         }
-        if (st.tierStatus.VIP) {
-          if (!st.tierStatus['SROBOT']) st.tierStatus['SROBOT'] = st.tierStatus.VIP;
-          delete st.tierStatus.VIP;
-        }
-        ['SROBOT++', 'SROBOT', 'FREE'].forEach(k => {
+        if (!st.tierStatus.VIP) st.tierStatus.VIP = 'AKTIF';
+        if (!st.tierStatus.FREE) st.tierStatus.FREE = 'AKTIF';
+        ['SROBOT', 'VIP', 'FREE'].forEach(k => {
           if (st.tierStatus[k] === 'OPEN') st.tierStatus[k] = 'AKTIF';
           if (st.tierStatus[k] === 'CLOSED') st.tierStatus[k] = 'PENUH';
           if (!st.tierStatus[k]) st.tierStatus[k] = 'AKTIF';
@@ -1247,28 +1245,28 @@
           qContainer.innerHTML = '';
           let globalSavedIdx = 0;
 
-          // SROBOT++ tetap dipisahkan section-nya jika ada
-          const fastSaved = sList.filter(p => (p.type === 'SROBOT++' || p.type === 'FAST' || p.type === 'VVIP'));
-          const vipFreeSaved = sList.filter(p => (p.type !== 'SROBOT++' && p.type !== 'FAST' && p.type !== 'VVIP'));
+          // SROBOT (SB) tetap dipisahkan section-nya jika ada
+          const fastSaved = sList.filter(p => getTierLabel(p.type) === 'SB');
+          const vipFreeSaved = sList.filter(p => getTierLabel(p.type) !== 'SB');
 
           const savedSections = [];
           if (fastSaved.length > 0) {
             savedSections.push({
-              key: 'SROBOT++',
-              label: 'SROBOT++',
+              key: 'SROBOT',
+              label: 'SROBOT',
               cls: 'fast',
               players: fastSaved
             });
           }
           savedSections.push({
             key: 'VIPFREE',
-            label: 'SROBOT & FREE',
+            label: 'VIP & FREE',
             cls: 'vipfree',
             players: vipFreeSaved
           });
 
           savedSections.forEach(sec => {
-            if (sec.players.length === 0 && sec.key === 'SROBOT++') return;
+            if (sec.players.length === 0 && sec.key === 'SROBOT') return;
 
             const tierDiv = document.createElement('div');
             tierDiv.className = `tier-section ${sec.cls}`;
@@ -1318,15 +1316,15 @@
       } else {
         if (qSectionTitle) qSectionTitle.innerText = 'MATCH QUEUE';
         
-        // SROBOT++ dipisahkan; SROBOT & FREE disatukan dengan pola 5 SROBOT : 2 FREE
+        // SROBOT dipisahkan; VIP & FREE disatukan dengan pola 5 VIP : 2 FREE
         const fastPlayers = [];
         const vipPlayers = [];
         const freePlayers = [];
 
         (state.queue || []).forEach(p => {
           const pTier = getTierLabel(p.type);
-          if (pTier === 'SROBOT++') fastPlayers.push(p);
-          else if (pTier === 'SROBOT') vipPlayers.push(p);
+          if (pTier === 'SB') fastPlayers.push(p);
+          else if (pTier === 'VIP') vipPlayers.push(p);
           else freePlayers.push(p);
         });
 
@@ -1341,8 +1339,8 @@
           qContainer.innerHTML = '';
           let globalIdx = 0;
 
-          // 1. Section SROBOT++
-          const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
+          // 1. Section SROBOT (SB)
+          const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT'] || state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
           const statusFastLabel = getStatusLabel(rawStatusFast);
           const statusClassFast = getStatusCls(rawStatusFast);
 
@@ -1351,7 +1349,7 @@
           fastSec.innerHTML = `
             <div class="tier-header fast">
               <div style="display:flex; align-items:center; gap:6px;">
-                <span>SROBOT++</span>
+                <span>SROBOT</span>
                 <span class="tier-status-tag ${statusClassFast}">${statusFastLabel}</span>
                 <span>(${fastPlayers.length})</span>
               </div>
@@ -1379,7 +1377,7 @@
                   </div>
                 </div>
                 <div class="q-right">
-                  <span class="q-badge fast">SROBOT++</span>
+                  <span class="q-badge fast">SB</span>
                   <span class="q-ticket">${p.matchesLeft}</span>
                 </div>
               `;
@@ -1388,11 +1386,11 @@
           }
           qContainer.appendChild(fastSec);
 
-          // 2. Section SROBOT & FREE
+          // 2. Section VIP & FREE
           const vipFreeSec = document.createElement('div');
           vipFreeSec.className = 'tier-section vipfree';
 
-          const rawStatusVip = (state.tierStatus && (state.tierStatus['SROBOT'] || state.tierStatus['VIP'])) || 'AKTIF';
+          const rawStatusVip = (state.tierStatus && state.tierStatus['VIP']) || 'AKTIF';
           const rawStatusFree = (state.tierStatus && state.tierStatus['FREE']) || 'AKTIF';
           const statusVipLabel = getStatusLabel(rawStatusVip);
           const statusFreeLabel = getStatusLabel(rawStatusFree);
@@ -1402,8 +1400,8 @@
           vipFreeSec.innerHTML = `
             <div class="tier-header vipfree">
               <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                <span>SROBOT & FREE</span>
-                <span class="tier-status-tag ${statusClassVip}">SROBOT: ${statusVipLabel}</span>
+                <span>VIP & FREE</span>
+                <span class="tier-status-tag ${statusClassVip}">VIP: ${statusVipLabel}</span>
                 <span class="tier-status-tag ${statusClassFree}">FREE: ${statusFreeLabel}</span>
                 <span>(${interleavedVipFree.length})</span>
               </div>

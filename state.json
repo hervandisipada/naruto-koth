@@ -5,7 +5,7 @@
     "char": "Tes 3",
     "matchesLeft": 1,
     "ws": 1,
-    "type": "SROBOT"
+    "type": "VIP"
   },
   "p2": {
     "id": "1794248261448",
@@ -13,7 +13,7 @@
     "char": "Tes 4",
     "matchesLeft": 1,
     "ws": 0,
-    "type": "SROBOT"
+    "type": "VIP"
   },
   "queue": [
     {
@@ -22,7 +22,7 @@
       "char": "Madara (Six Paths)",
       "matchesLeft": 5,
       "ws": 0,
-      "type": "SROBOT"
+      "type": "VIP"
     },
     {
       "id": "1794255226297",
@@ -30,7 +30,7 @@
       "char": "Huh",
       "matchesLeft": 3,
       "ws": 0,
-      "type": "SROBOT"
+      "type": "VIP"
     },
     {
       "id": "1794248297982",
@@ -73,7 +73,7 @@
       "char": "Hhhh",
       "matchesLeft": 66,
       "ws": 0,
-      "type": "SROBOT",
+      "type": "VIP",
       "savedAt": 1794255269035
     }
   ],
@@ -104,8 +104,8 @@
     "ws": 1
   },
   "tierStatus": {
-    "SROBOT++": "AKTIF",
     "SROBOT": "AKTIF",
+    "VIP": "AKTIF",
     "FREE": "AKTIF"
   }
 }

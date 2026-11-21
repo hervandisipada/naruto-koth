@@ -1149,8 +1149,8 @@
             <div class="form-group" style="flex: 1;">
               <label>Tier *</label>
               <select id="input-type" class="form-control">
-                <option value="SROBOT++">SROBOT++ (Prioritas Tertinggi)</option>
-                <option value="SROBOT">SROBOT (Prioritas Menengah)</option>
+                <option value="SROBOT">SROBOT (SB - Prioritas Tertinggi)</option>
+                <option value="VIP">VIP (Prioritas Menengah)</option>
                 <option value="FREE" selected>FREE (Normal)</option>
               </select>
             </div>
@@ -1552,7 +1552,7 @@
       topRecord: { name: '-', char: '-', ws: 0 },
       overlayListMode: 'queue',
       customCharacters: [],
-      tierStatus: { 'SROBOT++': 'AKTIF', 'SROBOT': 'AKTIF', 'FREE': 'AKTIF' }
+      tierStatus: { 'SROBOT': 'AKTIF', 'VIP': 'AKTIF', 'FREE': 'AKTIF' }
     };
 
     // Daftar 148 Karakter Bawaan
@@ -1682,14 +1682,14 @@
     const MAX_HISTORY_STACK = 50;
 
     function getTierCls(type) {
-      if (type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'fast';
-      if (type === 'SROBOT' || type === 'VIP') return 'vip';
+      if (type === 'SROBOT' || type === 'SB' || type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'fast';
+      if (type === 'VIP') return 'vip';
       return 'free';
     }
 
     function getTierLabel(type) {
-      if (type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'SROBOT++';
-      if (type === 'SROBOT' || type === 'VIP') return 'SROBOT';
+      if (type === 'SROBOT' || type === 'SB' || type === 'SROBOT++' || type === 'FAST' || type === 'VVIP') return 'SB';
+      if (type === 'VIP') return 'VIP';
       return 'FREE';
     }
 
@@ -1703,15 +1703,14 @@
       return 'open';
     }
 
-    // Sanitize State: pastikan tier SROBOT++/SROBOT/FREE valid dan migrasikan FAST/VIP/VVIP
+    // Sanitize State: pastikan tier SROBOT/VIP/FREE valid dan migrasikan FAST/SROBOT++/VVIP/SB
     function sanitizeState(st) {
       if (!st || typeof st !== 'object') return false;
       let changed = false;
       const fixP = (p) => {
         if (!p) return;
-        if (p.type === 'VVIP' || p.type === 'FAST') { p.type = 'SROBOT++'; changed = true; }
-        if (p.type === 'VIP') { p.type = 'SROBOT'; changed = true; }
-        if (!p.type || p.type === 'SAVE' || (p.type !== 'SROBOT++' && p.type !== 'SROBOT' && p.type !== 'FREE')) {
+        if (p.type === 'VVIP' || p.type === 'FAST' || p.type === 'SROBOT++' || p.type === 'SB') { p.type = 'SROBOT'; changed = true; }
+        if (!p.type || p.type === 'SAVE' || (p.type !== 'SROBOT' && p.type !== 'VIP' && p.type !== 'FREE')) {
           p.type = 'FREE';
           changed = true;
         }
@@ -1736,21 +1735,19 @@
       }
 
       if (!st.tierStatus || typeof st.tierStatus !== 'object') {
-        st.tierStatus = { 'SROBOT++': 'AKTIF', 'SROBOT': 'AKTIF', 'FREE': 'AKTIF' };
+        st.tierStatus = { 'SROBOT': 'AKTIF', 'VIP': 'AKTIF', 'FREE': 'AKTIF' };
         changed = true;
       } else {
-        if (st.tierStatus.FAST || st.tierStatus.VVIP) {
-          if (!st.tierStatus['SROBOT++']) st.tierStatus['SROBOT++'] = st.tierStatus.FAST || st.tierStatus.VVIP;
+        if (st.tierStatus['SROBOT++'] || st.tierStatus.FAST || st.tierStatus.VVIP) {
+          if (!st.tierStatus['SROBOT']) st.tierStatus['SROBOT'] = st.tierStatus['SROBOT++'] || st.tierStatus.FAST || st.tierStatus.VVIP;
+          delete st.tierStatus['SROBOT++'];
           delete st.tierStatus.FAST;
           delete st.tierStatus.VVIP;
           changed = true;
         }
-        if (st.tierStatus.VIP) {
-          if (!st.tierStatus['SROBOT']) st.tierStatus['SROBOT'] = st.tierStatus.VIP;
-          delete st.tierStatus.VIP;
-          changed = true;
-        }
-        ['SROBOT++', 'SROBOT', 'FREE'].forEach(k => {
+        if (!st.tierStatus.VIP) { st.tierStatus.VIP = 'AKTIF'; changed = true; }
+        if (!st.tierStatus.FREE) { st.tierStatus.FREE = 'AKTIF'; changed = true; }
+        ['SROBOT', 'VIP', 'FREE'].forEach(k => {
           if (st.tierStatus[k] === 'OPEN') { st.tierStatus[k] = 'AKTIF'; changed = true; }
           if (st.tierStatus[k] === 'CLOSED') { st.tierStatus[k] = 'PENUH'; changed = true; }
           if (!st.tierStatus[k]) { st.tierStatus[k] = 'AKTIF'; changed = true; }
@@ -1819,7 +1816,7 @@
 
     function toggleTierStatus(tierKey) {
       if (!state.tierStatus) {
-        state.tierStatus = { 'SROBOT++': 'AKTIF', 'SROBOT': 'AKTIF', 'FREE': 'AKTIF' };
+        state.tierStatus = { 'SROBOT': 'AKTIF', 'VIP': 'AKTIF', 'FREE': 'AKTIF' };
       }
       const cur = state.tierStatus[tierKey] || 'AKTIF';
       const next = (cur === 'CLOSED' || cur === 'PENUH') ? 'AKTIF' : 'PENUH';
@@ -2103,10 +2100,10 @@
       return `${totalSec}d`;
     }
 
-    // Rank Tier Prioritas: SROBOT++ (1) -> SROBOT (2) -> FREE (3)
-    const tierRank = { 'SROBOT++': 1, 'FAST': 1, 'VVIP': 1, 'SROBOT': 2, 'VIP': 2, 'FREE': 3 };
+    // Rank Tier Prioritas: SROBOT (1) -> VIP (2) -> FREE (3)
+    const tierRank = { 'SROBOT': 1, 'SB': 1, 'SROBOT++': 1, 'FAST': 1, 'VVIP': 1, 'VIP': 2, 'FREE': 3 };
 
-    // Helper Interleave 5 SROBOT : 2 FREE
+    // Helper Interleave 5 VIP : 2 FREE
     function interleaveVipFree(vipList, freeList) {
       const result = [];
       let vIdx = 0;
@@ -2130,8 +2127,8 @@
 
       state.queue.forEach(p => {
         const pTier = getTierLabel(p.type);
-        if (pTier === 'SROBOT++') fastPlayers.push(p);
-        else if (pTier === 'SROBOT') vipPlayers.push(p);
+        if (pTier === 'SB') fastPlayers.push(p);
+        else if (pTier === 'VIP') vipPlayers.push(p);
         else freePlayers.push(p);
       });
 
@@ -2200,7 +2197,7 @@
       saveState();
     }
 
-    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (SROBOT++ / SROBOT / FREE)
+    // Move Saved to Active Queue: MEMPERTAHANKAN TIER (SROBOT / VIP / FREE)
     function moveSavedToQueue(id, overrideType) {
       const index = state.saved.findIndex(p => String(p.id) === String(id));
       if (index !== -1) {
@@ -2219,7 +2216,7 @@
       }
     }
 
-    // Move Active Queue to Save: MEMPERTAHANKAN TIER (SROBOT++ / SROBOT / FREE)
+    // Move Active Queue to Save: MEMPERTAHANKAN TIER (SROBOT / VIP / FREE)
     function moveQueueToSave(id) {
       const index = state.queue.findIndex(p => String(p.id) === String(id));
       if (index !== -1) {
@@ -2269,11 +2266,11 @@
 
       const pTier = getTierLabel(player.type);
 
-      const fastList = list.filter(p => getTierLabel(p.type) === 'SROBOT++');
-      const vipList = list.filter(p => getTierLabel(p.type) === 'SROBOT');
+      const fastList = list.filter(p => getTierLabel(p.type) === 'SB');
+      const vipList = list.filter(p => getTierLabel(p.type) === 'VIP');
       const freeList = list.filter(p => getTierLabel(p.type) === 'FREE');
 
-      let targetList = (pTier === 'SROBOT++') ? fastList : ((pTier === 'SROBOT') ? vipList : freeList);
+      let targetList = (pTier === 'SB') ? fastList : ((pTier === 'VIP') ? vipList : freeList);
       const curIdx = targetList.findIndex(p => String(p.id) === String(id));
       if (curIdx === -1) return;
 
@@ -2303,9 +2300,9 @@
       let nextTier = 'FREE';
       const curTier = getTierLabel(player.type);
       if (curTier === 'FREE') {
+        nextTier = 'VIP';
+      } else if (curTier === 'VIP') {
         nextTier = 'SROBOT';
-      } else if (curTier === 'SROBOT') {
-        nextTier = 'SROBOT++';
       } else {
         nextTier = 'FREE';
       }
@@ -2630,7 +2627,7 @@
         } else {
           const saveDulu = confirm(`Simpan [ ${loser.name} ] ke LIST TABUNGAN?`);
           if (saveDulu) {
-            // PERTAHANKAN TIER: SROBOT++, SROBOT, atau FREE tetap melekat!
+            // PERTAHANKAN TIER: SROBOT, VIP, atau FREE tetap melekat!
             if (!loser.type || loser.type === 'SAVE') loser.type = 'FREE';
             loser.savedAt = Date.now();
             state.saved.push(loser);
@@ -2683,7 +2680,7 @@
           topRecord: { name: '-', char: '-', ws: 0 },
           overlayListMode: state.overlayListMode || 'queue',
           customCharacters: state.customCharacters || [],
-          tierStatus: state.tierStatus || { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
+          tierStatus: state.tierStatus || { SROBOT: 'AKTIF', VIP: 'AKTIF', FREE: 'AKTIF' }
         };
         saveState();
       }
@@ -3103,7 +3100,7 @@
 
       state.queue.forEach((p, idx) => {
         const pTier = getTierLabel(p.type);
-        if (pTier === 'SROBOT++') {
+        if (pTier === 'SB') {
           fastPlayers.push({ player: p, globalIdx: idx + 1, originalIdx: idx });
         } else {
           vipFreePlayers.push({ player: p, globalIdx: idx + 1, originalIdx: idx });
@@ -3112,15 +3109,15 @@
 
       const queueSections = [
         {
-          key: 'SROBOT++',
-          label: 'SROBOT++',
+          key: 'SROBOT',
+          label: 'SROBOT',
           cls: 'fast',
           players: fastPlayers,
           isFast: true
         },
         {
           key: 'VIPFREE',
-          label: 'SROBOT & FREE',
+          label: 'VIP & FREE',
           cls: 'vipfree',
           players: vipFreePlayers,
           isFast: false
@@ -3133,28 +3130,28 @@
 
         let headerControls = '';
         if (sec.isFast) {
-          const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
+          const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT'] || state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
           const statusFastLabel = getStatusLabel(rawStatusFast);
           const statusClass = getStatusCls(rawStatusFast);
           const statusText = statusFastLabel === 'AKTIF' ? '🟢 AKTIF' : '🔴 PENUH';
           headerControls = `
             <div style="display:flex; align-items:center; gap:8px;">
               <span>${sec.label}</span>
-              <button class="tier-status-btn ${statusClass}" onclick="toggleTierStatus('SROBOT++')" title="Klik untuk ubah status SROBOT++ (AKTIF / PENUH)">${statusText}</button>
+              <button class="tier-status-btn ${statusClass}" onclick="toggleTierStatus('SROBOT')" title="Klik untuk ubah status SROBOT (AKTIF / PENUH)">${statusText}</button>
             </div>
             <span>${sec.players.length}</span>
           `;
         } else {
-          const rawStatusSrobot = (state.tierStatus && (state.tierStatus['SROBOT'] || state.tierStatus['VIP'])) || 'AKTIF';
+          const rawStatusVip = (state.tierStatus && state.tierStatus['VIP']) || 'AKTIF';
           const rawStatusFree = (state.tierStatus && state.tierStatus['FREE']) || 'AKTIF';
-          const statusSrobotLabel = getStatusLabel(rawStatusSrobot);
+          const statusVipLabel = getStatusLabel(rawStatusVip);
           const statusFreeLabel = getStatusLabel(rawStatusFree);
-          const scSrobot = getStatusCls(rawStatusSrobot);
+          const scVip = getStatusCls(rawStatusVip);
           const scFree = getStatusCls(rawStatusFree);
           headerControls = `
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
               <span>${sec.label}</span>
-              <button class="tier-status-btn ${scSrobot}" onclick="toggleTierStatus('SROBOT')" title="Klik status SROBOT">SROBOT: ${statusSrobotLabel}</button>
+              <button class="tier-status-btn ${scVip}" onclick="toggleTierStatus('VIP')" title="Klik status VIP">VIP: ${statusVipLabel}</button>
               <button class="tier-status-btn ${scFree}" onclick="toggleTierStatus('FREE')" title="Klik status FREE">FREE: ${statusFreeLabel}</button>
             </div>
             <span>${sec.players.length}</span>
@@ -3185,8 +3182,8 @@
 
             const tierOptions = `
               <option value="" disabled selected style="display:none;">Pilih Role</option>
-              <option value="SROBOT++">SROBOT++${pTierLabel === 'SROBOT++' ? ' (Saat ini)' : ''}</option>
-              <option value="SROBOT">SROBOT${pTierLabel === 'SROBOT' ? ' (Saat ini)' : ''}</option>
+              <option value="SROBOT">SROBOT (SB)${pTierLabel === 'SB' ? ' (Saat ini)' : ''}</option>
+              <option value="VIP">VIP${pTierLabel === 'VIP' ? ' (Saat ini)' : ''}</option>
               <option value="FREE">FREE${pTierLabel === 'FREE' ? ' (Saat ini)' : ''}</option>
             `;
 
@@ -3257,7 +3254,7 @@
 
       state.saved.forEach((p, idx) => {
         const pTier = getTierLabel(p.type);
-        if (pTier === 'SROBOT++') {
+        if (pTier === 'SB') {
           fastSaved.push({ player: p, originalIdx: idx });
         } else {
           vipFreeSaved.push({ player: p, originalIdx: idx });
@@ -3267,8 +3264,8 @@
       const savedSections = [];
       if (fastSaved.length > 0) {
         savedSections.push({
-          key: 'SROBOT++',
-          label: 'SROBOT++',
+          key: 'SROBOT',
+          label: 'SROBOT',
           cls: 'fast',
           players: fastSaved,
           isFast: true
@@ -3276,28 +3273,28 @@
       }
       savedSections.push({
         key: 'VIPFREE',
-        label: 'SROBOT & FREE',
+        label: 'VIP & FREE',
         cls: 'vipfree',
         players: vipFreeSaved,
         isFast: false
       });
 
       savedSections.forEach(sec => {
-        if (sec.players.length === 0 && sec.key === 'SROBOT++') return;
+        if (sec.players.length === 0 && sec.key === 'SROBOT') return;
 
         const tierSec = document.createElement('div');
         tierSec.className = `tier-section ${sec.cls}`;
 
         let headerControls = '';
         if (sec.isFast) {
-          const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
+          const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT'] || state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
           const statusFastLabel = getStatusLabel(rawStatusFast);
           const statusClass = getStatusCls(rawStatusFast);
           const statusText = statusFastLabel === 'AKTIF' ? '🟢 AKTIF' : '🔴 PENUH';
           headerControls = `
             <div style="display:flex; align-items:center; gap:8px;">
               <span>${sec.label}</span>
-              <button class="tier-status-btn ${statusClass}" onclick="toggleTierStatus('SROBOT++')" title="Klik untuk ubah status SROBOT++">${statusText}</button>
+              <button class="tier-status-btn ${statusClass}" onclick="toggleTierStatus('SROBOT')" title="Klik untuk ubah status SROBOT">${statusText}</button>
             </div>
             <span>${sec.players.length}</span>
           `;
@@ -3334,8 +3331,8 @@
 
             const tierOptions = `
               <option value="" disabled selected style="display:none;">Pilih Role</option>
-              <option value="SROBOT++">SROBOT++${pTierLabel === 'SROBOT++' ? ' (Saat ini)' : ''}</option>
-              <option value="SROBOT">SROBOT${pTierLabel === 'SROBOT' ? ' (Saat ini)' : ''}</option>
+              <option value="SROBOT">SROBOT (SB)${pTierLabel === 'SB' ? ' (Saat ini)' : ''}</option>
+              <option value="VIP">VIP${pTierLabel === 'VIP' ? ' (Saat ini)' : ''}</option>
               <option value="FREE">FREE${pTierLabel === 'FREE' ? ' (Saat ini)' : ''}</option>
             `;
 
@@ -3451,18 +3448,18 @@
         if (sList.length === 0) {
           qContainer.innerHTML = '<div style="font-size:0.8rem; color:#aaa; padding:10px 0;">(Tabungan Kosong)</div>';
         } else {
-          const fastSaved = sList.filter(p => getTierLabel(p.type) === 'SROBOT++');
-          const vipFreeSaved = sList.filter(p => getTierLabel(p.type) !== 'SROBOT++');
+          const fastSaved = sList.filter(p => getTierLabel(p.type) === 'SB');
+          const vipFreeSaved = sList.filter(p => getTierLabel(p.type) !== 'SB');
 
           const sections = [];
           if (fastSaved.length > 0) {
-            sections.push({ key: 'SROBOT++', label: 'SROBOT++', cls: 'fast', players: fastSaved });
+            sections.push({ key: 'SROBOT', label: 'SROBOT', cls: 'fast', players: fastSaved });
           }
-          sections.push({ key: 'VIPFREE', label: 'SROBOT & FREE', cls: 'vipfree', players: vipFreeSaved });
+          sections.push({ key: 'VIPFREE', label: 'VIP & FREE', cls: 'vipfree', players: vipFreeSaved });
 
           let globalSavedIdx = 0;
           sections.forEach(sec => {
-            if (sec.players.length === 0 && sec.key === 'SROBOT++') return;
+            if (sec.players.length === 0 && sec.key === 'SROBOT') return;
 
             const tierSection = document.createElement('div');
             tierSection.className = `tier-section ${sec.cls}`;
@@ -3504,8 +3501,8 @@
 
         (state.queue || []).forEach(p => {
           const pTier = getTierLabel(p.type);
-          if (pTier === 'SROBOT++') fastPlayers.push(p);
-          else if (pTier === 'SROBOT') vipPlayers.push(p);
+          if (pTier === 'SB') fastPlayers.push(p);
+          else if (pTier === 'VIP') vipPlayers.push(p);
           else freePlayers.push(p);
         });
 
@@ -3517,12 +3514,12 @@
         } else {
           let globalIdx = 0;
 
-          // 1. SROBOT++ Section
+          // 1. SROBOT Section
           if (fastPlayers.length > 0 || state.queue.length > 0) {
             const tierSection = document.createElement('div');
             tierSection.className = 'tier-section fast';
 
-            const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
+            const rawStatusFast = (state.tierStatus && (state.tierStatus['SROBOT'] || state.tierStatus['SROBOT++'] || state.tierStatus['FAST'] || state.tierStatus['VVIP'])) || 'AKTIF';
             const statusFastLabel = getStatusLabel(rawStatusFast);
             const statusClassFast = getStatusCls(rawStatusFast);
 
@@ -3531,7 +3528,7 @@
             tierHeader.style.cssText = 'margin-top:6px; margin-bottom:3px; padding:3px 8px; font-size:0.78rem; font-weight:900;';
             tierHeader.innerHTML = `
               <div style="display:flex; align-items:center; gap:6px;">
-                <span>SROBOT++</span>
+                <span>SROBOT</span>
                 <span class="tier-status-tag ${statusClassFast}">${statusFastLabel}</span>
                 <span>(${fastPlayers.length})</span>
               </div>
@@ -3546,7 +3543,7 @@
               qEl.innerHTML = `
                 <span style="font-weight:700;">#${globalIdx} ${escapeHtml(p.name)} | <span style="font-weight:400; color:var(--c-slate);">${escapeHtml(formatChar(p.char))}</span></span>
                 <span style="display:flex; gap:6px; align-items:center;">
-                  <span class="badge badge-fast">SROBOT++</span>
+                  <span class="badge badge-fast">SB</span>
                   <span style="font-size:0.85rem; font-weight:900; color:var(--c-white); background:rgba(255,255,255,0.12); padding:1px 6px; border-radius:3px; border:1px solid var(--c-slate); min-width:28px; text-align:center;">${p.matchesLeft}</span>
                 </span>
               `;
@@ -3555,7 +3552,7 @@
             qContainer.appendChild(tierSection);
           }
 
-          // 2. SROBOT & FREE Section
+          // 2. VIP & FREE Section
           if (interleavedVipFree.length > 0) {
             const tierSection = document.createElement('div');
             tierSection.className = 'tier-section vipfree';
@@ -3565,7 +3562,7 @@
             tierHeader.style.cssText = 'margin-top:6px; margin-bottom:3px; padding:3px 8px; font-size:0.78rem; font-weight:900;';
             tierHeader.innerHTML = `
               <div style="display:flex; align-items:center; gap:6px;">
-                <span>SROBOT & FREE</span>
+                <span>VIP & FREE</span>
                 <span>(${interleavedVipFree.length})</span>
               </div>
               <span style="letter-spacing:0.8px;">MATCH</span>

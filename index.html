@@ -1677,21 +1677,16 @@
       }
     }
 
-    // === SISTEM USER TERDAFTAR SEBELUMNYA (RIWAYAT USER) ===
+    // === SISTEM USER TERDAFTAR SEBELUMNYA (RIWAYAT USERNAME) ===
     function getRegisteredUsersSorted() {
-      const map = new Map();
+      const set = new Set();
 
-      // 1. Dari state.registeredUsers
+      // 1. Dari state.registeredUsers (bisa format string murni atau object nama)
       if (Array.isArray(state.registeredUsers)) {
         state.registeredUsers.forEach(u => {
-          if (u && u.name && u.name.trim() && u.name !== '-' && u.name !== 'Menunggu...') {
-            const cleanName = u.name.trim();
-            map.set(cleanName.toLowerCase(), {
-              name: cleanName,
-              type: (u.type === 'SROBOT' || u.type === 'VIP') ? u.type : 'FREE',
-              char: formatChar(u.char),
-              lastSeen: Number(u.lastSeen) || 0
-            });
+          const rawName = (typeof u === 'string') ? u : (u && u.name);
+          if (rawName && typeof rawName === 'string' && rawName.trim() && rawName.trim() !== '-' && rawName.trim() !== 'Menunggu...') {
+            set.add(rawName.trim());
           }
         });
       }
@@ -1699,18 +1694,7 @@
       // 2. Gabungkan pemain aktif dari p1, p2, queue, saved, dan topRecords
       const harvest = (p) => {
         if (!p || !p.name || !p.name.trim() || p.name === '-' || p.name === 'Menunggu...') return;
-        const cleanName = p.name.trim();
-        const key = cleanName.toLowerCase();
-        const existing = map.get(key);
-        const pType = (p.type === 'SROBOT' || p.type === 'VIP') ? p.type : 'FREE';
-        const pChar = formatChar(p.char);
-        if (!existing) {
-          map.set(key, { name: cleanName, type: pType, char: pChar, lastSeen: Date.now() });
-        } else {
-          if (pType && pType !== 'FREE') existing.type = pType;
-          if (pChar && pChar !== '-') existing.char = pChar;
-          map.set(key, existing);
-        }
+        set.add(p.name.trim());
       };
 
       harvest(state.p1);
@@ -1719,34 +1703,30 @@
       if (Array.isArray(state.saved)) state.saved.forEach(harvest);
       if (Array.isArray(state.topRecords)) state.topRecords.forEach(harvest);
 
-      const list = Array.from(map.values());
+      const list = Array.from(set);
       // Urutkan sesuai abjad nama pemain (A-Z)
-      list.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base', numeric: true }));
+      list.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
       return list;
     }
 
-    function registerUserHistory(name, type, char) {
+    function registerUserHistory(name) {
       if (!name || !name.trim() || name.trim() === '-' || name.trim() === 'Menunggu...') return;
       const cleanName = name.trim();
-      const key = cleanName.toLowerCase();
       if (!Array.isArray(state.registeredUsers)) {
         state.registeredUsers = [];
       }
-      const cleanType = (type === 'SROBOT' || type === 'VIP' || type === 'FREE') ? type : 'FREE';
-      const cleanChar = formatChar(char);
-      const idx = state.registeredUsers.findIndex(u => u && u.name && u.name.trim().toLowerCase() === key);
-      const userObj = {
-        name: cleanName,
-        type: cleanType,
-        char: cleanChar,
-        lastSeen: Date.now()
-      };
-      if (idx !== -1) {
-        state.registeredUsers[idx] = { ...state.registeredUsers[idx], ...userObj };
-      } else {
-        state.registeredUsers.push(userObj);
+      const exists = state.registeredUsers.some(u => {
+        const n = (typeof u === 'string') ? u : (u && u.name);
+        return n && n.toLowerCase() === cleanName.toLowerCase();
+      });
+      if (!exists) {
+        state.registeredUsers.push(cleanName);
       }
-      state.registeredUsers.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base', numeric: true }));
+      state.registeredUsers.sort((a, b) => {
+        const na = (typeof a === 'string') ? a : (a && a.name) || '';
+        const nb = (typeof b === 'string') ? b : (b && b.name) || '';
+        return na.localeCompare(nb, undefined, { sensitivity: 'base', numeric: true });
+      });
       try {
         localStorage.setItem('koth_registered_users', JSON.stringify(state.registeredUsers));
       } catch (e) { }
@@ -1763,16 +1743,14 @@
       }
 
       if (datalistEl) {
-        datalistEl.innerHTML = users.map(u => `<option value="${escapeHtml(u.name)}">`).join('\n');
+        datalistEl.innerHTML = users.map(u => `<option value="${escapeHtml(u)}">`).join('\n');
       }
 
       if (selectEl) {
         const curVal = selectEl.value;
         let html = `<option value="">▼ PILIH DARI USER TERDAFTAR (${users.length} PEMAIN A-Z)...</option>`;
         users.forEach(u => {
-          const tierBadge = u.type || 'FREE';
-          const charInfo = (u.char && u.char !== '-') ? ` • ${u.char}` : '';
-          html += `<option value="${escapeHtml(u.name)}">${escapeHtml(u.name)} — [${tierBadge}]${escapeHtml(charInfo)}</option>`;
+          html += `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`;
         });
         selectEl.innerHTML = html;
         if (curVal) selectEl.value = curVal;
@@ -1781,25 +1759,10 @@
 
     function handleSelectRegisteredUser(userName) {
       if (!userName) return;
-      const users = getRegisteredUsersSorted();
-      const user = users.find(u => u.name.toLowerCase() === userName.toLowerCase());
-
+      // HANYA ambil usernamenya saja, JANGAN ambil data tier dan karakter
       const usernameInput = document.getElementById('input-username');
       if (usernameInput) {
         usernameInput.value = userName;
-      }
-
-      if (user) {
-        if (user.char && user.char !== '-') {
-          const charInput = document.getElementById('input-char');
-          if (charInput) charInput.value = user.char;
-          const charPicker = document.getElementById('select-char-picker');
-          if (charPicker) charPicker.value = user.char;
-        }
-        if (user.type) {
-          const typeSelect = document.getElementById('input-type');
-          if (typeSelect) typeSelect.value = user.type;
-        }
       }
     }
 
@@ -1914,30 +1877,22 @@
         st.registeredUsers = [];
         changed = true;
       }
+      const normalizedUsers = [];
+      st.registeredUsers.forEach(u => {
+        const rawName = (typeof u === 'string') ? u : (u && u.name);
+        if (rawName && typeof rawName === 'string' && rawName.trim() && rawName.trim() !== '-' && rawName.trim() !== 'Menunggu...') {
+          const clean = rawName.trim();
+          if (!normalizedUsers.some(x => x.toLowerCase() === clean.toLowerCase())) {
+            normalizedUsers.push(clean);
+          }
+        }
+      });
       const harvestUser = (p) => {
         if (!p || !p.name || !p.name.trim() || p.name === '-' || p.name === 'Menunggu...') return;
         const cleanName = p.name.trim();
-        const key = cleanName.toLowerCase();
-        const existing = st.registeredUsers.find(u => u && u.name && u.name.trim().toLowerCase() === key);
-        const pType = (p.type === 'SROBOT' || p.type === 'VIP') ? p.type : 'FREE';
-        const pChar = formatChar(p.char);
-        if (!existing) {
-          st.registeredUsers.push({
-            name: cleanName,
-            type: pType,
-            char: pChar,
-            lastSeen: Date.now()
-          });
+        if (!normalizedUsers.some(x => x.toLowerCase() === cleanName.toLowerCase())) {
+          normalizedUsers.push(cleanName);
           changed = true;
-        } else {
-          if (pType && pType !== 'FREE' && existing.type === 'FREE') {
-            existing.type = pType;
-            changed = true;
-          }
-          if (pChar && pChar !== '-' && (!existing.char || existing.char === '-')) {
-            existing.char = pChar;
-            changed = true;
-          }
         }
       };
       harvestUser(st.p1);
@@ -1945,7 +1900,11 @@
       if (Array.isArray(st.queue)) st.queue.forEach(harvestUser);
       if (Array.isArray(st.saved)) st.saved.forEach(harvestUser);
       if (Array.isArray(st.topRecords)) st.topRecords.forEach(harvestUser);
-      st.registeredUsers.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base', numeric: true }));
+      normalizedUsers.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
+      if (JSON.stringify(normalizedUsers) !== JSON.stringify(st.registeredUsers)) {
+        st.registeredUsers = normalizedUsers;
+        changed = true;
+      }
 
       return changed;
     }
@@ -2348,8 +2307,8 @@
         return;
       }
 
-      // Catat ke riwayat user terdaftar sebelumnya
-      registerUserHistory(name, type, char);
+      // Catat ke riwayat username terdaftar sebelumnya
+      registerUserHistory(name);
 
       const newPlayer = { id: Date.now().toString(), name, char, matchesLeft, ws: 0, type };
 

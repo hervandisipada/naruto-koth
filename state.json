@@ -109,50 +109,14 @@
     "FREE": "AKTIF"
   },
   "registeredUsers": [
-    {
-      "name": "Ddd",
-      "type": "FREE",
-      "char": "Rrrr"
-    },
-    {
-      "name": "Ghhhh",
-      "type": "VIP",
-      "char": "Hhhh"
-    },
-    {
-      "name": "Ggg",
-      "type": "FREE",
-      "char": "Gggg"
-    },
-    {
-      "name": "Hh",
-      "type": "VIP",
-      "char": "Huh"
-    },
-    {
-      "name": "Madara",
-      "type": "VIP",
-      "char": "Madara (Six Paths)"
-    },
-    {
-      "name": "Tes 2",
-      "type": "FREE",
-      "char": "Tes 2"
-    },
-    {
-      "name": "Tes 3",
-      "type": "VIP",
-      "char": "Tes 3"
-    },
-    {
-      "name": "Tes 4",
-      "type": "VIP",
-      "char": "Tes 4"
-    },
-    {
-      "name": "Tes 5",
-      "type": "FREE",
-      "char": "Tes 5"
-    }
+    "Ddd",
+    "Ghhhh",
+    "Ggg",
+    "Hh",
+    "Madara",
+    "Tes 2",
+    "Tes 3",
+    "Tes 4",
+    "Tes 5"
   ]
 }

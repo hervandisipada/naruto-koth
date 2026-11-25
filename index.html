@@ -1171,13 +1171,50 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Karakter (Pilih Dropdown / Ketik Baru)</label>
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-              <select id="select-char-picker" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="if(this.value){ document.getElementById('input-char').value = this.value; }">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="margin: 0;">Format Karakter:</label>
+              <div style="display: flex; gap: 4px;">
+                <button type="button" id="btn-mode-solo" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="setTeamCharMode('solo')">Solo (1)</button>
+                <button type="button" id="btn-mode-duo" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setTeamCharMode('duo')">Duo (2)</button>
+                <button type="button" id="btn-mode-trio" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setTeamCharMode('trio')">Trio (3)</button>
+              </div>
+            </div>
+
+            <!-- SLOT 1 (Leader / Utama) -->
+            <div id="group-char-1" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+              <div id="label-char-1" style="font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); display: none;">Karakter 1 (Utama / Leader):</div>
+              <select id="select-char-1" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(1, this.value)">
                 <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
               </select>
-              <input type="text" id="input-char" class="form-control" placeholder="Atau ketik nama karakter di sini..."
-                list="storm-characters" autocomplete="off">
+              <input type="text" id="input-char-1" class="form-control" placeholder="Atau ketik nama karakter di sini..."
+                list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
+            </div>
+
+            <!-- SLOT 2 (Support 1 - Duo/Trio) -->
+            <div id="group-char-2" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa;">Karakter 2 (Support 1):</div>
+              <select id="select-char-2" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(2, this.value)">
+                <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+              </select>
+              <input type="text" id="input-char-2" class="form-control" placeholder="Atau ketik nama Karakter 2..."
+                list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
+            </div>
+
+            <!-- SLOT 3 (Support 2 - Trio) -->
+            <div id="group-char-3" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2):</div>
+              <select id="select-char-3" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(3, this.value)">
+                <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+              </select>
+              <input type="text" id="input-char-3" class="form-control" placeholder="Atau ketik nama Karakter 3..."
+                list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
+            </div>
+
+            <!-- Hidden input kompatibilitas & Preview Tim -->
+            <input type="hidden" id="input-char" value="">
+            <select id="select-char-picker" style="display: none;"></select>
+            <div id="preview-team-char" style="display: none; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.25); border: 1px dashed var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
+              Format Tim: <b id="preview-team-char-text" style="color: var(--text-light);">-</b>
             </div>
           </div>
           <div class="form-row">
@@ -1409,12 +1446,52 @@
       <h3 style="margin-bottom: 10px; color: var(--accent-gold);">Pilih / Ubah Karakter</h3>
       <div class="form-group">
         <label id="modal-target-label">Pilih / Ubah Karakter:</label>
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <select id="modal-char-select" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="if(this.value){ document.getElementById('modal-char-input').value = this.value; }">
+
+        <!-- Format Tim Modal -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Format Karakter:</span>
+          <div style="display: flex; gap: 4px;">
+            <button type="button" id="modal-btn-solo" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="setModalTeamMode('solo')">Solo (1)</button>
+            <button type="button" id="modal-btn-duo" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setModalTeamMode('duo')">Duo (2)</button>
+            <button type="button" id="modal-btn-trio" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setModalTeamMode('trio')">Trio (3)</button>
+          </div>
+        </div>
+
+        <!-- Slot 1 Modal -->
+        <div id="modal-group-char-1" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+          <div id="modal-label-char-1" style="font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); display: none;">Karakter 1 (Utama / Leader):</div>
+          <select id="modal-char-select-1" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleModalCharSelect(1, this.value)">
             <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
           </select>
-          <input type="text" id="modal-char-input" class="form-control" placeholder="Atau ketik nama karakter di sini..."
-            list="storm-characters" autocomplete="off">
+          <input type="text" id="modal-char-input-1" class="form-control" placeholder="Atau ketik nama karakter di sini..."
+            list="storm-characters" autocomplete="off" oninput="updateModalTeamCharValue()">
+        </div>
+
+        <!-- Slot 2 Modal -->
+        <div id="modal-group-char-2" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+          <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa;">Karakter 2 (Support 1):</div>
+          <select id="modal-char-select-2" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleModalCharSelect(2, this.value)">
+            <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+          </select>
+          <input type="text" id="modal-char-input-2" class="form-control" placeholder="Atau ketik nama Karakter 2..."
+            list="storm-characters" autocomplete="off" oninput="updateModalTeamCharValue()">
+        </div>
+
+        <!-- Slot 3 Modal -->
+        <div id="modal-group-char-3" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+          <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2):</div>
+          <select id="modal-char-select-3" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleModalCharSelect(3, this.value)">
+            <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+          </select>
+          <input type="text" id="modal-char-input-3" class="form-control" placeholder="Atau ketik nama Karakter 3..."
+            list="storm-characters" autocomplete="off" oninput="updateModalTeamCharValue()">
+        </div>
+
+        <!-- Preview Modal & Hidden Input -->
+        <input type="hidden" id="modal-char-input" value="">
+        <select id="modal-char-select" style="display: none;"></select>
+        <div id="modal-preview-team-char" style="display: none; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.25); border: 1px dashed var(--border-color); font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+          Format Tim: <b id="modal-preview-team-char-text" style="color: var(--text-light);">-</b>
         </div>
       </div>
       <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -1671,40 +1748,200 @@
       const optionsHtml = `<option value="">▼ PILIH DARI DROPDOWN (${all.length} KARAKTER)...</option>` +
         all.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('\n');
 
-      const selectPicker = document.getElementById('select-char-picker');
-      if (selectPicker) {
-        const curVal = selectPicker.value;
-        selectPicker.innerHTML = optionsHtml;
-        if (curVal) selectPicker.value = curVal;
-      }
-
-      const modalSelect = document.getElementById('modal-char-select');
-      if (modalSelect) {
-        const curVal = modalSelect.value;
-        modalSelect.innerHTML = optionsHtml;
-        if (curVal) modalSelect.value = curVal;
-      }
+      ['select-char-1', 'select-char-2', 'select-char-3', 'modal-char-select-1', 'modal-char-select-2', 'modal-char-select-3', 'select-char-picker', 'modal-char-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          const curVal = el.value;
+          el.innerHTML = optionsHtml;
+          if (curVal) el.value = curVal;
+        }
+      });
     }
 
     function registerCharacter(charName) {
       if (!charName) return;
-      const trimmed = String(charName).trim();
-      if (!trimmed || trimmed === '-' || trimmed === 'TBA' || trimmed === 'Belum Pilih' || trimmed === 'Belum Pilih / TBA') {
-        return;
+      const parts = String(charName).split(/[\/]/).map(s => s.trim()).filter(Boolean);
+      parts.forEach(trimmed => {
+        if (!trimmed || trimmed === '-' || trimmed === 'TBA' || trimmed === 'Belum Pilih' || trimmed === 'Belum Pilih / TBA') {
+          return;
+        }
+
+        const all = getAllCharactersSorted();
+        const exists = all.some(c => c.toLowerCase() === trimmed.toLowerCase());
+        if (!exists) {
+          if (!Array.isArray(state.customCharacters)) {
+            state.customCharacters = getCustomCharacters().slice();
+          }
+          state.customCharacters.push(trimmed);
+          try {
+            localStorage.setItem('koth_custom_characters', JSON.stringify(state.customCharacters));
+          } catch (e) { }
+          renderCharacterDatalist();
+          saveState();
+        }
+      });
+    }
+
+    // === SISTEM FORMAT TIM (SOLO / DUO / TRIO) ===
+    let currentTeamCharMode = 'solo'; // 'solo' | 'duo' | 'trio'
+
+    function setTeamCharMode(mode) {
+      currentTeamCharMode = mode;
+      const btnSolo = document.getElementById('btn-mode-solo');
+      const btnDuo = document.getElementById('btn-mode-duo');
+      const btnTrio = document.getElementById('btn-mode-trio');
+
+      const g1Label = document.getElementById('label-char-1');
+      const g2 = document.getElementById('group-char-2');
+      const g3 = document.getElementById('group-char-3');
+
+      if (btnSolo) {
+        btnSolo.className = mode === 'solo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btnSolo.style.opacity = mode === 'solo' ? '1' : '0.7';
+      }
+      if (btnDuo) {
+        btnDuo.className = mode === 'duo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btnDuo.style.opacity = mode === 'duo' ? '1' : '0.7';
+      }
+      if (btnTrio) {
+        btnTrio.className = mode === 'trio' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btnTrio.style.opacity = mode === 'trio' ? '1' : '0.7';
       }
 
-      const all = getAllCharactersSorted();
-      const exists = all.some(c => c.toLowerCase() === trimmed.toLowerCase());
-      if (!exists) {
-        if (!Array.isArray(state.customCharacters)) {
-          state.customCharacters = getCustomCharacters().slice();
+      if (mode === 'solo') {
+        if (g1Label) g1Label.style.display = 'none';
+        if (g2) g2.style.display = 'none';
+        if (g3) g3.style.display = 'none';
+      } else if (mode === 'duo') {
+        if (g1Label) g1Label.style.display = 'block';
+        if (g2) g2.style.display = 'flex';
+        if (g3) g3.style.display = 'none';
+      } else if (mode === 'trio') {
+        if (g1Label) g1Label.style.display = 'block';
+        if (g2) g2.style.display = 'flex';
+        if (g3) g3.style.display = 'flex';
+      }
+      updateTeamCharValue();
+    }
+
+    function handleCharSelect(slot, val) {
+      if (!val) return;
+      const inp = document.getElementById(`input-char-${slot}`);
+      if (inp) {
+        inp.value = val;
+        updateTeamCharValue();
+      }
+    }
+
+    function updateTeamCharValue() {
+      const c1 = document.getElementById('input-char-1') ? document.getElementById('input-char-1').value.trim() : '';
+      const c2 = document.getElementById('input-char-2') ? document.getElementById('input-char-2').value.trim() : '';
+      const c3 = document.getElementById('input-char-3') ? document.getElementById('input-char-3').value.trim() : '';
+
+      let combined = '';
+      if (currentTeamCharMode === 'solo') {
+        combined = c1;
+      } else if (currentTeamCharMode === 'duo') {
+        const arr = [c1, c2].filter(Boolean);
+        combined = arr.join(' / ');
+      } else if (currentTeamCharMode === 'trio') {
+        const arr = [c1, c2, c3].filter(Boolean);
+        combined = arr.join(' / ');
+      }
+
+      const hiddenInput = document.getElementById('input-char');
+      if (hiddenInput) hiddenInput.value = combined;
+
+      const previewBox = document.getElementById('preview-team-char');
+      const previewText = document.getElementById('preview-team-char-text');
+      if (previewBox && previewText) {
+        if (currentTeamCharMode !== 'solo' && combined) {
+          previewBox.style.display = 'block';
+          previewText.innerText = combined;
+        } else {
+          previewBox.style.display = 'none';
         }
-        state.customCharacters.push(trimmed);
-        try {
-          localStorage.setItem('koth_custom_characters', JSON.stringify(state.customCharacters));
-        } catch (e) { }
-        renderCharacterDatalist();
-        saveState();
+      }
+    }
+
+    let modalTeamMode = 'solo';
+
+    function setModalTeamMode(mode) {
+      modalTeamMode = mode;
+      const btnSolo = document.getElementById('modal-btn-solo');
+      const btnDuo = document.getElementById('modal-btn-duo');
+      const btnTrio = document.getElementById('modal-btn-trio');
+
+      const g1Label = document.getElementById('modal-label-char-1');
+      const g2 = document.getElementById('modal-group-char-2');
+      const g3 = document.getElementById('modal-group-char-3');
+
+      if (btnSolo) {
+        btnSolo.className = mode === 'solo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btnSolo.style.opacity = mode === 'solo' ? '1' : '0.7';
+      }
+      if (btnDuo) {
+        btnDuo.className = mode === 'duo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btnDuo.style.opacity = mode === 'duo' ? '1' : '0.7';
+      }
+      if (btnTrio) {
+        btnTrio.className = mode === 'trio' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btnTrio.style.opacity = mode === 'trio' ? '1' : '0.7';
+      }
+
+      if (mode === 'solo') {
+        if (g1Label) g1Label.style.display = 'none';
+        if (g2) g2.style.display = 'none';
+        if (g3) g3.style.display = 'none';
+      } else if (mode === 'duo') {
+        if (g1Label) g1Label.style.display = 'block';
+        if (g2) g2.style.display = 'flex';
+        if (g3) g3.style.display = 'none';
+      } else if (mode === 'trio') {
+        if (g1Label) g1Label.style.display = 'block';
+        if (g2) g2.style.display = 'flex';
+        if (g3) g3.style.display = 'flex';
+      }
+      updateModalTeamCharValue();
+    }
+
+    function handleModalCharSelect(slot, val) {
+      if (!val) return;
+      const inp = document.getElementById(`modal-char-input-${slot}`);
+      if (inp) {
+        inp.value = val;
+        updateModalTeamCharValue();
+      }
+    }
+
+    function updateModalTeamCharValue() {
+      const c1 = document.getElementById('modal-char-input-1') ? document.getElementById('modal-char-input-1').value.trim() : '';
+      const c2 = document.getElementById('modal-char-input-2') ? document.getElementById('modal-char-input-2').value.trim() : '';
+      const c3 = document.getElementById('modal-char-input-3') ? document.getElementById('modal-char-input-3').value.trim() : '';
+
+      let combined = '';
+      if (modalTeamMode === 'solo') {
+        combined = c1;
+      } else if (modalTeamMode === 'duo') {
+        const arr = [c1, c2].filter(Boolean);
+        combined = arr.join(' / ');
+      } else if (modalTeamMode === 'trio') {
+        const arr = [c1, c2, c3].filter(Boolean);
+        combined = arr.join(' / ');
+      }
+
+      const hiddenInput = document.getElementById('modal-char-input');
+      if (hiddenInput) hiddenInput.value = combined;
+
+      const previewBox = document.getElementById('modal-preview-team-char');
+      const previewText = document.getElementById('modal-preview-team-char-text');
+      if (previewBox && previewText) {
+        if (combined) {
+          previewBox.style.display = 'block';
+          previewText.innerText = combined;
+        } else {
+          previewBox.style.display = 'none';
+        }
       }
     }
 
@@ -2438,6 +2675,7 @@
     }
 
     function saveNewPlayer(target) {
+      updateTeamCharValue();
       const name = document.getElementById('input-username').value.trim();
       const rawChar = document.getElementById('input-char').value.trim();
       const char = rawChar || 'TBA';
@@ -2483,10 +2721,20 @@
 
       // Reset form
       document.getElementById('input-username').value = '';
-      document.getElementById('input-char').value = '';
       document.getElementById('input-matches').value = '1';
+      ['input-char-1', 'input-char-2', 'input-char-3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      ['select-char-1', 'select-char-2', 'select-char-3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
       const picker = document.getElementById('select-char-picker');
       if (picker) picker.value = '';
+      const hiddenChar = document.getElementById('input-char');
+      if (hiddenChar) hiddenChar.value = '';
+      setTeamCharMode('solo');
       const userPicker = document.getElementById('select-registered-user');
       if (userPicker) userPicker.value = '';
       updatePlayerFormValidation();
@@ -2540,11 +2788,12 @@
 
     function formatChar(char) {
       if (!char) return '-';
-      const c = String(char).trim();
+      let c = String(char).trim();
       if (!c || c === 'TBA' || c === 'Belum Pilih' || c === 'Belum Pilih / TBA' || c.toLowerCase() === 'tba') {
         return '-';
       }
-      return c;
+      c = c.split('/').map(s => s.trim()).filter(Boolean).join(' / ');
+      return c || '-';
     }
 
     // Dropdown Ganti Tier Pemain
@@ -3092,16 +3341,35 @@
       else if (target === 'p2' && state.p2) { name = state.p2.name; curChar = state.p2.char; }
       else if (typeof target === 'object') { name = target.name; curChar = target.char; }
 
-      document.getElementById('modal-target-label').innerText = `Ubah Karakter ${name}:`;
-      document.getElementById('modal-char-input').value = curChar === 'Belum Pilih / TBA' ? '' : curChar;
-      const modalSelect = document.getElementById('modal-char-select');
-      if (modalSelect) {
-        modalSelect.value = curChar || '';
-      }
+      document.getElementById('modal-target-label').innerText = `Ubah Karakter [ ${name} ]:`;
+
+      let cleanChar = (curChar === 'Belum Pilih / TBA' || curChar === 'TBA' || curChar === '-') ? '' : curChar;
+      const parts = cleanChar ? cleanChar.split('/').map(s => s.trim()).filter(Boolean) : [];
+
+      let detectedMode = 'solo';
+      if (parts.length >= 3) detectedMode = 'trio';
+      else if (parts.length === 2) detectedMode = 'duo';
+
+      const in1 = document.getElementById('modal-char-input-1');
+      const in2 = document.getElementById('modal-char-input-2');
+      const in3 = document.getElementById('modal-char-input-3');
+      const sel1 = document.getElementById('modal-char-select-1');
+      const sel2 = document.getElementById('modal-char-select-2');
+      const sel3 = document.getElementById('modal-char-select-3');
+
+      if (in1) in1.value = parts[0] || '';
+      if (in2) in2.value = parts[1] || '';
+      if (in3) in3.value = parts[2] || '';
+      if (sel1) sel1.value = parts[0] || '';
+      if (sel2) sel2.value = parts[1] || '';
+      if (sel3) sel3.value = parts[2] || '';
+
+      setModalTeamMode(detectedMode);
       document.getElementById('modal-char').classList.add('active');
     }
 
     function saveModalChar() {
+      updateModalTeamCharValue();
       const rawVal = document.getElementById('modal-char-input').value.trim();
       const val = rawVal || 'Belum Pilih / TBA';
 

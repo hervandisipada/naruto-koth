@@ -955,11 +955,12 @@
 
     function formatChar(char) {
       if (!char) return '-';
-      const c = String(char).trim();
+      let c = String(char).trim();
       if (!c || c === 'TBA' || c === 'Belum Pilih' || c === 'Belum Pilih / TBA' || c.toLowerCase() === 'tba') {
         return '-';
       }
-      return c;
+      c = c.split('/').map(s => s.trim()).filter(Boolean).join(' / ');
+      return c || '-';
     }
 
     function applyMarquee(wrap, container) {
@@ -1196,7 +1197,16 @@
         p1RoleTag.innerText = rawT1;
 
         p1Name.innerText = state.p1.name;
-        p1Char.innerText = formatChar(state.p1.char);
+        const fChar1 = formatChar(state.p1.char);
+        p1Char.innerText = fChar1;
+        p1Char.title = fChar1;
+        if (fChar1.length > 25) {
+          p1Char.style.fontSize = '0.70rem';
+        } else if (fChar1.length > 18) {
+          p1Char.style.fontSize = '0.75rem';
+        } else {
+          p1Char.style.fontSize = '';
+        }
         p1Ws.innerText = state.p1.ws || 0;
 
         // Match: 1+1 lalu 5 detik otomatis terjumlah jadi 2
@@ -1245,7 +1255,16 @@
         p2RoleTag.innerText = rawT2;
 
         p2Name.innerText = state.p2.name;
-        p2Char.innerText = formatChar(state.p2.char);
+        const fChar2 = formatChar(state.p2.char);
+        p2Char.innerText = fChar2;
+        p2Char.title = fChar2;
+        if (fChar2.length > 25) {
+          p2Char.style.fontSize = '0.70rem';
+        } else if (fChar2.length > 18) {
+          p2Char.style.fontSize = '0.75rem';
+        } else {
+          p2Char.style.fontSize = '';
+        }
         p2Ws.innerText = state.p2.ws || 0;
 
         // Match: 1+1 lalu 5 detik otomatis terjumlah jadi 2

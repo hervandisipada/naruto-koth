@@ -1165,7 +1165,8 @@
               <select id="select-registered-user" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleSelectRegisteredUser(this.value)">
                 <option value="">▼ PILIH DARI USER TERDAFTAR (A-Z)...</option>
               </select>
-              <input type="text" id="input-username" class="form-control" placeholder="Atau ketik username pemain di sini..." list="registered-users-datalist" autocomplete="off" required>
+              <input type="text" id="input-username" class="form-control" placeholder="Atau ketik username pemain di sini..." list="registered-users-datalist" autocomplete="off" required oninput="updatePlayerFormValidation()" onchange="updatePlayerFormValidation()">
+              <div id="username-duplicate-warning" style="display:none; padding: 8px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; line-height: 1.4;"></div>
               <datalist id="registered-users-datalist"></datalist>
             </div>
           </div>
@@ -1194,8 +1195,8 @@
             </div>
           </div>
           <div style="display: flex; gap: 8px;">
-            <button type="submit" class="btn btn-primary" style="flex: 1;">+ Match Queue</button>
-            <button type="button" class="btn btn-blue" style="flex: 1;" onclick="handleAddPlayerDirectSave()">+
+            <button type="submit" id="btn-add-queue" class="btn btn-primary" style="flex: 1;">+ Match Queue</button>
+            <button type="button" id="btn-add-saved" class="btn btn-blue" style="flex: 1;" onclick="handleAddPlayerDirectSave()">+
               Tabungan</button>
           </div>
         </form>
@@ -1762,6 +1763,101 @@
       } catch (e) { }
     }
 
+    // === SISTEM CEK DUPLIKAT PEMAIN (ANTI-DOUBLE USER) ===
+    function checkDuplicatePlayer(name) {
+      if (!name || typeof name !== 'string') return null;
+      const clean = name.trim().toLowerCase();
+      if (!clean || clean === '-' || clean === 'menunggu...' || clean === 'tba') return null;
+
+      // 1. Cek Arena (P1 / P2)
+      if (state.p1 && state.p1.name && state.p1.name.trim().toLowerCase() === clean) {
+        return {
+          location: 'Arena (P1)',
+          player: state.p1,
+          message: `Pemain "${state.p1.name}" sedang bermain di Arena (P1)`
+        };
+      }
+      if (state.p2 && state.p2.name && state.p2.name.trim().toLowerCase() === clean) {
+        return {
+          location: 'Arena (P2)',
+          player: state.p2,
+          message: `Pemain "${state.p2.name}" sedang bermain di Arena (P2)`
+        };
+      }
+
+      // 2. Cek Match Queue
+      if (Array.isArray(state.queue)) {
+        const qIdx = state.queue.findIndex(p => p && p.name && p.name.trim().toLowerCase() === clean);
+        if (qIdx !== -1) {
+          const p = state.queue[qIdx];
+          return {
+            location: 'Match Queue',
+            player: p,
+            index: qIdx + 1,
+            message: `Pemain "${p.name}" sudah ada di Match Queue (Urutan #${qIdx + 1}, Tier: ${getTierLabel(p.type)})`
+          };
+        }
+      }
+
+      // 3. Cek List Tabungan (Saved)
+      if (Array.isArray(state.saved)) {
+        const sIdx = state.saved.findIndex(p => p && p.name && p.name.trim().toLowerCase() === clean);
+        if (sIdx !== -1) {
+          const p = state.saved[sIdx];
+          return {
+            location: 'List Tabungan',
+            player: p,
+            message: `Pemain "${p.name}" sudah ada di List Tabungan (Tier: ${getTierLabel(p.type)}, Sisa: ${p.matchesLeft} Match)`
+          };
+        }
+      }
+
+      return null;
+    }
+
+    function updatePlayerFormValidation() {
+      const input = document.getElementById('input-username');
+      const warnEl = document.getElementById('username-duplicate-warning');
+      const btnQueue = document.getElementById('btn-add-queue');
+      const btnSaved = document.getElementById('btn-add-saved');
+      if (!input) return;
+
+      const val = input.value.trim();
+      const dup = checkDuplicatePlayer(val);
+
+      if (dup) {
+        if (warnEl) {
+          warnEl.style.display = 'block';
+          warnEl.innerHTML = `⚠️ <b>PERINGATAN DOUBLE USER (AKAN GAGAL):</b><br>${escapeHtml(dup.message)}.<br><span style="font-size:0.75rem; font-weight:normal; opacity:0.9;">Pemain tidak bisa ditambahkan lagi karena masih aktif di antrean/tabungan.</span>`;
+        }
+        input.style.borderColor = '#ef4444';
+        input.style.boxShadow = '0 0 0 2px rgba(239, 68, 68, 0.25)';
+        if (btnQueue) {
+          btnQueue.style.opacity = '0.65';
+          btnQueue.title = `Pemain "${val}" sudah ada di ${dup.location}. Menambahkan akan ditolak.`;
+        }
+        if (btnSaved) {
+          btnSaved.style.opacity = '0.65';
+          btnSaved.title = `Pemain "${val}" sudah ada di ${dup.location}. Menambahkan akan ditolak.`;
+        }
+      } else {
+        if (warnEl) {
+          warnEl.style.display = 'none';
+          warnEl.innerHTML = '';
+        }
+        input.style.borderColor = '';
+        input.style.boxShadow = '';
+        if (btnQueue) {
+          btnQueue.style.opacity = '';
+          btnQueue.title = '';
+        }
+        if (btnSaved) {
+          btnSaved.style.opacity = '';
+          btnSaved.title = '';
+        }
+      }
+    }
+
     function renderRegisteredUsersDropdown() {
       const users = getRegisteredUsersSorted();
       const selectEl = document.getElementById('select-registered-user');
@@ -1780,7 +1876,12 @@
         const curVal = selectEl.value;
         let html = `<option value="">▼ PILIH DARI USER TERDAFTAR (${users.length} PEMAIN A-Z)...</option>`;
         users.forEach(u => {
-          html += `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`;
+          const dup = checkDuplicatePlayer(u);
+          if (dup) {
+            html += `<option value="${escapeHtml(u)}" style="color: #f87171; background: #2b1518;">⛔ ${escapeHtml(u)} (Ada di ${escapeHtml(dup.location)})</option>`;
+          } else {
+            html += `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`;
+          }
         });
         selectEl.innerHTML = html;
         if (curVal) selectEl.value = curVal;
@@ -1788,11 +1889,11 @@
     }
 
     function handleSelectRegisteredUser(userName) {
-      if (!userName) return;
       // HANYA ambil usernamenya saja, JANGAN ambil data tier dan karakter
       const usernameInput = document.getElementById('input-username');
       if (usernameInput) {
-        usernameInput.value = userName;
+        usernameInput.value = userName || '';
+        updatePlayerFormValidation();
       }
     }
 
@@ -2352,6 +2453,14 @@
         return;
       }
 
+      // Validasi Anti-Double User: Cek apakah pemain sudah ada di Antrean, Tabungan, atau Arena
+      const dup = checkDuplicatePlayer(name);
+      if (dup) {
+        alert(`❌ GAGAL MENAMBAHKAN PEMAIN!\n\n${dup.message}.\n\nPenambahan ditolak untuk mencegah double user.`);
+        updatePlayerFormValidation();
+        return;
+      }
+
       const targetLabel = target === 'saved' ? 'LIST TABUNGAN' : 'MATCH QUEUE';
       if (!confirm(`Tambahkan [ ${name} ] (${getTierLabel(type)}, ${matchesLeft} match, Karakter: "${char}") ke ${targetLabel}?`)) {
         return;
@@ -2380,6 +2489,7 @@
       if (picker) picker.value = '';
       const userPicker = document.getElementById('select-registered-user');
       if (userPicker) userPicker.value = '';
+      updatePlayerFormValidation();
 
       saveState();
     }
@@ -2389,6 +2499,11 @@
       const index = state.saved.findIndex(p => String(p.id) === String(id));
       if (index !== -1) {
         const player = state.saved[index];
+        const existingInQueue = state.queue.find(p => p.name && p.name.trim().toLowerCase() === player.name.trim().toLowerCase());
+        if (existingInQueue) {
+          alert(`❌ Gagal Menaikkan Pemain!\n\nPemain "${player.name}" sudah ada di Match Queue.`);
+          return;
+        }
         if (!confirm(`Naikkan [ ${player.name} ] (${getTierLabel(player.type)}) dari Tabungan ke Match Queue?`)) return;
         state.saved.splice(index, 1);
         if (overrideType) {
@@ -2408,6 +2523,11 @@
       const index = state.queue.findIndex(p => String(p.id) === String(id));
       if (index !== -1) {
         const player = state.queue[index];
+        const existingInSaved = state.saved.find(p => p.name && p.name.trim().toLowerCase() === player.name.trim().toLowerCase());
+        if (existingInSaved) {
+          alert(`❌ Gagal Menyimpan Pemain!\n\nPemain "${player.name}" sudah ada di List Tabungan.`);
+          return;
+        }
         if (!confirm(`Simpan [ ${player.name} ] (${getTierLabel(player.type)}) ke List Tabungan?`)) return;
         state.queue.splice(index, 1);
         if (!player.type || player.type === 'SAVE') player.type = 'FREE';
@@ -3065,6 +3185,7 @@
       renderRegisteredUsersDropdown();
       renderTopRecordAdmin();
       updateUndoRedoUI();
+      updatePlayerFormValidation();
 
       const annInput = document.getElementById('input-announcement');
       if (annInput && state.announcement !== undefined) {

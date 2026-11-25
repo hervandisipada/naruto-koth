@@ -953,14 +953,144 @@
       return { kingSlot: 'p1', challengerSlot: 'p2' };
     }
 
+    // Peta Singkatan 3 Huruf Karakter Naruto Storm (Khusus Tampilan Overlay Duo/Trio)
+    const CHAR_ABBR_MAP = {
+      'naruto': 'NRT', 'nrt': 'NRT',
+      'sasuke': 'SSK', 'ssk': 'SSK',
+      'sakura': 'SKR', 'skr': 'SKR',
+      'kakashi': 'KKS', 'kks': 'KKS',
+      'lee': 'LEE', 'rock lee': 'LEE',
+      'neji': 'NEJ', 'nej': 'NEJ',
+      'tenten': 'TEN', 'ten': 'TEN', 'tencil': 'TEN',
+      'shikamaru': 'SKM', 'skm': 'SKM',
+      'choji': 'CHJ', 'chōji': 'CHJ', 'chj': 'CHJ',
+      'ino': 'INO', 'inocil': 'INO',
+      'kiba': 'KBA', 'kibacil': 'KBA',
+      'shino': 'SHN', 'shn': 'SHN',
+      'hinata': 'HNT', 'hnt': 'HNT',
+      'sai': 'SAI',
+      'yamato': 'YMT',
+      'asuma': 'ASM',
+      'guy': 'GUY', 'guymalam': 'GUY', 'might guy': 'GUY',
+      'jiraiya': 'JRY',
+      'tsunade': 'TSN',
+      'orochimaru': 'ORO',
+      'minato': 'MNT',
+      'kushina': 'KSH',
+      'itachi': 'ITC',
+      'shisui': 'SSI',
+      'hiruzen': 'HRZ',
+      'tobirama': 'TBR',
+      'hashirama': 'HSH',
+      'madara': 'MDR',
+      'obito': 'OBT',
+      'tobi': 'TOB',
+      'danzo': 'DNZ', 'danzō': 'DNZ',
+      'gaara': 'GAR',
+      'kankuro': 'KNK',
+      'temari': 'TMR',
+      'chiyo': 'CHY',
+      'pain': 'PAN',
+      'konan': 'KNN',
+      'nagato': 'NGT',
+      'kisame': 'KSM',
+      'sasori': 'SSR',
+      'deidara': 'DDR',
+      'hidan': 'HDN',
+      'kakuzu': 'KKZ',
+      'zabuza': 'ZBZ',
+      'haku': 'HAK',
+      'roshi': 'RSH', 'rōshi': 'RSH',
+      'hanzo': 'HNZ',
+      'darui': 'DRI',
+      'ay': 'RAI', 'raikage': 'RAI',
+      'bee': 'BEE', 'killer bee': 'BEE',
+      'ohnoki': 'OHN', 'onoki': 'OHN', 'tsuchikage': 'TSU',
+      'mei': 'MEI', 'mizukage': 'MZK',
+      'kaguya': 'KGY',
+      'hagoromo': 'HGR',
+      'hamura': 'HMR',
+      'ashura': 'ASR',
+      'indra': 'IND',
+      'boruto': 'BRT', 'brt': 'BRT',
+      'sarada': 'SRD', 'srd': 'SRD',
+      'mitsuki': 'MTK', 'mtk': 'MTK',
+      'kawaki': 'KWK', 'kwk': 'KWK',
+      'ishiki': 'ISK', 'isshiki': 'ISK',
+      'momoshiki': 'MSH',
+      'kinshiki': 'KNS',
+      'jigen': 'JGN',
+      'delta': 'DLT',
+      'boro': 'BOR',
+      'code': 'CDE',
+      'koji': 'KOJ',
+      'suigetsu': 'SGT',
+      'karin': 'KRN',
+      'jugo': 'JUG',
+      'kabuto': 'KBT',
+      'kimimaro': 'KMM',
+      'tayuya': 'TYY',
+      'sakon': 'SKN',
+      'kidomaru': 'KDM',
+      'jirobo': 'JRB',
+      'hanabi': 'HNB',
+      'konohamaru': 'KNH',
+      'iruka': 'IRK',
+      'rin': 'RIN',
+      'yugito': 'YGT',
+      'yagura': 'YGR',
+      'utakata': 'UTK',
+      'fuu': 'FUU', 'fū': 'FUU',
+      'han': 'HAN',
+      'mifune': 'MFN',
+      'muu': 'MUU', 'mu': 'MUU',
+      'gengetsu': 'GNG',
+      'pakura': 'PKR',
+      'gari': 'GAR',
+      'toroi': 'TRO',
+      'kinkaku': 'KNK',
+      'ginkaku': 'GNK',
+      'kazekage': 'KZK'
+    };
+
+    function getCharAbbr(name) {
+      if (!name) return '';
+      let clean = String(name).replace(/\(.*?\)/g, '').trim().toLowerCase();
+      if (!clean) clean = String(name).trim().toLowerCase();
+
+      // 1. Cek awalan / kecocokan langsung di kamus
+      for (const [k, v] of Object.entries(CHAR_ABBR_MAP)) {
+        if (clean === k || clean.startsWith(k + ' ') || clean.startsWith(k)) {
+          return v;
+        }
+      }
+
+      // 2. Cek per kata
+      const words = clean.split(/\s+/);
+      for (const w of words) {
+        if (CHAR_ABBR_MAP[w]) return CHAR_ABBR_MAP[w];
+      }
+
+      // 3. Fallback cerdas: ambil huruf alfanumerik, maks 3 huruf besar
+      const alpha = clean.replace(/[^a-z0-9]/gi, '').toUpperCase();
+      return (alpha.length >= 3 ? alpha.slice(0, 3) : alpha) || 'CHR';
+    }
+
     function formatChar(char) {
       if (!char) return '-';
       let c = String(char).trim();
       if (!c || c === 'TBA' || c === 'Belum Pilih' || c === 'Belum Pilih / TBA' || c.toLowerCase() === 'tba') {
         return '-';
       }
-      c = c.split('/').map(s => s.trim()).filter(Boolean).join(' / ');
-      return c || '-';
+
+      const parts = c.split('/').map(s => s.trim()).filter(Boolean);
+      // Khusus mode Duo (2) dan Trio (3): singkat tiap karakter ke maks 3 huruf
+      if (parts.length >= 2) {
+        return parts.map(p => getCharAbbr(p)).join(' / ');
+      }
+
+      // Mode Solo (1 char): tampilkan nama lengkap seperti biasa di overlay
+      return parts[0] || c;
     }
 
     function applyMarquee(wrap, container) {
@@ -1199,7 +1329,7 @@
         p1Name.innerText = state.p1.name;
         const fChar1 = formatChar(state.p1.char);
         p1Char.innerText = fChar1;
-        p1Char.title = fChar1;
+        p1Char.title = state.p1.char || fChar1;
         if (fChar1.length > 25) {
           p1Char.style.fontSize = '0.70rem';
         } else if (fChar1.length > 18) {
@@ -1257,7 +1387,7 @@
         p2Name.innerText = state.p2.name;
         const fChar2 = formatChar(state.p2.char);
         p2Char.innerText = fChar2;
-        p2Char.title = fChar2;
+        p2Char.title = state.p2.char || fChar2;
         if (fChar2.length > 25) {
           p2Char.style.fontSize = '0.70rem';
         } else if (fChar2.length > 18) {

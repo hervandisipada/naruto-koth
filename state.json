@@ -181,6 +181,67 @@
     "Obito (Pelarian)",
     "Gaara 5 Kage"
   ],
+  "masterMode": "SOLO",
+  "topRecordsSolo": [
+    {
+      "rank": 1,
+      "name": "Kelvin",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 2,
+      "name": "itu dia dit",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 3,
+      "name": "Kelvin",
+      "char": "Hanzo",
+      "ws": 13
+    }
+  ],
+  "topRecordsDuo": [
+    {
+      "rank": 1,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    },
+    {
+      "rank": 2,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    },
+    {
+      "rank": 3,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    }
+  ],
+  "topRecordsTrio": [
+    {
+      "rank": 1,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    },
+    {
+      "rank": 2,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    },
+    {
+      "rank": 3,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    }
+  ],
   "topRecord": {
     "rank": 1,
     "name": "Kelvin",

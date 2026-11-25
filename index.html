@@ -1079,6 +1079,32 @@
   <div id="admin-view" class="view-container active">
     <div class="admin-grid">
 
+      <!-- MASTER MODE CONTROLLER (SOLO / DUO / TRIO) -->
+      <div class="card full-width" style="padding: 10px 14px; margin-bottom: 4px; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 900; font-size: 0.95rem; color: var(--accent-gold); letter-spacing: 0.5px;">🎮 MASTER MODE:</span>
+              <span id="master-mode-status-badge" class="badge" style="font-weight: 800; font-size: 0.85rem; padding: 4px 12px; border-radius: 4px; background: #0284c7; color: #fff;">SOLO (1 CHAR)</span>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 3px;">
+              Pilih format mode pertandingan live. Form pemain & Top WS otomatis beralih sesuai mode yang dipilih.
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" id="btn-master-solo" class="btn btn-primary" style="font-weight: 800; padding: 6px 14px; font-size: 0.85rem;" onclick="setMasterMode('SOLO')">
+              ⚡ SOLO (1 Char)
+            </button>
+            <button type="button" id="btn-master-duo" class="btn btn-blue" style="font-weight: 800; padding: 6px 14px; font-size: 0.85rem; opacity: 0.7;" onclick="setMasterMode('DUO')">
+              ⚔️ DUO (2 Char)
+            </button>
+            <button type="button" id="btn-master-trio" class="btn btn-blue" style="font-weight: 800; padding: 6px 14px; font-size: 0.85rem; opacity: 0.7;" onclick="setMasterMode('TRIO')">
+              👑 TRIO (2-3 Char)
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- ARENA MATCH CONTROLLER -->
       <div class="card full-width">
         <div class="card-title">
@@ -1202,11 +1228,11 @@
 
             <!-- SLOT 3 (Support 2 - Trio) -->
             <div id="group-char-3" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
-              <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2):</div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2 - Opsional):</div>
               <select id="select-char-3" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(3, this.value)">
-                <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+                <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER) - OPSIONAL...</option>
               </select>
-              <input type="text" id="input-char-3" class="form-control" placeholder="Atau ketik nama Karakter 3..."
+              <input type="text" id="input-char-3" class="form-control" placeholder="Atau ketik nama Karakter 3 (bisa kosong jika hanya 2 char)..."
                 list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
             </div>
 
@@ -1321,12 +1347,22 @@
 
       <!-- TOP WS (TOP 3) -->
       <div class="card">
-        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
           <span>TOP 3 WS</span>
           <span id="admin-top-ws-badge" class="badge"
-            style="background: var(--c-white); color: var(--c-dark); font-weight: 800; padding: 2px 8px; border-radius: 4px;">🥇 0 WS | 🥈 0 WS | 🥉 0 WS</span>
+            style="background: var(--c-white); color: var(--c-dark); font-weight: 800; padding: 2px 8px; border-radius: 4px;">[SOLO] 🥇 0 WS | 🥈 0 WS | 🥉 0 WS</span>
         </div>
-        <p class="instructions" style="margin-bottom: 8px;">Daftar 3 Rekor WS tertinggi di live overlay (otomatis terupdate saat rekor baru tercapai di arena, atau edit manual di bawah).</p>
+        <p class="instructions" style="margin-bottom: 8px;">Daftar 3 Rekor WS tertinggi di live overlay khusus masing-masing mode (Solo, Duo, Trio).</p>
+
+        <!-- Tab Pilihan Mode Top WS: SOLO | DUO | TRIO -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: var(--panel-subtle); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 6px;">
+          <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-light);">Rekor Mode:</span>
+          <div style="display: flex; gap: 4px;">
+            <button type="button" id="btn-topws-tab-solo" class="btn btn-sm btn-primary" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem;" onclick="switchTopWsTab('SOLO')">⚡ Solo</button>
+            <button type="button" id="btn-topws-tab-duo" class="btn btn-sm btn-blue" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem; opacity: 0.7;" onclick="switchTopWsTab('DUO')">⚔️ Duo</button>
+            <button type="button" id="btn-topws-tab-trio" class="btn btn-sm btn-blue" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem; opacity: 0.7;" onclick="switchTopWsTab('TRIO')">👑 Trio</button>
+          </div>
+        </div>
 
         <!-- TOP 1 -->
         <div class="top-record-row" style="background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.35); border-radius: 6px; padding: 6px 8px; margin-bottom: 6px;">
@@ -1479,11 +1515,11 @@
 
         <!-- Slot 3 Modal -->
         <div id="modal-group-char-3" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
-          <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2):</div>
+          <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2 - Opsional):</div>
           <select id="modal-char-select-3" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleModalCharSelect(3, this.value)">
-            <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+            <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER) - OPSIONAL...</option>
           </select>
-          <input type="text" id="modal-char-input-3" class="form-control" placeholder="Atau ketik nama Karakter 3..."
+          <input type="text" id="modal-char-input-3" class="form-control" placeholder="Atau ketik nama Karakter 3 (bisa kosong jika hanya 2 char)..."
             list="storm-characters" autocomplete="off" oninput="updateModalTeamCharValue()">
         </div>
 
@@ -1782,6 +1818,112 @@
       });
     }
 
+    // === SISTEM MASTER MODE (SOLO / DUO / TRIO) ===
+    function setMasterMode(mode) {
+      if (!['SOLO', 'DUO', 'TRIO'].includes(mode)) mode = 'SOLO';
+      state.masterMode = mode;
+
+      // 1. Update UI tombol master
+      updateMasterModeUI();
+
+      // 2. Sesuaikan format form tambah pemain
+      setTeamCharMode(mode.toLowerCase());
+
+      // 3. Switch tab Top WS ke mode yang baru dipilih
+      switchTopWsTab(mode, false);
+
+      // 4. Sinkronkan topRecords & topRecord aktif
+      syncActiveTopRecords();
+
+      renderAll();
+      saveState();
+    }
+
+    function updateMasterModeUI() {
+      const m = state.masterMode || 'SOLO';
+      const badge = document.getElementById('master-mode-status-badge');
+      const btnSolo = document.getElementById('btn-master-solo');
+      const btnDuo = document.getElementById('btn-master-duo');
+      const btnTrio = document.getElementById('btn-master-trio');
+
+      if (badge) {
+        if (m === 'SOLO') {
+          badge.innerText = 'SOLO (1 CHAR)';
+          badge.style.background = '#0284c7';
+        } else if (m === 'DUO') {
+          badge.innerText = 'DUO (2 CHAR)';
+          badge.style.background = '#2563eb';
+        } else if (m === 'TRIO') {
+          badge.innerText = 'TRIO (2-3 CHAR)';
+          badge.style.background = '#7c3aed';
+        }
+      }
+
+      if (btnSolo) {
+        btnSolo.className = m === 'SOLO' ? 'btn btn-primary' : 'btn btn-blue';
+        btnSolo.style.opacity = m === 'SOLO' ? '1' : '0.65';
+        btnSolo.style.boxShadow = m === 'SOLO' ? '0 0 10px rgba(2, 132, 199, 0.5)' : 'none';
+      }
+      if (btnDuo) {
+        btnDuo.className = m === 'DUO' ? 'btn btn-primary' : 'btn btn-blue';
+        btnDuo.style.opacity = m === 'DUO' ? '1' : '0.65';
+        btnDuo.style.boxShadow = m === 'DUO' ? '0 0 10px rgba(37, 99, 235, 0.5)' : 'none';
+      }
+      if (btnTrio) {
+        btnTrio.className = m === 'TRIO' ? 'btn btn-primary' : 'btn btn-blue';
+        btnTrio.style.opacity = m === 'TRIO' ? '1' : '0.65';
+        btnTrio.style.boxShadow = m === 'TRIO' ? '0 0 10px rgba(124, 58, 237, 0.5)' : 'none';
+      }
+    }
+
+    // Tab Top WS terpisah: SOLO | DUO | TRIO
+    let currentTopWsTab = 'SOLO';
+
+    function switchTopWsTab(tab, doRender = true) {
+      if (!['SOLO', 'DUO', 'TRIO'].includes(tab)) tab = 'SOLO';
+      currentTopWsTab = tab;
+
+      ['SOLO', 'DUO', 'TRIO'].forEach(m => {
+        const btn = document.getElementById(`btn-topws-tab-${m.toLowerCase()}`);
+        if (btn) {
+          if (m === tab) {
+            btn.className = 'btn btn-sm btn-primary';
+            btn.style.opacity = '1';
+            btn.style.fontWeight = '800';
+          } else {
+            btn.className = 'btn btn-sm btn-blue';
+            btn.style.opacity = '0.7';
+            btn.style.fontWeight = 'normal';
+          }
+        }
+      });
+
+      if (doRender) {
+        renderTopRecordAdmin();
+      }
+    }
+
+    function syncActiveTopRecords() {
+      const mode = state.masterMode || 'SOLO';
+      let activeList = state.topRecordsSolo;
+      if (mode === 'DUO') activeList = state.topRecordsDuo;
+      else if (mode === 'TRIO') activeList = state.topRecordsTrio;
+
+      if (!Array.isArray(activeList) || activeList.length < 3) {
+        activeList = [
+          { rank: 1, name: '-', char: '-', ws: 0 },
+          { rank: 2, name: '-', char: '-', ws: 0 },
+          { rank: 3, name: '-', char: '-', ws: 0 }
+        ];
+        if (mode === 'DUO') state.topRecordsDuo = activeList;
+        else if (mode === 'TRIO') state.topRecordsTrio = activeList;
+        else state.topRecordsSolo = activeList;
+      }
+
+      state.topRecords = activeList;
+      state.topRecord = activeList[0];
+    }
+
     // === SISTEM FORMAT TIM (SOLO / DUO / TRIO) ===
     let currentTeamCharMode = 'solo'; // 'solo' | 'duo' | 'trio'
 
@@ -1970,6 +2112,9 @@
       if (Array.isArray(state.queue)) state.queue.forEach(harvest);
       if (Array.isArray(state.saved)) state.saved.forEach(harvest);
       if (Array.isArray(state.topRecords)) state.topRecords.forEach(harvest);
+      if (Array.isArray(state.topRecordsSolo)) state.topRecordsSolo.forEach(harvest);
+      if (Array.isArray(state.topRecordsDuo)) state.topRecordsDuo.forEach(harvest);
+      if (Array.isArray(state.topRecordsTrio)) state.topRecordsTrio.forEach(harvest);
 
       const list = Array.from(set);
       // Urutkan sesuai abjad nama pemain (A-Z)
@@ -2219,26 +2364,50 @@
           if (!st.tierStatus[k]) { st.tierStatus[k] = 'AKTIF'; changed = true; }
         });
       }
-      if (!st.topRecord || typeof st.topRecord !== 'object') {
-        st.topRecord = { name: '-', char: '-', ws: 0 };
+      if (!st.masterMode || !['SOLO', 'DUO', 'TRIO'].includes(st.masterMode)) {
+        st.masterMode = 'SOLO';
         changed = true;
       }
-      if (!Array.isArray(st.topRecords) || st.topRecords.length < 3) {
-        const existing = Array.isArray(st.topRecords) ? st.topRecords.slice() : [];
-        if (existing.length === 0 && st.topRecord && st.topRecord.name && st.topRecord.name !== '-') {
-          existing.push({ rank: 1, name: st.topRecord.name, char: formatChar(st.topRecord.char), ws: Number(st.topRecord.ws) || 0 });
-        }
+
+      const normalizeRecList = (list) => {
+        const existing = Array.isArray(list) ? list.slice() : [];
         while (existing.length < 3) {
           existing.push({ rank: existing.length + 1, name: '-', char: '-', ws: 0 });
         }
-        st.topRecords = existing.slice(0, 3).map((r, i) => ({
+        return existing.slice(0, 3).map((r, i) => ({
           rank: i + 1,
           name: r.name || '-',
           char: formatChar(r.char),
           ws: Number(r.ws) || 0
         }));
+      };
+
+      if (!Array.isArray(st.topRecordsSolo) || st.topRecordsSolo.length < 3) {
+        st.topRecordsSolo = normalizeRecList(st.topRecords);
         changed = true;
+      } else {
+        st.topRecordsSolo = normalizeRecList(st.topRecordsSolo);
       }
+
+      if (!Array.isArray(st.topRecordsDuo) || st.topRecordsDuo.length < 3) {
+        st.topRecordsDuo = normalizeRecList(st.topRecordsDuo);
+        changed = true;
+      } else {
+        st.topRecordsDuo = normalizeRecList(st.topRecordsDuo);
+      }
+
+      if (!Array.isArray(st.topRecordsTrio) || st.topRecordsTrio.length < 3) {
+        st.topRecordsTrio = normalizeRecList(st.topRecordsTrio);
+        changed = true;
+      } else {
+        st.topRecordsTrio = normalizeRecList(st.topRecordsTrio);
+      }
+
+      let activeRecList = st.topRecordsSolo;
+      if (st.masterMode === 'DUO') activeRecList = st.topRecordsDuo;
+      else if (st.masterMode === 'TRIO') activeRecList = st.topRecordsTrio;
+
+      st.topRecords = activeRecList;
       st.topRecord = st.topRecords[0];
 
       if (!Array.isArray(st.registeredUsers)) {
@@ -2734,9 +2903,9 @@
       if (picker) picker.value = '';
       const hiddenChar = document.getElementById('input-char');
       if (hiddenChar) hiddenChar.value = '';
-      setTeamCharMode('solo');
       const userPicker = document.getElementById('select-registered-user');
       if (userPicker) userPicker.value = '';
+      setTeamCharMode((state.masterMode || 'SOLO').toLowerCase());
       updatePlayerFormValidation();
 
       saveState();
@@ -3121,21 +3290,27 @@
 
     function checkAndUpdateTopRecord(candidate) {
       if (!candidate || candidate.ws === undefined || candidate.ws === null || candidate.ws <= 0) return;
-      if (!Array.isArray(state.topRecords) || state.topRecords.length < 3) {
-        state.topRecords = [
+      const curMode = state.masterMode || 'SOLO';
+      let targetKey = 'topRecordsSolo';
+      if (curMode === 'DUO') targetKey = 'topRecordsDuo';
+      else if (curMode === 'TRIO') targetKey = 'topRecordsTrio';
+
+      if (!Array.isArray(state[targetKey]) || state[targetKey].length < 3) {
+        state[targetKey] = [
           { rank: 1, name: '-', char: '-', ws: 0 },
           { rank: 2, name: '-', char: '-', ws: 0 },
           { rank: 3, name: '-', char: '-', ws: 0 }
         ];
       }
 
+      const list = state[targetKey];
       const candName = String(candidate.name).trim();
       const candChar = formatChar(candidate.char);
       const candWs = Number(candidate.ws) || 0;
 
       // Cek apakah entri sama persis: HANYA jika username DAN karakter sama persis (case-insensitive)
       // Jika username sama tapi karakter beda, atau username beda: diperlakukan sebagai rekor terpisah
-      const existingIdx = state.topRecords.findIndex(r => 
+      const existingIdx = list.findIndex(r => 
         r.name && r.name !== '-' && 
         r.name.toLowerCase() === candName.toLowerCase() &&
         formatChar(r.char).toLowerCase() === candChar.toLowerCase()
@@ -3143,33 +3318,35 @@
 
       if (existingIdx !== -1) {
         // Jika nama DAN karakter sama persis, perbarui WS jika rekor saat ini lebih tinggi
-        if (candWs > (state.topRecords[existingIdx].ws || 0)) {
-          state.topRecords[existingIdx].ws = candWs;
+        if (candWs > (list[existingIdx].ws || 0)) {
+          list[existingIdx].ws = candWs;
         }
       } else {
-        const minWs = Math.min(...state.topRecords.map(r => r.ws || 0));
-        const hasEmptySlot = state.topRecords.some(r => !r.name || r.name === '-' || (r.ws || 0) === 0);
+        const minWs = Math.min(...list.map(r => r.ws || 0));
+        const hasEmptySlot = list.some(r => !r.name || r.name === '-' || (r.ws || 0) === 0);
 
         if (hasEmptySlot || candWs > minWs) {
-          const valid = state.topRecords.filter(r => r.name && r.name !== '-' && (r.ws || 0) > 0);
+          const valid = list.filter(r => r.name && r.name !== '-' && (r.ws || 0) > 0);
           valid.push({ name: candName, char: candChar, ws: candWs });
           valid.sort((a, b) => (b.ws || 0) - (a.ws || 0));
           const top3 = valid.slice(0, 3);
           while (top3.length < 3) {
             top3.push({ name: '-', char: '-', ws: 0 });
           }
-          state.topRecords = top3.map((r, i) => ({ rank: i + 1, ...r }));
+          state[targetKey] = top3.map((r, i) => ({ rank: i + 1, ...r }));
         }
       }
 
-      state.topRecords.sort((a, b) => (b.ws || 0) - (a.ws || 0));
-      state.topRecords = state.topRecords.slice(0, 3).map((r, i) => ({
+      state[targetKey].sort((a, b) => (b.ws || 0) - (a.ws || 0));
+      state[targetKey] = state[targetKey].slice(0, 3).map((r, i) => ({
         rank: i + 1,
         name: r.name || '-',
         char: formatChar(r.char),
         ws: Number(r.ws) || 0
       }));
-      state.topRecord = state.topRecords[0];
+
+      // Sinkronkan ke rekor aktif
+      syncActiveTopRecords();
     }
 
     // Fill Arena Slot otomatis: Hanya isi jika arena KOSONG TOTAL di awal sesi live
@@ -3393,12 +3570,20 @@
         updatedPlayer = editingTarget;
       }
 
-      if (updatedPlayer && Array.isArray(state.topRecords)) {
-        state.topRecords.forEach(r => {
-          if (r.name && r.name === updatedPlayer.name && r.ws === updatedPlayer.ws && r.ws > 0) {
-            r.char = formatChar(val);
+      if (updatedPlayer) {
+        const updateRecList = (list) => {
+          if (Array.isArray(list)) {
+            list.forEach(r => {
+              if (r.name && r.name === updatedPlayer.name && r.ws === updatedPlayer.ws && r.ws > 0) {
+                r.char = formatChar(val);
+              }
+            });
           }
-        });
+        };
+        updateRecList(state.topRecordsSolo);
+        updateRecList(state.topRecordsDuo);
+        updateRecList(state.topRecordsTrio);
+        updateRecList(state.topRecords);
         if (state.topRecord && state.topRecord.name === updatedPlayer.name && state.topRecord.ws === updatedPlayer.ws && state.topRecord.ws > 0) {
           state.topRecord.char = formatChar(val);
         }
@@ -3444,6 +3629,7 @@
 
     // RENDER FUNCTIONS
     function renderAll() {
+      updateMasterModeUI();
       renderArena();
       renderQueue();
       renderSaved();
@@ -3464,21 +3650,24 @@
     }
 
     function renderTopRecordAdmin() {
-      if (!Array.isArray(state.topRecords) || state.topRecords.length < 3) {
-        state.topRecords = [
-          state.topRecord || { rank: 1, name: '-', char: '-', ws: 0 },
+      const tab = currentTopWsTab || 'SOLO';
+      const targetKey = tab === 'DUO' ? 'topRecordsDuo' : (tab === 'TRIO' ? 'topRecordsTrio' : 'topRecordsSolo');
+
+      if (!Array.isArray(state[targetKey]) || state[targetKey].length < 3) {
+        state[targetKey] = [
+          { rank: 1, name: '-', char: '-', ws: 0 },
           { rank: 2, name: '-', char: '-', ws: 0 },
           { rank: 3, name: '-', char: '-', ws: 0 }
         ];
       }
-      state.topRecord = state.topRecords[0];
+      const records = state[targetKey];
 
       const topWsBadge = document.getElementById('admin-top-ws-badge');
       if (topWsBadge) {
-        const r1 = state.topRecords[0] ? state.topRecords[0].ws || 0 : 0;
-        const r2 = state.topRecords[1] ? state.topRecords[1].ws || 0 : 0;
-        const r3 = state.topRecords[2] ? state.topRecords[2].ws || 0 : 0;
-        topWsBadge.innerText = `🥇 ${r1} WS | 🥈 ${r2} WS | 🥉 ${r3} WS`;
+        const r1 = records[0] ? records[0].ws || 0 : 0;
+        const r2 = records[1] ? records[1].ws || 0 : 0;
+        const r3 = records[2] ? records[2].ws || 0 : 0;
+        topWsBadge.innerText = `[${tab}] 🥇 ${r1} WS | 🥈 ${r2} WS | 🥉 ${r3} WS`;
       }
 
       // Jangan timpa input jika admin sedang fokus / mengetik di salah satu field rekor
@@ -3496,7 +3685,7 @@
       if (inputs.some(el => el && document.activeElement === el)) return;
 
       for (let i = 1; i <= 3; i++) {
-        const rec = state.topRecords[i - 1] || { name: '-', char: '-', ws: 0 };
+        const rec = records[i - 1] || { name: '-', char: '-', ws: 0 };
         const nInput = document.getElementById(`input-record-name-${i}`);
         const cInput = document.getElementById(`input-record-char-${i}`);
         const wInput = document.getElementById(`input-record-ws-${i}`);
@@ -3507,6 +3696,7 @@
     }
 
     function saveTopRecord() {
+      const tab = currentTopWsTab || 'SOLO';
       const records = [];
       for (let i = 1; i <= 3; i++) {
         const nInput = document.getElementById(`input-record-name-${i}`);
@@ -3518,24 +3708,29 @@
         records.push({ rank: i, name, char: formatChar(char), ws });
       }
 
-      if (!confirm("Simpan perubahan TOP 3 WS?")) return;
+      if (!confirm(`Simpan perubahan TOP 3 WS untuk mode [ ${tab} ]?`)) return;
 
       records.sort((a, b) => (b.ws || 0) - (a.ws || 0));
-      state.topRecords = records.slice(0, 3).map((r, i) => ({ ...r, rank: i + 1 }));
-      state.topRecord = state.topRecords[0];
+      const targetKey = tab === 'DUO' ? 'topRecordsDuo' : (tab === 'TRIO' ? 'topRecordsTrio' : 'topRecordsSolo');
+      state[targetKey] = records.slice(0, 3).map((r, i) => ({ ...r, rank: i + 1 }));
+
+      syncActiveTopRecords();
 
       saveState();
-      alert("TOP 3 WS berhasil diperbarui!");
+      alert(`TOP 3 WS (${tab}) berhasil diperbarui!`);
     }
 
     function resetTopRecord() {
-      if (!confirm("Reset semua rekor TOP 3 WS menjadi 0?")) return;
-      state.topRecords = [
+      const tab = currentTopWsTab || 'SOLO';
+      if (!confirm(`Reset semua rekor TOP 3 WS untuk mode [ ${tab} ] menjadi 0?`)) return;
+      const targetKey = tab === 'DUO' ? 'topRecordsDuo' : (tab === 'TRIO' ? 'topRecordsTrio' : 'topRecordsSolo');
+      state[targetKey] = [
         { rank: 1, name: '-', char: '-', ws: 0 },
         { rank: 2, name: '-', char: '-', ws: 0 },
         { rank: 3, name: '-', char: '-', ws: 0 }
       ];
-      state.topRecord = state.topRecords[0];
+
+      syncActiveTopRecords();
 
       for (let i = 1; i <= 3; i++) {
         const nInput = document.getElementById(`input-record-name-${i}`);
@@ -3547,7 +3742,7 @@
       }
 
       saveState();
-      alert("Semua rekor TOP 3 WS berhasil di-reset menjadi 0.");
+      alert(`Semua rekor TOP 3 WS (${tab}) berhasil di-reset menjadi 0.`);
     }
 
     function saveAnnouncement() {

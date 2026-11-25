@@ -2764,12 +2764,18 @@
       const candChar = formatChar(candidate.char);
       const candWs = Number(candidate.ws) || 0;
 
-      const existingIdx = state.topRecords.findIndex(r => r.name && r.name !== '-' && r.name.toLowerCase() === candName.toLowerCase());
+      // Cek apakah entri sama persis: HANYA jika username DAN karakter sama persis (case-insensitive)
+      // Jika username sama tapi karakter beda, atau username beda: diperlakukan sebagai rekor terpisah
+      const existingIdx = state.topRecords.findIndex(r => 
+        r.name && r.name !== '-' && 
+        r.name.toLowerCase() === candName.toLowerCase() &&
+        formatChar(r.char).toLowerCase() === candChar.toLowerCase()
+      );
 
       if (existingIdx !== -1) {
-        if (candWs >= (state.topRecords[existingIdx].ws || 0)) {
+        // Jika nama DAN karakter sama persis, perbarui WS jika rekor saat ini lebih tinggi
+        if (candWs > (state.topRecords[existingIdx].ws || 0)) {
           state.topRecords[existingIdx].ws = candWs;
-          if (candChar && candChar !== '-') state.topRecords[existingIdx].char = candChar;
         }
       } else {
         const minWs = Math.min(...state.topRecords.map(r => r.ws || 0));

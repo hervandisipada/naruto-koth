@@ -1224,7 +1224,22 @@
       20%, 60% { transform: translateX(-8px); }
       40%, 80% { transform: translateX(8px); }
     }
-
+    .admin-pin-input-field {
+      width: 100%;
+      max-width: 220px;
+      font-size: 2rem;
+      text-align: center;
+      letter-spacing: 12px;
+      padding: 10px 14px;
+      background: #222831;
+      border: 2px solid #F7F7F7;
+      border-radius: 8px;
+      color: #F7F7F7;
+      font-family: inherit;
+      font-weight: 900;
+      outline: none;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
   </style>
 </head>
 
@@ -1245,12 +1260,7 @@
 
       <!-- Input PIN Langsung (Keyboard PC & HP Otomatis Muncul) -->
       <div style="margin-bottom: 14px;">
-        <input type="password" id="admin-pin-direct-input" maxlength="4" inputmode="numeric" pattern="[0-9]*" 
-               autocomplete="off" autofocus placeholder="• • • •" 
-               style="width: 100%; max-width: 220px; font-size: 2rem; text-align: center; letter-spacing: 12px; 
-                      padding: 10px 14px; background: #222831; border: 2px solid #F7F7F7; 
-                      border-radius: 8px; color: #F7F7F7; font-family: 'Consolas', monospace; font-weight: 900; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);"
-               oninput="handleDirectPinInput(this.value)" onkeydown="if(event.key==='Enter')submitPin();">
+        <input type="password" id="admin-pin-direct-input" class="admin-pin-input-field" maxlength="4" autocomplete="off" autofocus placeholder="****" oninput="handleDirectPinInput(this.value)" onkeydown="handlePinKey(event)" />
       </div>
 
       <div id="pin-error-msg" style="min-height: 22px; font-size: 0.82rem; font-weight: 800; color: #ef4444; margin-bottom: 14px;"></div>
@@ -1297,6 +1307,12 @@
             setTimeout(() => input.focus(), 100);
           }
         }
+      }
+    }
+
+    function handlePinKey(e) {
+      if (e && (e.key === 'Enter' || e.keyCode === 13)) {
+        submitPin();
       }
     }
 
@@ -5822,114 +5838,6 @@ Penambahan ditolak untuk mencegah double user.`);
 
     // Inisialisasi
     loadState();
-
-    // ==========================================
-    // SISTEM PIN KEAMANAN ADMIN (PIN: 7878)
-    // ==========================================
-    const ADMIN_PIN_CODE = '7878';
-    let enteredPin = '';
-
-    function checkAdminAuth() {
-      const isAuth = sessionStorage.getItem('koth_admin_auth') === ADMIN_PIN_CODE;
-      const modal = document.getElementById('admin-pin-lock-modal');
-      if (modal) {
-        if (isAuth) {
-          modal.style.display = 'none';
-        } else {
-          modal.style.display = 'flex';
-          enteredPin = '';
-          updatePinDisplay();
-        }
-      }
-    }
-
-    function pressPinKey(num) {
-      if (enteredPin.length < 4) {
-        enteredPin += num;
-        updatePinDisplay();
-        if (enteredPin.length === 4) {
-          setTimeout(submitPin, 120);
-        }
-      }
-    }
-
-    function pressPinClear() {
-      enteredPin = '';
-      updatePinDisplay();
-      const errMsg = document.getElementById('pin-error-msg');
-      if (errMsg) errMsg.innerText = '';
-    }
-
-    function submitPin() {
-      const errMsg = document.getElementById('pin-error-msg');
-      if (enteredPin === ADMIN_PIN_CODE) {
-        if (errMsg) {
-          errMsg.style.color = '#22c55e';
-          errMsg.innerText = '✅ Akses Diterima! Membuka panel...';
-        }
-        sessionStorage.setItem('koth_admin_auth', ADMIN_PIN_CODE);
-        setTimeout(() => {
-          const modal = document.getElementById('admin-pin-lock-modal');
-          if (modal) modal.style.display = 'none';
-        }, 250);
-      } else {
-        if (errMsg) {
-          errMsg.style.color = '#ef4444';
-          errMsg.innerText = '❌ PIN SALAH! Akses ditolak.';
-        }
-        const container = document.getElementById('pin-dots-container');
-        if (container) {
-          container.style.animation = 'pinShake 0.4s';
-          setTimeout(() => { container.style.animation = ''; }, 450);
-        }
-        setTimeout(() => {
-          pressPinClear();
-        }, 600);
-      }
-    }
-
-    function logoutAdmin() {
-      sessionStorage.removeItem('koth_admin_auth');
-      checkAdminAuth();
-    }
-
-    function updatePinDisplay() {
-      for (let i = 0; i < 4; i++) {
-        const box = document.getElementById(`pin-box-${i}`);
-        if (box) {
-          if (i < enteredPin.length) {
-            box.innerText = '•';
-            box.style.borderColor = '#f59e0b';
-            box.style.background = 'rgba(245, 158, 11, 0.15)';
-          } else {
-            box.innerText = '';
-            box.style.borderColor = '#334155';
-            box.style.background = 'rgba(0,0,0,0.4)';
-          }
-        }
-      }
-    }
-
-    // Keyboard listener untuk PIN
-    window.addEventListener('keydown', (e) => {
-      const modal = document.getElementById('admin-pin-lock-modal');
-      if (!modal || modal.style.display === 'none') return;
-
-      if (e.key >= '0' && e.key <= '9') {
-        e.preventDefault();
-        pressPinKey(e.key);
-      } else if (e.key === 'Backspace' || e.key === 'Delete' || e.key.toLowerCase() === 'c') {
-        e.preventDefault();
-        pressPinClear();
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        submitPin();
-      }
-    });
-
-    // Jalankan cek auth saat load
-    checkAdminAuth();
-
 
     // Auto-refresh timer Saved setiap 15 detik jika tab Saved aktif
     setInterval(() => {

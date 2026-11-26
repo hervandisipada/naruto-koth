@@ -1843,9 +1843,10 @@
       container.ontouchend = () => { setTimeout(() => { isUserInteracting = false; currentScrollY = container.scrollTop; }, 2000); };
     }
 
-    // Connect Local SSE
+    // Connect Local SSE (Hanya jika dijalankan di server Python lokal)
     function connectSSE() {
-      if (window.location.protocol.startsWith('http')) {
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+      if (window.location.protocol.startsWith('http') && isLocal) {
         const evtSource = new EventSource('/api/events');
         evtSource.onmessage = function (e) {
           try {

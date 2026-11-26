@@ -3086,7 +3086,8 @@
       }
 
       // Initial GET from Local Python Server if running locally
-      if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('github.io')) {
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+      if (window.location.protocol.startsWith('http') && isLocal) {
         fetch('/api/state')
           .then(res => res.json())
           .then(serverState => {
@@ -3148,7 +3149,8 @@
       }
 
       // Local Python Server Sync (If running via start.bat / local server)
-      if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('github.io')) {
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+      if (window.location.protocol.startsWith('http') && isLocal) {
         fetch('/api/state', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3250,18 +3252,20 @@
     }
 
     function setupSync() {
-      const isOnline = window.location.hostname.includes('github.io');
+      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
       let overlayUrl = '';
       let adminUrl = '';
 
-      if (isOnline) {
-        overlayUrl = `https://hervandisipada.github.io/naruto-koth/overlay.html`;
-        adminUrl = `https://hervandisipada.github.io/naruto-koth/`;
+      if (!isLocal) {
+        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) || '/';
+        const origin = window.location.origin;
+        overlayUrl = `${origin}${basePath}overlay.html`;
+        adminUrl = `${origin}${basePath}`;
       } else {
         const currentHost = window.location.hostname || 'localhost';
         const currentPort = window.location.port ? `:${window.location.port}` : ':8000';
-        overlayUrl = `http://${currentHost === '' ? 'localhost' : currentHost}${currentPort}/overlay.html`;
-        adminUrl = `http://${currentHost === '' ? 'localhost' : currentHost}${currentPort}`;
+        overlayUrl = `http://${currentHost}${currentPort}/overlay.html`;
+        adminUrl = `http://${currentHost}${currentPort}`;
       }
 
       const linkEl = document.getElementById('tiktok-link-display');

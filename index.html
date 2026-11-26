@@ -1079,27 +1079,27 @@
   <div id="admin-view" class="view-container active">
     <div class="admin-grid">
 
-      <!-- MASTER MODE CONTROLLER (SOLO / DUO / TRIO) -->
+      <!-- MASTER MODE CONTROLLER (1v1 / DUO / TIM) -->
       <div class="card full-width" style="padding: 10px 14px; margin-bottom: 4px; background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 8px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div>
             <div style="display: flex; align-items: center; gap: 8px;">
               <span style="font-weight: 900; font-size: 0.95rem; color: var(--accent-gold); letter-spacing: 0.5px;">🎮 MASTER MODE:</span>
-              <span id="master-mode-status-badge" class="badge" style="font-weight: 800; font-size: 0.85rem; padding: 4px 12px; border-radius: 4px; background: #0284c7; color: #fff;">SOLO (1 CHAR)</span>
+              <span id="master-mode-status-badge" class="badge" style="font-weight: 800; font-size: 0.85rem; padding: 4px 12px; border-radius: 4px; background: #0284c7; color: #fff;">1v1 (1 CHAR)</span>
             </div>
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 3px;">
-              Pilih format mode pertandingan live. Form pemain & Top WS otomatis beralih sesuai mode yang dipilih.
+              Pilih format mode pertandingan live. Arena pemain, format form karakter & Top WS otomatis beralih terpisah per mode.
             </div>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button type="button" id="btn-master-solo" class="btn btn-primary" style="font-weight: 800; padding: 6px 14px; font-size: 0.85rem;" onclick="setMasterMode('SOLO')">
-              ⚡ SOLO (1 Char)
+            <button type="button" id="btn-master-1v1" class="btn btn-primary" style="font-weight: 800; padding: 6px 14px; font-size: 0.85rem;" onclick="setMasterMode('1v1')">
+              ⚡ 1v1 (1 Char)
             </button>
             <button type="button" id="btn-master-duo" class="btn btn-blue" style="font-weight: 800; padding: 6px 14px; font-size: 0.85rem; opacity: 0.7;" onclick="setMasterMode('DUO')">
               ⚔️ DUO (2 Char)
             </button>
-            <button type="button" id="btn-master-trio" class="btn btn-blue" style="font-weight: 800; padding: 6px 14px; font-size: 0.85rem; opacity: 0.7;" onclick="setMasterMode('TRIO')">
-              👑 TRIO (2-3 Char)
+            <button type="button" id="btn-master-tim" class="btn btn-blue" style="font-weight: 800; padding: 6px 14px; font-size: 0.85rem; opacity: 0.7;" onclick="setMasterMode('TIM')">
+              👑 TIM (2-3 Char)
             </button>
           </div>
         </div>
@@ -1108,7 +1108,7 @@
       <!-- ARENA MATCH CONTROLLER -->
       <div class="card full-width">
         <div class="card-title">
-          <span>ARENA (1 VS 1)</span>
+          <span>ARENA (<span id="arena-current-mode-label">1v1</span>)</span>
           <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
             <button class="btn-undo-action" onclick="undo()" title="Undo perubahan terakhir (Ctrl+Z)" disabled>↩ Undo</button>
             <button class="btn-redo-action" onclick="redo()" title="Redo perubahan (Ctrl+Y)" disabled>↪ Redo</button>
@@ -1198,12 +1198,7 @@
           </div>
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label style="margin: 0;">Format Karakter:</label>
-              <div style="display: flex; gap: 4px;">
-                <button type="button" id="btn-mode-solo" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="setTeamCharMode('solo')">Solo (1)</button>
-                <button type="button" id="btn-mode-duo" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setTeamCharMode('duo')">Duo (2)</button>
-                <button type="button" id="btn-mode-trio" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setTeamCharMode('trio')">Trio (3)</button>
-              </div>
+              <label style="margin: 0;">Karakter: <span id="add-player-mode-badge" style="font-size: 0.78rem; font-weight: 800; color: var(--accent-gold);">(Mode: 1v1)</span></label>
             </div>
 
             <!-- SLOT 1 (Leader / Utama) -->
@@ -1350,17 +1345,39 @@
         <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
           <span>TOP 3 WS</span>
           <span id="admin-top-ws-badge" class="badge"
-            style="background: var(--c-white); color: var(--c-dark); font-weight: 800; padding: 2px 8px; border-radius: 4px;">[SOLO] 🥇 0 WS | 🥈 0 WS | 🥉 0 WS</span>
+            style="background: var(--c-white); color: var(--c-dark); font-weight: 800; padding: 2px 8px; border-radius: 4px;">[1v1] 🥇 0 WS | 🥈 0 WS | 🥉 0 WS</span>
         </div>
-        <p class="instructions" style="margin-bottom: 8px;">Daftar 3 Rekor WS tertinggi di live overlay khusus masing-masing mode (Solo, Duo, Trio).</p>
+        <p class="instructions" style="margin-bottom: 8px;">Daftar 3 Rekor WS tertinggi di live overlay khusus masing-masing mode (1v1, DUO, TIM).</p>
 
-        <!-- Tab Pilihan Mode Top WS: SOLO | DUO | TRIO -->
+        <!-- Ceklis Pilihan Tampil di Overlay -->
+        <div style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-gold);">📺 TAMPILKAN DI OVERLAY:</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted);">(Ceklis 1, 2, atau semuanya)</span>
+          </div>
+          <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; margin: 0; color: #fff;">
+              <input type="checkbox" id="chk-topws-1v1" onchange="toggleTopWsOverlay('1v1', this.checked)">
+              <span>TOP WS 1v1</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; margin: 0; color: #fff;">
+              <input type="checkbox" id="chk-topws-duo" onchange="toggleTopWsOverlay('DUO', this.checked)">
+              <span>TOP WS DUO</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; margin: 0; color: #fff;">
+              <input type="checkbox" id="chk-topws-tim" onchange="toggleTopWsOverlay('TIM', this.checked)">
+              <span>TOP WS TIM</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tab Pilihan Mode Editor Top WS: 1v1 | DUO | TIM -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: var(--panel-subtle); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 6px;">
-          <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-light);">Rekor Mode:</span>
+          <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-light);">Edit Rekor Mode:</span>
           <div style="display: flex; gap: 4px;">
-            <button type="button" id="btn-topws-tab-solo" class="btn btn-sm btn-primary" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem;" onclick="switchTopWsTab('SOLO')">⚡ Solo</button>
-            <button type="button" id="btn-topws-tab-duo" class="btn btn-sm btn-blue" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem; opacity: 0.7;" onclick="switchTopWsTab('DUO')">⚔️ Duo</button>
-            <button type="button" id="btn-topws-tab-trio" class="btn btn-sm btn-blue" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem; opacity: 0.7;" onclick="switchTopWsTab('TRIO')">👑 Trio</button>
+            <button type="button" id="btn-topws-tab-1v1" class="btn btn-sm btn-primary" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem;" onclick="switchTopWsTab('1v1')">⚡ 1v1</button>
+            <button type="button" id="btn-topws-tab-duo" class="btn btn-sm btn-blue" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem; opacity: 0.7;" onclick="switchTopWsTab('DUO')">⚔️ DUO</button>
+            <button type="button" id="btn-topws-tab-tim" class="btn btn-sm btn-blue" style="font-weight: 800; padding: 3px 10px; font-size: 0.78rem; opacity: 0.7;" onclick="switchTopWsTab('TIM')">👑 TIM</button>
           </div>
         </div>
 
@@ -1487,9 +1504,9 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Format Karakter:</span>
           <div style="display: flex; gap: 4px;">
-            <button type="button" id="modal-btn-solo" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="setModalTeamMode('solo')">Solo (1)</button>
+            <button type="button" id="modal-btn-1v1" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="setModalTeamMode('1v1')">1v1 (1)</button>
             <button type="button" id="modal-btn-duo" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setModalTeamMode('duo')">Duo (2)</button>
-            <button type="button" id="modal-btn-trio" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setModalTeamMode('trio')">Trio (3)</button>
+            <button type="button" id="modal-btn-tim" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; opacity: 0.7;" onclick="setModalTeamMode('tim')">Tim (3)</button>
           </div>
         </div>
 
@@ -1818,21 +1835,58 @@
       });
     }
 
-    // === SISTEM MASTER MODE (SOLO / DUO / TRIO) ===
-    function setMasterMode(mode) {
-      if (!['SOLO', 'DUO', 'TRIO'].includes(mode)) mode = 'SOLO';
-      state.masterMode = mode;
+    // === SISTEM PISAH ARENA PER MODE (1v1 / DUO / TIM) ===
+    function getArenaKey(mode) {
+      const m = String(mode || state.masterMode || '1v1').toUpperCase();
+      if (m === 'DUO') return 'arenaDuo';
+      if (m === 'TIM' || m === 'TRIO') return 'arenaTim';
+      return 'arena1v1';
+    }
 
-      // 1. Update UI tombol master
+    function syncActiveModeToArena() {
+      const curKey = getArenaKey(state.masterMode);
+      if (!state[curKey] || typeof state[curKey] !== 'object') {
+        state[curKey] = { p1: null, p2: null };
+      }
+      state[curKey].p1 = state.p1 || null;
+      state[curKey].p2 = state.p2 || null;
+    }
+
+    function syncArenaToActiveMode() {
+      const curKey = getArenaKey(state.masterMode);
+      if (!state[curKey] || typeof state[curKey] !== 'object') {
+        state[curKey] = { p1: null, p2: null };
+      }
+      state.p1 = state[curKey].p1 || null;
+      state.p2 = state[curKey].p2 || null;
+    }
+
+    // === SISTEM MASTER MODE (1v1 / DUO / TIM) ===
+    function setMasterMode(mode) {
+      // 1. Simpan pemain arena mode saat ini sebelum berpindah
+      syncActiveModeToArena();
+
+      let cleanMode = '1v1';
+      const up = String(mode).toUpperCase();
+      if (up === 'DUO') cleanMode = 'DUO';
+      else if (up === 'TIM' || up === 'TRIO') cleanMode = 'TIM';
+      else cleanMode = '1v1';
+
+      state.masterMode = cleanMode;
+
+      // 2. Muat pemain arena khusus mode yang dipilih
+      syncArenaToActiveMode();
+
+      // 3. Update UI tombol master & label arena
       updateMasterModeUI();
 
-      // 2. Sesuaikan format form tambah pemain
-      setTeamCharMode(mode.toLowerCase());
+      // 4. Sesuaikan format form tambah pemain
+      setTeamCharMode(cleanMode.toLowerCase());
 
-      // 3. Switch tab Top WS ke mode yang baru dipilih
-      switchTopWsTab(mode, false);
+      // 5. Switch tab Top WS ke mode yang baru dipilih
+      switchTopWsTab(cleanMode, false);
 
-      // 4. Sinkronkan topRecords & topRecord aktif
+      // 6. Sinkronkan topRecords & topRecord aktif
       syncActiveTopRecords();
 
       renderAll();
@@ -1840,53 +1894,93 @@
     }
 
     function updateMasterModeUI() {
-      const m = state.masterMode || 'SOLO';
+      const m = state.masterMode || '1v1';
       const badge = document.getElementById('master-mode-status-badge');
-      const btnSolo = document.getElementById('btn-master-solo');
+      const btn1v1 = document.getElementById('btn-master-1v1') || document.getElementById('btn-master-solo');
       const btnDuo = document.getElementById('btn-master-duo');
-      const btnTrio = document.getElementById('btn-master-trio');
+      const btnTim = document.getElementById('btn-master-tim') || document.getElementById('btn-master-trio');
+      const arenaLabel = document.getElementById('arena-current-mode-label');
+
+      if (arenaLabel) {
+        arenaLabel.innerText = m;
+      }
 
       if (badge) {
-        if (m === 'SOLO') {
-          badge.innerText = 'SOLO (1 CHAR)';
+        if (m === '1v1' || m === 'SOLO') {
+          badge.innerText = '1v1 (1 CHAR)';
           badge.style.background = '#0284c7';
         } else if (m === 'DUO') {
           badge.innerText = 'DUO (2 CHAR)';
           badge.style.background = '#2563eb';
-        } else if (m === 'TRIO') {
-          badge.innerText = 'TRIO (2-3 CHAR)';
+        } else if (m === 'TIM' || m === 'TRIO') {
+          badge.innerText = 'TIM (2-3 CHAR)';
           badge.style.background = '#7c3aed';
         }
       }
 
-      if (btnSolo) {
-        btnSolo.className = m === 'SOLO' ? 'btn btn-primary' : 'btn btn-blue';
-        btnSolo.style.opacity = m === 'SOLO' ? '1' : '0.65';
-        btnSolo.style.boxShadow = m === 'SOLO' ? '0 0 10px rgba(2, 132, 199, 0.5)' : 'none';
+      if (btn1v1) {
+        const isAct = (m === '1v1' || m === 'SOLO');
+        btn1v1.className = isAct ? 'btn btn-primary' : 'btn btn-blue';
+        btn1v1.style.opacity = isAct ? '1' : '0.65';
+        btn1v1.style.boxShadow = isAct ? '0 0 10px rgba(2, 132, 199, 0.5)' : 'none';
       }
       if (btnDuo) {
-        btnDuo.className = m === 'DUO' ? 'btn btn-primary' : 'btn btn-blue';
-        btnDuo.style.opacity = m === 'DUO' ? '1' : '0.65';
-        btnDuo.style.boxShadow = m === 'DUO' ? '0 0 10px rgba(37, 99, 235, 0.5)' : 'none';
+        const isAct = (m === 'DUO');
+        btnDuo.className = isAct ? 'btn btn-primary' : 'btn btn-blue';
+        btnDuo.style.opacity = isAct ? '1' : '0.65';
+        btnDuo.style.boxShadow = isAct ? '0 0 10px rgba(37, 99, 235, 0.5)' : 'none';
       }
-      if (btnTrio) {
-        btnTrio.className = m === 'TRIO' ? 'btn btn-primary' : 'btn btn-blue';
-        btnTrio.style.opacity = m === 'TRIO' ? '1' : '0.65';
-        btnTrio.style.boxShadow = m === 'TRIO' ? '0 0 10px rgba(124, 58, 237, 0.5)' : 'none';
+      if (btnTim) {
+        const isAct = (m === 'TIM' || m === 'TRIO');
+        btnTim.className = isAct ? 'btn btn-primary' : 'btn btn-blue';
+        btnTim.style.opacity = isAct ? '1' : '0.65';
+        btnTim.style.boxShadow = isAct ? '0 0 10px rgba(124, 58, 237, 0.5)' : 'none';
       }
     }
 
-    // Tab Top WS terpisah: SOLO | DUO | TRIO
-    let currentTopWsTab = 'SOLO';
+    // === TOP WS CEKLIS & TAB (1v1 | DUO | TIM) ===
+    let currentTopWsTab = '1v1';
+
+    function getTopWsKey(mode) {
+      const m = String(mode || '1v1').toUpperCase();
+      if (m === 'DUO') return 'topRecordsDuo';
+      if (m === 'TIM' || m === 'TRIO') return 'topRecordsTim';
+      return 'topRecords1v1';
+    }
+
+    function renderTopWsCheckboxes() {
+      if (!state.topWsOverlay || typeof state.topWsOverlay !== 'object') {
+        state.topWsOverlay = { '1v1': true, 'DUO': true, 'TIM': true };
+      }
+      const c1 = document.getElementById('chk-topws-1v1');
+      const c2 = document.getElementById('chk-topws-duo');
+      const c3 = document.getElementById('chk-topws-tim');
+      if (c1) c1.checked = state.topWsOverlay['1v1'] !== false;
+      if (c2) c2.checked = state.topWsOverlay['DUO'] !== false;
+      if (c3) c3.checked = state.topWsOverlay['TIM'] !== false;
+    }
+
+    function toggleTopWsOverlay(modeKey, isChecked) {
+      if (!state.topWsOverlay || typeof state.topWsOverlay !== 'object') {
+        state.topWsOverlay = { '1v1': true, 'DUO': true, 'TIM': true };
+      }
+      state.topWsOverlay[modeKey] = !!isChecked;
+      saveState();
+    }
 
     function switchTopWsTab(tab, doRender = true) {
-      if (!['SOLO', 'DUO', 'TRIO'].includes(tab)) tab = 'SOLO';
-      currentTopWsTab = tab;
+      let cleanTab = '1v1';
+      const up = String(tab).toUpperCase();
+      if (up === 'DUO') cleanTab = 'DUO';
+      else if (up === 'TIM' || up === 'TRIO') cleanTab = 'TIM';
+      else cleanTab = '1v1';
 
-      ['SOLO', 'DUO', 'TRIO'].forEach(m => {
+      currentTopWsTab = cleanTab;
+
+      ['1v1', 'DUO', 'TIM'].forEach(m => {
         const btn = document.getElementById(`btn-topws-tab-${m.toLowerCase()}`);
         if (btn) {
-          if (m === tab) {
+          if (m === cleanTab) {
             btn.className = 'btn btn-sm btn-primary';
             btn.style.opacity = '1';
             btn.style.fontWeight = '800';
@@ -1904,10 +1998,9 @@
     }
 
     function syncActiveTopRecords() {
-      const mode = state.masterMode || 'SOLO';
-      let activeList = state.topRecordsSolo;
-      if (mode === 'DUO') activeList = state.topRecordsDuo;
-      else if (mode === 'TRIO') activeList = state.topRecordsTrio;
+      const mode = state.masterMode || '1v1';
+      const targetKey = getTopWsKey(mode);
+      let activeList = state[targetKey];
 
       if (!Array.isArray(activeList) || activeList.length < 3) {
         activeList = [
@@ -1915,50 +2008,49 @@
           { rank: 2, name: '-', char: '-', ws: 0 },
           { rank: 3, name: '-', char: '-', ws: 0 }
         ];
-        if (mode === 'DUO') state.topRecordsDuo = activeList;
-        else if (mode === 'TRIO') state.topRecordsTrio = activeList;
-        else state.topRecordsSolo = activeList;
+        state[targetKey] = activeList;
       }
+
+      // Aliases sync for compatibility
+      state.topRecordsSolo = state.topRecords1v1 || activeList;
+      state.topRecordsTrio = state.topRecordsTim || activeList;
 
       state.topRecords = activeList;
       state.topRecord = activeList[0];
     }
 
-    // === SISTEM FORMAT TIM (SOLO / DUO / TRIO) ===
-    let currentTeamCharMode = 'solo'; // 'solo' | 'duo' | 'trio'
+    // === SISTEM FORMAT TIM (1v1 / DUO / TIM) ===
+    let currentTeamCharMode = '1v1'; // '1v1' | 'duo' | 'tim'
 
     function setTeamCharMode(mode) {
-      currentTeamCharMode = mode;
-      const btnSolo = document.getElementById('btn-mode-solo');
-      const btnDuo = document.getElementById('btn-mode-duo');
-      const btnTrio = document.getElementById('btn-mode-trio');
+      let clean = '1v1';
+      const m = String(mode).toLowerCase();
+      if (m === 'duo') clean = 'duo';
+      else if (m === 'tim' || m === 'trio') clean = 'tim';
+      else clean = '1v1';
+
+      currentTeamCharMode = clean;
+
+      const badge = document.getElementById('add-player-mode-badge');
+      if (badge) {
+        if (clean === '1v1') badge.innerText = '(Mode: 1v1 - 1 Karakter)';
+        else if (clean === 'duo') badge.innerText = '(Mode: DUO - 2 Karakter)';
+        else if (clean === 'tim') badge.innerText = '(Mode: TIM - 2 atau 3 Karakter)';
+      }
 
       const g1Label = document.getElementById('label-char-1');
       const g2 = document.getElementById('group-char-2');
       const g3 = document.getElementById('group-char-3');
 
-      if (btnSolo) {
-        btnSolo.className = mode === 'solo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
-        btnSolo.style.opacity = mode === 'solo' ? '1' : '0.7';
-      }
-      if (btnDuo) {
-        btnDuo.className = mode === 'duo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
-        btnDuo.style.opacity = mode === 'duo' ? '1' : '0.7';
-      }
-      if (btnTrio) {
-        btnTrio.className = mode === 'trio' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
-        btnTrio.style.opacity = mode === 'trio' ? '1' : '0.7';
-      }
-
-      if (mode === 'solo') {
+      if (clean === '1v1') {
         if (g1Label) g1Label.style.display = 'none';
         if (g2) g2.style.display = 'none';
         if (g3) g3.style.display = 'none';
-      } else if (mode === 'duo') {
+      } else if (clean === 'duo') {
         if (g1Label) g1Label.style.display = 'block';
         if (g2) g2.style.display = 'flex';
         if (g3) g3.style.display = 'none';
-      } else if (mode === 'trio') {
+      } else if (clean === 'tim') {
         if (g1Label) g1Label.style.display = 'block';
         if (g2) g2.style.display = 'flex';
         if (g3) g3.style.display = 'flex';
@@ -1981,12 +2073,12 @@
       const c3 = document.getElementById('input-char-3') ? document.getElementById('input-char-3').value.trim() : '';
 
       let combined = '';
-      if (currentTeamCharMode === 'solo') {
+      if (currentTeamCharMode === '1v1' || currentTeamCharMode === 'solo') {
         combined = c1;
       } else if (currentTeamCharMode === 'duo') {
         const arr = [c1, c2].filter(Boolean);
         combined = arr.join(' / ');
-      } else if (currentTeamCharMode === 'trio') {
+      } else if (currentTeamCharMode === 'tim' || currentTeamCharMode === 'trio') {
         const arr = [c1, c2, c3].filter(Boolean);
         combined = arr.join(' / ');
       }
@@ -1997,7 +2089,7 @@
       const previewBox = document.getElementById('preview-team-char');
       const previewText = document.getElementById('preview-team-char-text');
       if (previewBox && previewText) {
-        if (currentTeamCharMode !== 'solo' && combined) {
+        if (currentTeamCharMode !== '1v1' && currentTeamCharMode !== 'solo' && combined) {
           previewBox.style.display = 'block';
           previewText.innerText = combined;
         } else {
@@ -2006,40 +2098,46 @@
       }
     }
 
-    let modalTeamMode = 'solo';
+    let modalTeamMode = '1v1';
 
     function setModalTeamMode(mode) {
-      modalTeamMode = mode;
-      const btnSolo = document.getElementById('modal-btn-solo');
+      let clean = '1v1';
+      const m = String(mode).toLowerCase();
+      if (m === 'duo') clean = 'duo';
+      else if (m === 'tim' || m === 'trio') clean = 'tim';
+      else clean = '1v1';
+
+      modalTeamMode = clean;
+      const btn1v1 = document.getElementById('modal-btn-1v1') || document.getElementById('modal-btn-solo');
       const btnDuo = document.getElementById('modal-btn-duo');
-      const btnTrio = document.getElementById('modal-btn-trio');
+      const btnTim = document.getElementById('modal-btn-tim') || document.getElementById('modal-btn-trio');
 
       const g1Label = document.getElementById('modal-label-char-1');
       const g2 = document.getElementById('modal-group-char-2');
       const g3 = document.getElementById('modal-group-char-3');
 
-      if (btnSolo) {
-        btnSolo.className = mode === 'solo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
-        btnSolo.style.opacity = mode === 'solo' ? '1' : '0.7';
+      if (btn1v1) {
+        btn1v1.className = clean === '1v1' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btn1v1.style.opacity = clean === '1v1' ? '1' : '0.7';
       }
       if (btnDuo) {
-        btnDuo.className = mode === 'duo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
-        btnDuo.style.opacity = mode === 'duo' ? '1' : '0.7';
+        btnDuo.className = clean === 'duo' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btnDuo.style.opacity = clean === 'duo' ? '1' : '0.7';
       }
-      if (btnTrio) {
-        btnTrio.className = mode === 'trio' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
-        btnTrio.style.opacity = mode === 'trio' ? '1' : '0.7';
+      if (btnTim) {
+        btnTim.className = clean === 'tim' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        btnTim.style.opacity = clean === 'tim' ? '1' : '0.7';
       }
 
-      if (mode === 'solo') {
+      if (clean === '1v1') {
         if (g1Label) g1Label.style.display = 'none';
         if (g2) g2.style.display = 'none';
         if (g3) g3.style.display = 'none';
-      } else if (mode === 'duo') {
+      } else if (clean === 'duo') {
         if (g1Label) g1Label.style.display = 'block';
         if (g2) g2.style.display = 'flex';
         if (g3) g3.style.display = 'none';
-      } else if (mode === 'trio') {
+      } else if (clean === 'tim') {
         if (g1Label) g1Label.style.display = 'block';
         if (g2) g2.style.display = 'flex';
         if (g3) g3.style.display = 'flex';
@@ -2109,11 +2207,16 @@
 
       harvest(state.p1);
       harvest(state.p2);
+      if (state.arena1v1) { harvest(state.arena1v1.p1); harvest(state.arena1v1.p2); }
+      if (state.arenaDuo) { harvest(state.arenaDuo.p1); harvest(state.arenaDuo.p2); }
+      if (state.arenaTim) { harvest(state.arenaTim.p1); harvest(state.arenaTim.p2); }
       if (Array.isArray(state.queue)) state.queue.forEach(harvest);
       if (Array.isArray(state.saved)) state.saved.forEach(harvest);
       if (Array.isArray(state.topRecords)) state.topRecords.forEach(harvest);
+      if (Array.isArray(state.topRecords1v1)) state.topRecords1v1.forEach(harvest);
       if (Array.isArray(state.topRecordsSolo)) state.topRecordsSolo.forEach(harvest);
       if (Array.isArray(state.topRecordsDuo)) state.topRecordsDuo.forEach(harvest);
+      if (Array.isArray(state.topRecordsTim)) state.topRecordsTim.forEach(harvest);
       if (Array.isArray(state.topRecordsTrio)) state.topRecordsTrio.forEach(harvest);
 
       const list = Array.from(set);
@@ -2151,20 +2254,35 @@
       const clean = name.trim().toLowerCase();
       if (!clean || clean === '-' || clean === 'menunggu...' || clean === 'tba') return null;
 
-      // 1. Cek Arena (P1 / P2)
-      if (state.p1 && state.p1.name && state.p1.name.trim().toLowerCase() === clean) {
-        return {
-          location: 'Arena (P1)',
-          player: state.p1,
-          message: `Pemain "${state.p1.name}" sedang bermain di Arena (P1)`
-        };
-      }
-      if (state.p2 && state.p2.name && state.p2.name.trim().toLowerCase() === clean) {
-        return {
-          location: 'Arena (P2)',
-          player: state.p2,
-          message: `Pemain "${state.p2.name}" sedang bermain di Arena (P2)`
-        };
+      // 1. Cek Arena (P1 / P2 Mode Aktif & Mode Lainnya)
+      const checkArenaSlot = (p, label) => {
+        if (p && p.name && p.name.trim().toLowerCase() === clean) {
+          return {
+            location: label,
+            player: p,
+            message: `Pemain "${p.name}" sedang bermain di ${label}`
+          };
+        }
+        return null;
+      };
+
+      const c1 = checkArenaSlot(state.p1, `Arena ${state.masterMode || '1v1'} (P1)`);
+      if (c1) return c1;
+      const c2 = checkArenaSlot(state.p2, `Arena ${state.masterMode || '1v1'} (P2)`);
+      if (c2) return c2;
+
+      const otherArenas = [
+        { label: 'Arena 1v1', data: state.arena1v1 },
+        { label: 'Arena DUO', data: state.arenaDuo },
+        { label: 'Arena TIM', data: state.arenaTim }
+      ];
+      for (const a of otherArenas) {
+        if (a.data) {
+          const s1 = checkArenaSlot(a.data.p1, `${a.label} (P1)`);
+          if (s1) return s1;
+          const s2 = checkArenaSlot(a.data.p2, `${a.label} (P2)`);
+          if (s2) return s2;
+        }
       }
 
       // 2. Cek Match Queue
@@ -2364,10 +2482,30 @@
           if (!st.tierStatus[k]) { st.tierStatus[k] = 'AKTIF'; changed = true; }
         });
       }
-      if (!st.masterMode || !['SOLO', 'DUO', 'TRIO'].includes(st.masterMode)) {
-        st.masterMode = 'SOLO';
+      if (st.masterMode === 'SOLO') { st.masterMode = '1v1'; changed = true; }
+      if (st.masterMode === 'TRIO') { st.masterMode = 'TIM'; changed = true; }
+      if (!st.masterMode || !['1v1', 'DUO', 'TIM'].includes(st.masterMode)) {
+        st.masterMode = '1v1';
         changed = true;
       }
+
+      // Pisah Arena per Mode
+      if (!st.arena1v1 || typeof st.arena1v1 !== 'object') {
+        st.arena1v1 = st.arenaSolo || { p1: st.p1 || null, p2: st.p2 || null };
+        changed = true;
+      }
+      if (!st.arenaDuo || typeof st.arenaDuo !== 'object') {
+        st.arenaDuo = { p1: null, p2: null };
+        changed = true;
+      }
+      if (!st.arenaTim || typeof st.arenaTim !== 'object') {
+        st.arenaTim = st.arenaTrio || { p1: null, p2: null };
+        changed = true;
+      }
+
+      const activeArena = (st.masterMode === 'DUO') ? st.arenaDuo : ((st.masterMode === 'TIM') ? st.arenaTim : st.arena1v1);
+      st.p1 = activeArena.p1 || null;
+      st.p2 = activeArena.p2 || null;
 
       const normalizeRecList = (list) => {
         const existing = Array.isArray(list) ? list.slice() : [];
@@ -2382,12 +2520,13 @@
         }));
       };
 
-      if (!Array.isArray(st.topRecordsSolo) || st.topRecordsSolo.length < 3) {
-        st.topRecordsSolo = normalizeRecList(st.topRecords);
+      if (!Array.isArray(st.topRecords1v1) || st.topRecords1v1.length < 3) {
+        st.topRecords1v1 = normalizeRecList(st.topRecordsSolo || st.topRecords);
         changed = true;
       } else {
-        st.topRecordsSolo = normalizeRecList(st.topRecordsSolo);
+        st.topRecords1v1 = normalizeRecList(st.topRecords1v1);
       }
+      st.topRecordsSolo = st.topRecords1v1;
 
       if (!Array.isArray(st.topRecordsDuo) || st.topRecordsDuo.length < 3) {
         st.topRecordsDuo = normalizeRecList(st.topRecordsDuo);
@@ -2396,19 +2535,25 @@
         st.topRecordsDuo = normalizeRecList(st.topRecordsDuo);
       }
 
-      if (!Array.isArray(st.topRecordsTrio) || st.topRecordsTrio.length < 3) {
-        st.topRecordsTrio = normalizeRecList(st.topRecordsTrio);
+      if (!Array.isArray(st.topRecordsTim) || st.topRecordsTim.length < 3) {
+        st.topRecordsTim = normalizeRecList(st.topRecordsTrio || st.topRecordsTim);
         changed = true;
       } else {
-        st.topRecordsTrio = normalizeRecList(st.topRecordsTrio);
+        st.topRecordsTim = normalizeRecList(st.topRecordsTim);
       }
+      st.topRecordsTrio = st.topRecordsTim;
 
-      let activeRecList = st.topRecordsSolo;
+      let activeRecList = st.topRecords1v1;
       if (st.masterMode === 'DUO') activeRecList = st.topRecordsDuo;
-      else if (st.masterMode === 'TRIO') activeRecList = st.topRecordsTrio;
+      else if (st.masterMode === 'TIM') activeRecList = st.topRecordsTim;
 
       st.topRecords = activeRecList;
       st.topRecord = st.topRecords[0];
+
+      if (!st.topWsOverlay || typeof st.topWsOverlay !== 'object') {
+        st.topWsOverlay = { '1v1': true, 'DUO': true, 'TIM': true };
+        changed = true;
+      }
 
       if (!Array.isArray(st.registeredUsers)) {
         st.registeredUsers = [];
@@ -2434,9 +2579,15 @@
       };
       harvestUser(st.p1);
       harvestUser(st.p2);
+      if (st.arena1v1) { harvestUser(st.arena1v1.p1); harvestUser(st.arena1v1.p2); }
+      if (st.arenaDuo) { harvestUser(st.arenaDuo.p1); harvestUser(st.arenaDuo.p2); }
+      if (st.arenaTim) { harvestUser(st.arenaTim.p1); harvestUser(st.arenaTim.p2); }
       if (Array.isArray(st.queue)) st.queue.forEach(harvestUser);
       if (Array.isArray(st.saved)) st.saved.forEach(harvestUser);
       if (Array.isArray(st.topRecords)) st.topRecords.forEach(harvestUser);
+      if (Array.isArray(st.topRecords1v1)) st.topRecords1v1.forEach(harvestUser);
+      if (Array.isArray(st.topRecordsDuo)) st.topRecordsDuo.forEach(harvestUser);
+      if (Array.isArray(st.topRecordsTim)) st.topRecordsTim.forEach(harvestUser);
       normalizedUsers.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
       if (JSON.stringify(normalizedUsers) !== JSON.stringify(st.registeredUsers)) {
         st.registeredUsers = normalizedUsers;
@@ -2503,6 +2654,8 @@
     }
 
     function saveState(isUndoRedo = false) {
+      syncActiveModeToArena();
+      syncActiveTopRecords();
       const currentStateJson = JSON.stringify(state);
 
       if (!isUndoRedo) {
@@ -2905,7 +3058,7 @@
       if (hiddenChar) hiddenChar.value = '';
       const userPicker = document.getElementById('select-registered-user');
       if (userPicker) userPicker.value = '';
-      setTeamCharMode((state.masterMode || 'SOLO').toLowerCase());
+      setTeamCharMode((state.masterMode || '1v1').toLowerCase());
       updatePlayerFormValidation();
 
       saveState();
@@ -3290,10 +3443,8 @@
 
     function checkAndUpdateTopRecord(candidate) {
       if (!candidate || candidate.ws === undefined || candidate.ws === null || candidate.ws <= 0) return;
-      const curMode = state.masterMode || 'SOLO';
-      let targetKey = 'topRecordsSolo';
-      if (curMode === 'DUO') targetKey = 'topRecordsDuo';
-      else if (curMode === 'TRIO') targetKey = 'topRecordsTrio';
+      const curMode = state.masterMode || '1v1';
+      const targetKey = getTopWsKey(curMode);
 
       if (!Array.isArray(state[targetKey]) || state[targetKey].length < 3) {
         state[targetKey] = [
@@ -3425,10 +3576,12 @@
     }
 
     function resetArena() {
-      if (confirm("Kosongkan arena pertandingan? Pemain di arena saat ini akan dikosongkan.")) {
+      const curMode = state.masterMode || '1v1';
+      if (confirm(`Kosongkan arena pertandingan untuk mode [ ${curMode} ]? Pemain di arena mode ini akan dikosongkan.`)) {
         state.p1 = null;
         state.p2 = null;
         state.vipConsecutiveCount = 0;
+        syncActiveModeToArena();
         sortQueue();
         saveState();
       }
@@ -3452,12 +3605,23 @@
     function resetAllData() {
       if (confirm("PERINGATAN: Yakin ingin mereset SEMUA data (Arena, Match Queue, dan List Tabungan) untuk memulai sesi streaming baru?")) {
         state = {
+          masterMode: state.masterMode || '1v1',
+          arena1v1: { p1: null, p2: null },
+          arenaDuo: { p1: null, p2: null },
+          arenaTim: { p1: null, p2: null },
           p1: null,
           p2: null,
           queue: [],
           saved: [],
           announcement: '',
+          topWsOverlay: state.topWsOverlay || { '1v1': true, 'DUO': true, 'TIM': true },
+          topRecords1v1: state.topRecords1v1 || [],
+          topRecordsDuo: state.topRecordsDuo || [],
+          topRecordsTim: state.topRecordsTim || [],
+          topRecordsSolo: state.topRecordsSolo || [],
+          topRecordsTrio: state.topRecordsTrio || [],
           topRecord: { name: '-', char: '-', ws: 0 },
+          topRecords: state.topRecords || [],
           overlayListMode: state.overlayListMode || 'queue',
           customCharacters: state.customCharacters || [],
           registeredUsers: state.registeredUsers || [],
@@ -3523,9 +3687,12 @@
       let cleanChar = (curChar === 'Belum Pilih / TBA' || curChar === 'TBA' || curChar === '-') ? '' : curChar;
       const parts = cleanChar ? cleanChar.split('/').map(s => s.trim()).filter(Boolean) : [];
 
-      let detectedMode = 'solo';
-      if (parts.length >= 3) detectedMode = 'trio';
+      let detectedMode = (state.masterMode || '1v1').toLowerCase();
+      if (detectedMode === 'solo') detectedMode = '1v1';
+      if (detectedMode === 'trio') detectedMode = 'tim';
+      if (parts.length >= 3) detectedMode = 'tim';
       else if (parts.length === 2) detectedMode = 'duo';
+      else if (parts.length <= 1) detectedMode = '1v1';
 
       const in1 = document.getElementById('modal-char-input-1');
       const in2 = document.getElementById('modal-char-input-2');
@@ -3580,8 +3747,10 @@
             });
           }
         };
+        updateRecList(state.topRecords1v1);
         updateRecList(state.topRecordsSolo);
         updateRecList(state.topRecordsDuo);
+        updateRecList(state.topRecordsTim);
         updateRecList(state.topRecordsTrio);
         updateRecList(state.topRecords);
         if (state.topRecord && state.topRecord.name === updatedPlayer.name && state.topRecord.ws === updatedPlayer.ws && state.topRecord.ws > 0) {
@@ -3650,8 +3819,8 @@
     }
 
     function renderTopRecordAdmin() {
-      const tab = currentTopWsTab || 'SOLO';
-      const targetKey = tab === 'DUO' ? 'topRecordsDuo' : (tab === 'TRIO' ? 'topRecordsTrio' : 'topRecordsSolo');
+      const tab = currentTopWsTab || '1v1';
+      const targetKey = getTopWsKey(tab);
 
       if (!Array.isArray(state[targetKey]) || state[targetKey].length < 3) {
         state[targetKey] = [
@@ -3669,6 +3838,9 @@
         const r3 = records[2] ? records[2].ws || 0 : 0;
         topWsBadge.innerText = `[${tab}] 🥇 ${r1} WS | 🥈 ${r2} WS | 🥉 ${r3} WS`;
       }
+
+      // Render Checkbox Tampilkan di Overlay
+      renderTopWsCheckboxes();
 
       // Jangan timpa input jika admin sedang fokus / mengetik di salah satu field rekor
       const inputs = [
@@ -3696,7 +3868,7 @@
     }
 
     function saveTopRecord() {
-      const tab = currentTopWsTab || 'SOLO';
+      const tab = currentTopWsTab || '1v1';
       const records = [];
       for (let i = 1; i <= 3; i++) {
         const nInput = document.getElementById(`input-record-name-${i}`);
@@ -3711,7 +3883,7 @@
       if (!confirm(`Simpan perubahan TOP 3 WS untuk mode [ ${tab} ]?`)) return;
 
       records.sort((a, b) => (b.ws || 0) - (a.ws || 0));
-      const targetKey = tab === 'DUO' ? 'topRecordsDuo' : (tab === 'TRIO' ? 'topRecordsTrio' : 'topRecordsSolo');
+      const targetKey = getTopWsKey(tab);
       state[targetKey] = records.slice(0, 3).map((r, i) => ({ ...r, rank: i + 1 }));
 
       syncActiveTopRecords();
@@ -3721,9 +3893,9 @@
     }
 
     function resetTopRecord() {
-      const tab = currentTopWsTab || 'SOLO';
+      const tab = currentTopWsTab || '1v1';
       if (!confirm(`Reset semua rekor TOP 3 WS untuk mode [ ${tab} ] menjadi 0?`)) return;
-      const targetKey = tab === 'DUO' ? 'topRecordsDuo' : (tab === 'TRIO' ? 'topRecordsTrio' : 'topRecordsSolo');
+      const targetKey = getTopWsKey(tab);
       state[targetKey] = [
         { rank: 1, name: '-', char: '-', ws: 0 },
         { rank: 2, name: '-', char: '-', ws: 0 },

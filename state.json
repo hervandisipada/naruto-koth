@@ -181,7 +181,51 @@
     "Obito (Pelarian)",
     "Gaara 5 Kage"
   ],
-  "masterMode": "SOLO",
+  "masterMode": "1v1",
+  "arena1v1": {
+    "p1": {
+      "id": "1795443185757",
+      "name": "Mail?",
+      "char": "Rōshi",
+      "matchesLeft": 0,
+      "ws": 1,
+      "type": "FREE"
+    },
+    "p2": null
+  },
+  "arenaDuo": {
+    "p1": null,
+    "p2": null
+  },
+  "arenaTim": {
+    "p1": null,
+    "p2": null
+  },
+  "topWsOverlay": {
+    "1v1": true,
+    "DUO": true,
+    "TIM": true
+  },
+  "topRecords1v1": [
+    {
+      "rank": 1,
+      "name": "Kelvin",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 2,
+      "name": "itu dia dit",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 3,
+      "name": "Kelvin",
+      "char": "Hanzo",
+      "ws": 13
+    }
+  ],
   "topRecordsSolo": [
     {
       "rank": 1,
@@ -203,6 +247,26 @@
     }
   ],
   "topRecordsDuo": [
+    {
+      "rank": 1,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    },
+    {
+      "rank": 2,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    },
+    {
+      "rank": 3,
+      "name": "-",
+      "char": "-",
+      "ws": 0
+    }
+  ],
+  "topRecordsTim": [
     {
       "rank": 1,
       "name": "-",

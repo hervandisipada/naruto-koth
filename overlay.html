@@ -118,7 +118,9 @@
       color: #ffffff;
       font-weight: 700;
       font-size: 0.98rem;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
       will-change: transform;
     }
 
@@ -1324,15 +1326,24 @@
     function renderOverlay() {
       if (!state) return;
 
-      // Announcement Ticker
+      // Announcement Ticker (NOTE)
       const tickerEl = document.getElementById('overlay-ticker');
       const tickerWrap = document.querySelector('.ticker-marquee-wrap');
       const tickerText = document.getElementById('ticker-text');
       if (state.announcement && state.announcement.trim()) {
-        tickerText.innerText = state.announcement.trim();
+        let cleanNote = state.announcement.trim();
+        if (/^NOTE\s*:\s*/i.test(cleanNote)) {
+          cleanNote = cleanNote.replace(/^NOTE\s*:\s*/i, '');
+        }
+        tickerText.innerText = cleanNote;
         tickerEl.style.display = 'flex';
       } else {
         tickerEl.style.display = 'none';
+        if (tickerText && tickerText._marqueeAnim) {
+          try { tickerText._marqueeAnim.cancel(); } catch (e) { }
+          tickerText._marqueeAnim = null;
+          tickerText.style.transform = 'none';
+        }
       }
 
       // Top Record WS Banner (Top WS 1v1, TOP WS DUO, TOP WS TIM)

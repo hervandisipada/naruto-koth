@@ -1273,13 +1273,14 @@
       <!-- PENGUMUMAN / NOTE RUNNING TEXT OVERLAY -->
       <div class="card">
         <div class="card-title">
-          <span>Running Text</span>
+          <span>NOTE / Running Text Overlay</span>
         </div>
-        <p class="instructions" style="margin-bottom: 8px;">Teks berjalan di bar atas overlay live.</p>
-        <div class="form-group">
-          <input type="text" id="input-announcement" class="form-control" placeholder="Pesan pengumuman...">
+        <p class="instructions" style="margin-bottom: 8px;">Teks pengumuman berjalan di bar atas overlay live (Label "NOTE:").</p>
+        <div class="form-group" style="display: flex; gap: 8px;">
+          <input type="text" id="input-announcement" class="form-control" placeholder="Tulis pengumuman NOTE di sini..." onkeydown="if(event.key==='Enter') saveAnnouncement()">
+          <button class="btn btn-primary" onclick="saveAnnouncement()" style="white-space: nowrap; padding: 0 16px; font-weight: 800;">Simpan</button>
+          <button class="btn btn-danger" onclick="clearAnnouncement()" style="white-space: nowrap; padding: 0 12px; font-weight: 800;" title="Kosongkan & Sembunyikan NOTE">Hapus</button>
         </div>
-        <button class="btn btn-primary btn-block" onclick="saveAnnouncement()">Simpan Teks</button>
       </div>
 
       <!-- TOP WS (TOP 3) -->
@@ -1396,6 +1397,14 @@
   <!-- VIEW 2: TIKTOK LIVE OVERLAY SOURCE -->
   <div id="overlay-view" class="view-container">
     <div class="overlay-container">
+      <!-- NOTE / TICKER BAR PREVIEW -->
+      <div id="ov-ticker-bar"
+        style="background: rgba(0,0,0,0.45); border-radius: 8px; padding: 6px 10px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.2); border-left: 4px solid #fff; display: none; align-items: center; gap: 8px; font-size: 0.95rem; color: #fff; overflow: hidden;">
+        <span style="font-weight: 900; font-size: 0.85rem; letter-spacing: 0.8px; white-space: nowrap;">NOTE:</span>
+        <div style="flex: 1; white-space: nowrap; overflow: hidden; min-width: 0;">
+          <span id="ov-ticker-text" style="font-weight: 700;"></span>
+        </div>
+      </div>
       <div id="ov-top-record-bar"
         style="background: rgba(0,0,0,0.45); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2); border-left: 4px solid #fff; display: flex; align-items: center; gap: 8px; font-size: 0.92rem; color: #fff;">
         <span style="font-weight: 900; font-size: 0.85rem; letter-spacing: 0.8px;">TOP WS:</span>
@@ -4331,10 +4340,18 @@
 
     function saveAnnouncement() {
       const val = document.getElementById('input-announcement').value.trim();
-      if (!confirm("Simpan teks pengumuman running text overlay?")) return;
       state.announcement = val;
       saveState();
-      alert("Pengumuman overlay berhasil diperbarui!");
+      showToast('✅ Teks NOTE overlay berhasil disimpan!');
+    }
+
+    function clearAnnouncement() {
+      if (!confirm("Kosongkan dan sembunyikan NOTE dari overlay?")) return;
+      const input = document.getElementById('input-announcement');
+      if (input) input.value = '';
+      state.announcement = '';
+      saveState();
+      showToast('🗑️ NOTE overlay berhasil dikosongkan!');
     }
 
     function renderArena() {
@@ -4829,6 +4846,22 @@
     }
 
     function renderOverlay() {
+      // NOTE / Announcement Ticker in Preview
+      const ovTickerBar = document.getElementById('ov-ticker-bar');
+      const ovTickerText = document.getElementById('ov-ticker-text');
+      if (ovTickerBar && ovTickerText) {
+        if (state.announcement && state.announcement.trim()) {
+          let cleanNote = state.announcement.trim();
+          if (/^NOTE\s*:\s*/i.test(cleanNote)) {
+            cleanNote = cleanNote.replace(/^NOTE\s*:\s*/i, '');
+          }
+          ovTickerText.innerText = cleanNote;
+          ovTickerBar.style.display = 'flex';
+        } else {
+          ovTickerBar.style.display = 'none';
+        }
+      }
+
       // Top Record Bar in Preview (Top 3 WS)
       const ovTopRecEl = document.getElementById('ov-top-rec-text');
       if (ovTopRecEl) {

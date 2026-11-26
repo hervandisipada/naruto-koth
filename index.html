@@ -1188,6 +1188,22 @@
 
       <!-- KELOLA MATCH QUEUE & LIST TABUNGAN -->
       <div class="card full-width">
+        <!-- PANDUAN HARGA TIKET MATCH (1v1 vs DUO & TIM) -->
+        <div style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-gold);">🎟️ HARGA TIKET:</div>
+            <div style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <span style="background: #0284c7; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.72rem;">1v1</span>
+              <span>VIP <b>5c (1rb)</b> • SB <b>30c (5rb)</b></span>
+            </div>
+            <div style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <span style="background: #7c3aed; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.72rem;">DUO & TIM</span>
+              <span>VIP <b>10c (2rb)</b> • SB <b>60c (10rb)</b></span>
+            </div>
+          </div>
+          <button type="button" class="btn btn-sm btn-blue" onclick="copyPriceToTicker()" style="font-size: 0.75rem; padding: 3px 10px; font-weight: 800;" title="Pasang teks info harga ini ke Ticker Running Text Overlay">📢 Pasang di Ticker</button>
+        </div>
+
         <!-- Search bar untuk cek slot penonton -->
         <div
           style="background: var(--panel-subtle); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border-color);">
@@ -1240,7 +1256,14 @@
         <div id="subtab-queue-content">
           <div
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-            <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain dalam match queue:</span>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain dalam match queue:</span>
+              <div style="display: flex; gap: 4px;">
+                <button type="button" id="filter-queue-all" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800;" onclick="filterQueueList('ALL')">Semua</button>
+                <button type="button" id="filter-queue-1v1" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800; opacity: 0.7;" onclick="filterQueueList('1v1')">⚡ 1v1</button>
+                <button type="button" id="filter-queue-tim" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800; opacity: 0.7;" onclick="filterQueueList('TIM')">⚔️ DUO & TIM</button>
+              </div>
+            </div>
             <button class="btn btn-sm btn-danger" onclick="clearQueue()">Reset Match Queue</button>
           </div>
           <div id="queue-list-container"></div>
@@ -1250,7 +1273,14 @@
         <div id="subtab-saved-content" style="display: none;">
           <div
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-            <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain di tabungan:</span>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain di tabungan:</span>
+              <div style="display: flex; gap: 4px;">
+                <button type="button" id="filter-saved-all" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800;" onclick="filterSavedList('ALL')">Semua</button>
+                <button type="button" id="filter-saved-1v1" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800; opacity: 0.7;" onclick="filterSavedList('1v1')">⚡ 1v1</button>
+                <button type="button" id="filter-saved-tim" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800; opacity: 0.7;" onclick="filterSavedList('TIM')">⚔️ DUO & TIM</button>
+              </div>
+            </div>
             <button class="btn btn-sm btn-danger" onclick="clearSaved()">Reset Tabungan</button>
           </div>
           <div id="saved-list-container"></div>
@@ -1489,6 +1519,24 @@
             Format Tim: <b id="preview-team-char-text" style="color: var(--text-light);">-</b>
           </div>
         </div>
+
+        <!-- PILIHAN DUA MACAM TIKET MATCH (1v1 vs DUO & TIM) -->
+        <div class="form-group" style="background: var(--panel-subtle); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="margin: 0; font-size: 0.82rem; font-weight: 800; color: var(--accent-gold);">🎟️ Jenis Tiket Match:</label>
+            <span id="ticket-price-info" style="font-size: 0.72rem; color: #fff; font-weight: 700;">VIP: 5c (1rb) | SB: 30c (5rb)</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" id="btn-ticket-1v1" class="btn btn-sm btn-primary" style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem;" onclick="setPlayerTicketMode('1v1')">
+              ⚡ Tiket 1v1
+            </button>
+            <button type="button" id="btn-ticket-tim" class="btn btn-sm btn-blue" style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem; opacity: 0.7;" onclick="setPlayerTicketMode('TIM')">
+              ⚔️ Tiket DUO / TIM
+            </button>
+          </div>
+          <input type="hidden" id="input-ticket-mode" value="1v1">
+        </div>
+
         <div class="form-row">
           <div class="form-group" style="flex: 1;">
             <label>Jumlah Match *</label>
@@ -1898,8 +1946,11 @@
       // 3. Update UI tombol master & label arena
       updateMasterModeUI();
 
-      // 4. Sesuaikan format form tambah pemain
+      // 4. Sesuaikan format form tambah pemain & tiket mode default
       setTeamCharMode(cleanMode.toLowerCase());
+      if (typeof setPlayerTicketMode === 'function') {
+        setPlayerTicketMode(cleanMode === '1v1' ? '1v1' : 'TIM');
+      }
 
       // 5. Switch tab Top WS ke mode yang baru dipilih
       switchTopWsTab(cleanMode, false);
@@ -2459,6 +2510,14 @@
         if (p.type === 'VVIP' || p.type === 'FAST' || p.type === 'SROBOT++' || p.type === 'SB') { p.type = 'SROBOT'; changed = true; }
         if (!p.type || p.type === 'SAVE' || (p.type !== 'SROBOT' && p.type !== 'VIP' && p.type !== 'FREE')) {
           p.type = 'FREE';
+          changed = true;
+        }
+        if (!p.ticketMode) {
+          if (p.char && (p.char.includes('/') || p.char.includes(',') || p.char.includes('&'))) {
+            p.ticketMode = 'TIM';
+          } else {
+            p.ticketMode = '1v1';
+          }
           changed = true;
         }
       };
@@ -3039,15 +3098,18 @@
         return;
       }
 
+      const rawTicketMode = document.getElementById('input-ticket-mode')?.value;
+      const ticketMode = (rawTicketMode === 'TIM' || rawTicketMode === 'DUO') ? 'TIM' : (state.masterMode === '1v1' ? '1v1' : 'TIM');
+      const ticketText = ticketMode === '1v1' ? '⚡ Tiket 1v1' : '⚔️ Tiket DUO/TIM';
       const targetLabel = target === 'saved' ? 'LIST TABUNGAN' : 'MATCH QUEUE';
-      if (!confirm(`Tambahkan [ ${name} ] (${getTierLabel(type)}, ${matchesLeft} match, Karakter: "${char}") ke ${targetLabel}?`)) {
+      if (!confirm(`Tambahkan [ ${name} ] (${getTierLabel(type)}, ${ticketText}, ${matchesLeft} match, Karakter: "${char}") ke ${targetLabel}?`)) {
         return;
       }
 
       // Catat ke riwayat username terdaftar sebelumnya
       registerUserHistory(name);
 
-      const newPlayer = { id: Date.now().toString(), name, char, matchesLeft, ws: 0, type };
+      const newPlayer = { id: Date.now().toString(), name, char, matchesLeft, ws: 0, type, ticketMode };
 
       if (target === 'saved') {
         newPlayer.savedAt = Date.now();
@@ -3226,11 +3288,102 @@
       saveState();
     }
 
+    // Filter Tiket Match (1v1 vs DUO/TIM)
+    let currentQueueTicketFilter = 'ALL';
+    let currentSavedTicketFilter = 'ALL';
+
+    function setPlayerTicketMode(mode) {
+      const clean = (mode === 'TIM' || mode === 'DUO' || mode === 'DUO_TIM') ? 'TIM' : '1v1';
+      const input = document.getElementById('input-ticket-mode');
+      if (input) input.value = clean;
+
+      const btn1v1 = document.getElementById('btn-ticket-1v1');
+      const btnTim = document.getElementById('btn-ticket-tim');
+      const priceInfo = document.getElementById('ticket-price-info');
+
+      if (btn1v1 && btnTim) {
+        if (clean === '1v1') {
+          btn1v1.className = 'btn btn-sm btn-primary';
+          btn1v1.style.opacity = '1';
+          btnTim.className = 'btn btn-sm btn-blue';
+          btnTim.style.opacity = '0.7';
+          if (priceInfo) priceInfo.innerHTML = 'VIP: <b>5c (1rb)</b> | SB: <b>30c (5rb)</b>';
+          if (typeof setTeamCharMode === 'function' && currentTeamCharMode !== '1v1') {
+            setTeamCharMode('1v1');
+          }
+        } else {
+          btnTim.className = 'btn btn-sm btn-primary';
+          btnTim.style.opacity = '1';
+          btn1v1.className = 'btn btn-sm btn-blue';
+          btn1v1.style.opacity = '0.7';
+          if (priceInfo) priceInfo.innerHTML = 'VIP: <b>10c (2rb)</b> | SB: <b>60c (10rb)</b>';
+          if (typeof setTeamCharMode === 'function' && currentTeamCharMode === '1v1') {
+            const m = (state.masterMode === 'TIM' || state.masterMode === 'TRIO') ? 'tim' : 'duo';
+            setTeamCharMode(m);
+          }
+        }
+      }
+    }
+
+    function filterQueueList(filter) {
+      currentQueueTicketFilter = filter;
+      ['all', '1v1', 'tim'].forEach(k => {
+        const btn = document.getElementById(`filter-queue-${k}`);
+        if (btn) {
+          if (k.toUpperCase() === filter) {
+            btn.className = 'btn btn-sm btn-primary';
+            btn.style.opacity = '1';
+          } else {
+            btn.className = 'btn btn-sm btn-blue';
+            btn.style.opacity = '0.7';
+          }
+        }
+      });
+      renderQueue();
+    }
+
+    function filterSavedList(filter) {
+      currentSavedTicketFilter = filter;
+      ['all', '1v1', 'tim'].forEach(k => {
+        const btn = document.getElementById(`filter-saved-${k}`);
+        if (btn) {
+          if (k.toUpperCase() === filter) {
+            btn.className = 'btn btn-sm btn-primary';
+            btn.style.opacity = '1';
+          } else {
+            btn.className = 'btn btn-sm btn-blue';
+            btn.style.opacity = '0.7';
+          }
+        }
+      });
+      renderSaved();
+    }
+
+    function changePlayerTicketMode(playerId, listType, newMode) {
+      const list = listType === 'saved' ? state.saved : state.queue;
+      const p = list.find(x => String(x.id) === String(playerId));
+      if (p) {
+        p.ticketMode = (newMode === 'TIM' || newMode === 'DUO') ? 'TIM' : '1v1';
+        saveState();
+      }
+    }
+
+    function copyPriceToTicker() {
+      const text = "🎟️ HARGA TIKET: 1v1 (VIP 5c/1rb • SROBOT 30c/5rb) | DUO & TIM (VIP 10c/2rb • SROBOT 60c/10rb)";
+      const input = document.getElementById('input-announcement');
+      if (input) input.value = text;
+      state.announcement = text;
+      state.tickerText = text;
+      saveState();
+      alert("✅ Berhasil memasang teks harga tiket ke Ticker Running Text Overlay!");
+    }
+
     // Modal Tambah Pemain Baru
     function openAddPlayerModal() {
       const modal = document.getElementById('modal-add-player');
       if (!modal) return;
       setTeamCharMode((state.masterMode || '1v1').toLowerCase());
+      setPlayerTicketMode((state.masterMode === '1v1' || !state.masterMode) ? '1v1' : 'TIM');
       renderRegisteredUsersDropdown();
       updatePlayerFormValidation();
       modal.classList.add('active');
@@ -3396,6 +3549,19 @@
 
       const playerCandidate = state.queue[index];
       const pTier = getTierLabel(playerCandidate.type);
+
+      // Validasi Kesesuaian Tiket dengan Mode Arena Aktif
+      const curMode = state.masterMode || '1v1';
+      const pTicket = (playerCandidate.ticketMode === 'TIM' || playerCandidate.ticketMode === 'DUO') ? 'TIM' : '1v1';
+      if (curMode === '1v1' && pTicket !== '1v1') {
+        if (!confirm(`⚠️ PERINGATAN TIKET:\nPemain [ ${playerCandidate.name} ] memiliki Tiket DUO & TIM, sedangkan Arena saat ini Mode 1v1.\n\nTetap naikkan ke arena?`)) {
+          return;
+        }
+      } else if (curMode !== '1v1' && pTicket === '1v1') {
+        if (!confirm(`⚠️ PERINGATAN TIKET:\nPemain [ ${playerCandidate.name} ] memiliki Tiket 1v1, sedangkan Arena saat ini Mode ${curMode}.\n\nTetap naikkan ke arena?`)) {
+          return;
+        }
+      }
 
       // Validasi Aturan Mutlak: Maksimal 3x VIP berturut-turut, lalu 1x FREE
       const hasFreeInQueue = state.queue.some(p => getTierLabel(p.type) === 'FREE');
@@ -4150,6 +4316,10 @@
       const vipFreePlayers = [];
 
       state.queue.forEach((p, idx) => {
+        const pTicketMode = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'TIM' : '1v1';
+        if (currentQueueTicketFilter === '1v1' && pTicketMode !== '1v1') return;
+        if (currentQueueTicketFilter === 'TIM' && pTicketMode !== 'TIM') return;
+
         const pTier = getTierLabel(p.type);
         if (pTier === 'SB') {
           fastPlayers.push({ player: p, globalIdx: idx + 1, originalIdx: idx });
@@ -4256,10 +4426,19 @@
             }
 
             const wsBadge = (p.ws && p.ws > 0) ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); margin-left:4px; font-weight:800;">${p.ws} WS</span>` : '';
+            const tLabel = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'DUO/TIM' : '1v1';
+            const tBg = tLabel === '1v1' ? '#0284c7' : '#7c3aed';
+            const ticketBadge = `<span class="badge" style="background:${tBg}; color:#fff; font-size:0.72rem; font-weight:800; margin-left:4px;" title="Jenis Tiket: ${tLabel}">${tLabel}</span>`;
+
+            const ticketOptions = `
+              <option value="" disabled selected style="display:none;">Pilih Tiket</option>
+              <option value="1v1">⚡ Tiket 1v1 (5c/30c)${tLabel === '1v1' ? ' (Saat ini)' : ''}</option>
+              <option value="TIM">⚔️ Tiket DUO/TIM (10c/60c)${tLabel === 'DUO/TIM' ? ' (Saat ini)' : ''}</option>
+            `;
 
             item.innerHTML = `
               <div class="item-info">
-                <div class="item-name">#${globalIdx} ${escapeHtml(p.name)} <span class="badge badge-${itemCls}">${pTierLabel}</span>${wsBadge}</div>
+                <div class="item-name">#${globalIdx} ${escapeHtml(p.name)} <span class="badge badge-${itemCls}">${pTierLabel}</span>${ticketBadge}${wsBadge}</div>
                 <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Match: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit match">${p.matchesLeft}</b></div>
               </div>
               <div class="item-meta">
@@ -4274,6 +4453,12 @@
                   <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🏷️ ${pTierLabel}</button>
                   <select class="icon-select-overlay" onchange="changePlayerTier('${p.id}', 'queue', this.value)">
                     ${tierOptions}
+                  </select>
+                </div>
+                <div class="dropdown-icon-btn" title="Ganti Jenis Tiket (${tLabel})">
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🎟️ ${tLabel}</button>
+                  <select class="icon-select-overlay" onchange="changePlayerTicketMode('${p.id}', 'queue', this.value)">
+                    ${ticketOptions}
                   </select>
                 </div>
                 <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${originalIdx}])" title="Ubah Karakter">🥋 CHAR</button>
@@ -4306,6 +4491,10 @@
       const vipFreeSaved = [];
 
       state.saved.forEach((p, idx) => {
+        const pTicketMode = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'TIM' : '1v1';
+        if (currentSavedTicketFilter === '1v1' && pTicketMode !== '1v1') return;
+        if (currentSavedTicketFilter === 'TIM' && pTicketMode !== 'TIM') return;
+
         const pTier = getTierLabel(p.type);
         if (pTier === 'SB') {
           fastSaved.push({ player: p, originalIdx: idx });
@@ -4392,10 +4581,19 @@
             const item = document.createElement('div');
             item.className = `list-item ${itemCls}`;
             const wsBadge = (p.ws && p.ws > 0) ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); margin-left:4px; font-weight:800;">${p.ws} WS</span>` : '';
+            const tLabel = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'DUO/TIM' : '1v1';
+            const tBg = tLabel === '1v1' ? '#0284c7' : '#7c3aed';
+            const ticketBadge = `<span class="badge" style="background:${tBg}; color:#fff; font-size:0.72rem; font-weight:800; margin-left:4px;" title="Jenis Tiket: ${tLabel}">${tLabel}</span>`;
+
+            const ticketOptions = `
+              <option value="" disabled selected style="display:none;">Pilih Tiket</option>
+              <option value="1v1">⚡ Tiket 1v1 (5c/30c)${tLabel === '1v1' ? ' (Saat ini)' : ''}</option>
+              <option value="TIM">⚔️ Tiket DUO/TIM (10c/60c)${tLabel === 'DUO/TIM' ? ' (Saat ini)' : ''}</option>
+            `;
 
             item.innerHTML = `
               <div class="item-info">
-                <div class="item-name">${escapeHtml(p.name)} <span class="badge badge-${itemCls}">${pTierLabel}</span>${wsBadge}</div>
+                <div class="item-name">${escapeHtml(p.name)} <span class="badge badge-${itemCls}">${pTierLabel}</span>${ticketBadge}${wsBadge}</div>
                 <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b> | Match: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit match">${p.matchesLeft}</b></div>
               </div>
               <div class="item-meta">
@@ -4410,6 +4608,12 @@
                   <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🏷️ ${pTierLabel}</button>
                   <select class="icon-select-overlay" onchange="changePlayerTier('${p.id}', 'saved', this.value)">
                     ${tierOptions}
+                  </select>
+                </div>
+                <div class="dropdown-icon-btn" title="Ganti Jenis Tiket (${tLabel})">
+                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🎟️ ${tLabel}</button>
+                  <select class="icon-select-overlay" onchange="changePlayerTicketMode('${p.id}', 'saved', this.value)">
+                    ${ticketOptions}
                   </select>
                 </div>
                 <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${originalIdx}])" title="Ubah Karakter">🥋 CHAR</button>

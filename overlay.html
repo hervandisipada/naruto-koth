@@ -1584,9 +1584,6 @@
                 globalSavedIdx++;
                 const pTierLabel = getTierLabel(p.type);
                 const rowCls = getTierCls(p.type);
-                const tLabel = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'DUO/TIM' : '1v1';
-                const tBg = tLabel === '1v1' ? '#0284c7' : '#7c3aed';
-                const tBadge = `<span style="background:${tBg}; color:#fff; font-size:0.62rem; font-weight:800; padding:1px 5px; border-radius:3px; margin-right:4px;">${tLabel}</span>`;
                 const row = document.createElement('div');
                 row.className = `queue-row ${rowCls}`;
                 row.innerHTML = `
@@ -1598,8 +1595,7 @@
                       <span class="q-char">${escapeHtml(formatChar(p.char))}</span>
                     </div>
                   </div>
-                  <div class="q-right" style="display:flex; align-items:center;">
-                    ${tBadge}
+                  <div class="q-right">
                     <span class="q-badge ${rowCls}">${pTierLabel}</span>
                     <span class="q-ticket">${p.matchesLeft}</span>
                   </div>
@@ -1663,9 +1659,6 @@
           } else {
             fastPlayers.forEach(p => {
               globalIdx++;
-              const tLabel = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'DUO/TIM' : '1v1';
-              const tBg = tLabel === '1v1' ? '#0284c7' : '#7c3aed';
-              const tBadge = `<span style="background:${tBg}; color:#fff; font-size:0.62rem; font-weight:800; padding:1px 5px; border-radius:3px; margin-right:4px;">${tLabel}</span>`;
               const row = document.createElement('div');
               row.className = 'queue-row fast';
               row.innerHTML = `
@@ -1677,8 +1670,7 @@
                     <span class="q-char">${escapeHtml(formatChar(p.char))}</span>
                   </div>
                 </div>
-                <div class="q-right" style="display:flex; align-items:center;">
-                  ${tBadge}
+                <div class="q-right">
                   <span class="q-badge fast">SB</span>
                   <span class="q-ticket">${p.matchesLeft}</span>
                 </div>
@@ -1721,9 +1713,6 @@
               globalIdx++;
               const pTierLabel = getTierLabel(p.type);
               const rowCls = getTierCls(p.type);
-              const tLabel = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'DUO/TIM' : '1v1';
-              const tBg = tLabel === '1v1' ? '#0284c7' : '#7c3aed';
-              const tBadge = `<span style="background:${tBg}; color:#fff; font-size:0.62rem; font-weight:800; padding:1px 5px; border-radius:3px; margin-right:4px;">${tLabel}</span>`;
               const row = document.createElement('div');
               row.className = `queue-row ${rowCls}`;
               row.innerHTML = `
@@ -1735,8 +1724,7 @@
                     <span class="q-char">${escapeHtml(formatChar(p.char))}</span>
                   </div>
                 </div>
-                <div class="q-right" style="display:flex; align-items:center;">
-                  ${tBadge}
+                <div class="q-right">
                   <span class="q-badge ${rowCls}">${pTierLabel}</span>
                   <span class="q-ticket">${p.matchesLeft}</span>
                 </div>

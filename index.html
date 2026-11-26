@@ -1188,22 +1188,6 @@
 
       <!-- KELOLA MATCH QUEUE & LIST TABUNGAN -->
       <div class="card full-width">
-        <!-- PANDUAN HARGA TIKET MATCH (1v1 vs DUO & TIM) -->
-        <div style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-            <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-gold);">🎟️ HARGA TIKET:</div>
-            <div style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 6px;">
-              <span style="background: #0284c7; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.72rem;">1v1</span>
-              <span>VIP <b>5c (1rb)</b> • SB <b>30c (5rb)</b></span>
-            </div>
-            <div style="font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 6px;">
-              <span style="background: #7c3aed; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.72rem;">DUO & TIM</span>
-              <span>VIP <b>10c (2rb)</b> • SB <b>60c (10rb)</b></span>
-            </div>
-          </div>
-          <button type="button" class="btn btn-sm btn-blue" onclick="copyPriceToTicker()" style="font-size: 0.75rem; padding: 3px 10px; font-weight: 800;" title="Pasang teks info harga ini ke Ticker Running Text Overlay">📢 Pasang di Ticker</button>
-        </div>
-
         <!-- Search bar untuk cek slot penonton -->
         <div
           style="background: var(--panel-subtle); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border-color);">
@@ -1256,14 +1240,7 @@
         <div id="subtab-queue-content">
           <div
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain dalam match queue:</span>
-              <div style="display: flex; gap: 4px;">
-                <button type="button" id="filter-queue-all" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800;" onclick="filterQueueList('ALL')">Semua</button>
-                <button type="button" id="filter-queue-1v1" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800; opacity: 0.7;" onclick="filterQueueList('1v1')">⚡ 1v1</button>
-                <button type="button" id="filter-queue-tim" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800; opacity: 0.7;" onclick="filterQueueList('TIM')">⚔️ DUO & TIM</button>
-              </div>
-            </div>
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain dalam match queue:</span>
             <button class="btn btn-sm btn-danger" onclick="clearQueue()">Reset Match Queue</button>
           </div>
           <div id="queue-list-container"></div>
@@ -1271,16 +1248,22 @@
 
         <!-- TAB 2: LIST TABUNGAN -->
         <div id="subtab-saved-content" style="display: none;">
+          <!-- TABS KHUSUS LIST TABUNGAN: 1vs1 vs TIM -->
+          <div style="display: flex; gap: 8px; margin-bottom: 12px; background: var(--panel-subtle); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color); flex-wrap: wrap;">
+            <button type="button" id="tab-saved-1v1" class="btn btn-sm btn-primary" style="flex: 1; min-width: 140px; font-weight: 800; font-size: 0.88rem; padding: 8px 12px;" onclick="switchSavedModeTab('1v1')">
+              ⚡ Tabungan 1vs1 (<span id="saved-count-1v1">0</span>)
+            </button>
+            <button type="button" id="tab-saved-tim" class="btn btn-sm btn-blue" style="flex: 1; min-width: 140px; font-weight: 800; font-size: 0.88rem; padding: 8px 12px; opacity: 0.7;" onclick="switchSavedModeTab('TIM')">
+              👑 Tabungan TIM (<span id="saved-count-tim">0</span>)
+            </button>
+            <button type="button" id="tab-saved-all" class="btn btn-sm btn-blue" style="font-weight: 800; font-size: 0.82rem; padding: 8px 14px; opacity: 0.7;" onclick="switchSavedModeTab('ALL')">
+              Semua (<span id="saved-count-all">0</span>)
+            </button>
+          </div>
+
           <div
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="font-size: 0.82rem; color: var(--text-muted);">Pemain di tabungan:</span>
-              <div style="display: flex; gap: 4px;">
-                <button type="button" id="filter-saved-all" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800;" onclick="filterSavedList('ALL')">Semua</button>
-                <button type="button" id="filter-saved-1v1" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800; opacity: 0.7;" onclick="filterSavedList('1v1')">⚡ 1v1</button>
-                <button type="button" id="filter-saved-tim" class="btn btn-sm btn-blue" style="padding: 2px 8px; font-size: 0.75rem; font-weight: 800; opacity: 0.7;" onclick="filterSavedList('TIM')">⚔️ DUO & TIM</button>
-              </div>
-            </div>
+            <span style="font-size: 0.82rem; color: var(--text-muted);" id="saved-mode-header-label">Pemain di Tabungan 1vs1:</span>
             <button class="btn btn-sm btn-danger" onclick="clearSaved()">Reset Tabungan</button>
           </div>
           <div id="saved-list-container"></div>
@@ -1522,16 +1505,13 @@
 
         <!-- PILIHAN DUA MACAM TIKET MATCH (1v1 vs DUO & TIM) -->
         <div class="form-group" style="background: var(--panel-subtle); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 8px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <label style="margin: 0; font-size: 0.82rem; font-weight: 800; color: var(--accent-gold);">🎟️ Jenis Tiket Match:</label>
-            <span id="ticket-price-info" style="font-size: 0.72rem; color: #fff; font-weight: 700;">VIP: 5c (1rb) | SB: 30c (5rb)</span>
-          </div>
+          <label style="display: block; margin-bottom: 6px; font-size: 0.82rem; font-weight: 800; color: var(--accent-gold);">🎟️ Jenis Tiket Match:</label>
           <div style="display: flex; gap: 8px;">
             <button type="button" id="btn-ticket-1v1" class="btn btn-sm btn-primary" style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem;" onclick="setPlayerTicketMode('1v1')">
-              ⚡ Tiket 1v1
+              ⚡ Tiket 1vs1
             </button>
             <button type="button" id="btn-ticket-tim" class="btn btn-sm btn-blue" style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem; opacity: 0.7;" onclick="setPlayerTicketMode('TIM')">
-              ⚔️ Tiket DUO / TIM
+              👑 Tiket TIM
             </button>
           </div>
           <input type="hidden" id="input-ticket-mode" value="1v1">
@@ -1554,6 +1534,66 @@
         <div style="display: flex; gap: 8px; margin-top: 6px;">
           <button type="submit" id="btn-add-queue" class="btn btn-primary" style="flex: 1; padding: 10px; font-weight: 700;">+ Match Queue</button>
           <button type="button" id="btn-add-saved" class="btn btn-blue" style="flex: 1; padding: 10px; font-weight: 700;" onclick="handleAddPlayerDirectSave()">+ Tabungan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL KONVERSI TIKET (2x VIP 1v1 = 1x VIP TIM) -->
+  <div id="modal-convert-ticket" class="modal-overlay" onclick="handleModalConvertBackdrop(event)">
+    <div class="modal-box" style="max-width: 440px; border: 2px solid var(--border-strong); box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+        <h3 style="margin: 0; color: var(--accent-gold); font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+          <span>🔄 Konversi Tiket Match</span>
+        </h3>
+        <button type="button" class="btn btn-sm btn-danger" onclick="closeConvertModal()" style="padding: 2px 8px; font-weight: 900; font-size: 1rem; border-radius: 4px;">✕</button>
+      </div>
+
+      <div style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 12px; font-size: 0.82rem;">
+        <div style="color: var(--text-muted); margin-bottom: 2px;">Pemain:</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <b id="convert-player-name" style="font-size: 1.05rem; color: #fff;">-</b>
+          <span id="convert-player-badge" class="badge badge-vip">VIP</span>
+        </div>
+        <div style="margin-top: 6px; font-size: 0.85rem; color: var(--text-light);">
+          Tiket Saat Ini: <b id="convert-current-tickets" style="color: var(--accent-gold);">0 Match</b> (<span id="convert-current-mode">1vs1</span>)
+        </div>
+      </div>
+
+      <div style="background: rgba(2, 132, 199, 0.12); border: 1px dashed #0284c7; padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; font-size: 0.82rem; line-height: 1.4;">
+        <div style="font-weight: 800; color: var(--accent-gold); margin-bottom: 3px;">⚖️ Aturan Kurs Konversi:</div>
+        <div>• <b>2x Match 1vs1</b> = <b>1x Match TIM</b></div>
+        <div>• <b>1x Match TIM</b> = <b>2x Match 1vs1</b></div>
+      </div>
+
+      <form id="convert-ticket-form" onsubmit="handleExecuteConversion(event)">
+        <input type="hidden" id="convert-player-id" value="">
+        <input type="hidden" id="convert-list-type" value="saved">
+        <input type="hidden" id="convert-from-mode" value="1v1">
+
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label style="font-weight: 700; font-size: 0.82rem; margin-bottom: 4px;">Arah Konversi:</label>
+          <div id="convert-direction-label" style="font-size: 0.9rem; font-weight: 800; color: #fff; background: var(--panel-subtle); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+            ⚡ 1vs1 ➔ 👑 TIM (Rasio 2 : 1)
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-weight: 700; font-size: 0.82rem; margin-bottom: 4px;" id="convert-amount-label">Jumlah Tiket yang Dikonversi:</label>
+          <input type="number" id="convert-amount-input" class="form-control" value="2" min="1" required oninput="updateConvertPreview()">
+          <div id="convert-preview-text" style="margin-top: 6px; font-size: 0.82rem; color: var(--accent-gold); font-weight: 700;">
+            Hasil: 1 Match TIM
+          </div>
+          <div id="convert-error-text" style="display: none; margin-top: 4px; font-size: 0.8rem; color: #f87171; font-weight: 700;"></div>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <button type="submit" id="btn-submit-convert" class="btn btn-primary" style="flex: 1; padding: 10px; font-weight: 800;">
+            ✅ Konversi Tiket
+          </button>
+          <button type="button" class="btn btn-danger" style="flex: 1; padding: 10px; font-weight: 800;" onclick="closeConvertModal()">
+            Batal
+          </button>
         </div>
       </form>
     </div>
@@ -3288,9 +3328,10 @@
       saveState();
     }
 
-    // Filter Tiket Match (1v1 vs DUO/TIM)
+    // Filter & Tab Tiket Match (1v1 vs TIM)
     let currentQueueTicketFilter = 'ALL';
-    let currentSavedTicketFilter = 'ALL';
+    let currentSavedModeTab = '1v1';
+    let convertingPlayer = null;
 
     function setPlayerTicketMode(mode) {
       const clean = (mode === 'TIM' || mode === 'DUO' || mode === 'DUO_TIM') ? 'TIM' : '1v1';
@@ -3299,7 +3340,6 @@
 
       const btn1v1 = document.getElementById('btn-ticket-1v1');
       const btnTim = document.getElementById('btn-ticket-tim');
-      const priceInfo = document.getElementById('ticket-price-info');
 
       if (btn1v1 && btnTim) {
         if (clean === '1v1') {
@@ -3307,7 +3347,6 @@
           btn1v1.style.opacity = '1';
           btnTim.className = 'btn btn-sm btn-blue';
           btnTim.style.opacity = '0.7';
-          if (priceInfo) priceInfo.innerHTML = 'VIP: <b>5c (1rb)</b> | SB: <b>30c (5rb)</b>';
           if (typeof setTeamCharMode === 'function' && currentTeamCharMode !== '1v1') {
             setTeamCharMode('1v1');
           }
@@ -3316,7 +3355,6 @@
           btnTim.style.opacity = '1';
           btn1v1.className = 'btn btn-sm btn-blue';
           btn1v1.style.opacity = '0.7';
-          if (priceInfo) priceInfo.innerHTML = 'VIP: <b>10c (2rb)</b> | SB: <b>60c (10rb)</b>';
           if (typeof setTeamCharMode === 'function' && currentTeamCharMode === '1v1') {
             const m = (state.masterMode === 'TIM' || state.masterMode === 'TRIO') ? 'tim' : 'duo';
             setTeamCharMode(m);
@@ -3327,27 +3365,15 @@
 
     function filterQueueList(filter) {
       currentQueueTicketFilter = filter;
-      ['all', '1v1', 'tim'].forEach(k => {
-        const btn = document.getElementById(`filter-queue-${k}`);
-        if (btn) {
-          if (k.toUpperCase() === filter) {
-            btn.className = 'btn btn-sm btn-primary';
-            btn.style.opacity = '1';
-          } else {
-            btn.className = 'btn btn-sm btn-blue';
-            btn.style.opacity = '0.7';
-          }
-        }
-      });
       renderQueue();
     }
 
-    function filterSavedList(filter) {
-      currentSavedTicketFilter = filter;
-      ['all', '1v1', 'tim'].forEach(k => {
-        const btn = document.getElementById(`filter-saved-${k}`);
+    function switchSavedModeTab(tab) {
+      currentSavedModeTab = tab;
+      ['1v1', 'tim', 'all'].forEach(k => {
+        const btn = document.getElementById(`tab-saved-${k}`);
         if (btn) {
-          if (k.toUpperCase() === filter) {
+          if (k.toUpperCase() === tab.toUpperCase()) {
             btn.className = 'btn btn-sm btn-primary';
             btn.style.opacity = '1';
           } else {
@@ -3356,7 +3382,17 @@
           }
         }
       });
+      const headerLabel = document.getElementById('saved-mode-header-label');
+      if (headerLabel) {
+        if (tab === '1v1') headerLabel.innerText = 'Pemain di Tabungan 1vs1:';
+        else if (tab === 'TIM') headerLabel.innerText = 'Pemain di Tabungan TIM:';
+        else headerLabel.innerText = 'Semua Pemain di Tabungan:';
+      }
       renderSaved();
+    }
+
+    function filterSavedList(filter) {
+      switchSavedModeTab(filter);
     }
 
     function changePlayerTicketMode(playerId, listType, newMode) {
@@ -3365,17 +3401,169 @@
       if (p) {
         p.ticketMode = (newMode === 'TIM' || newMode === 'DUO') ? 'TIM' : '1v1';
         saveState();
+        renderAll();
       }
     }
 
-    function copyPriceToTicker() {
-      const text = "🎟️ HARGA TIKET: 1v1 (VIP 5c/1rb • SROBOT 30c/5rb) | DUO & TIM (VIP 10c/2rb • SROBOT 60c/10rb)";
-      const input = document.getElementById('input-announcement');
-      if (input) input.value = text;
-      state.announcement = text;
-      state.tickerText = text;
+    // Modal Konversi Tiket Match (2x VIP 1v1 = 1x VIP TIM)
+    function promptConvertPlayerTicket(playerId, listType) {
+      const list = listType === 'queue' ? state.queue : state.saved;
+      const p = list.find(x => String(x.id) === String(playerId));
+      if (!p) return;
+      convertingPlayer = { player: p, listType };
+      const modal = document.getElementById('modal-convert-ticket');
+      if (!modal) return;
+
+      const pTicketMode = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'TIM' : '1v1';
+      document.getElementById('convert-player-id').value = p.id;
+      document.getElementById('convert-list-type').value = listType;
+      document.getElementById('convert-from-mode').value = pTicketMode;
+      document.getElementById('convert-player-name').innerText = p.name;
+      const badgeEl = document.getElementById('convert-player-badge');
+      if (badgeEl) {
+        badgeEl.className = `badge badge-${getTierCls(p.type)}`;
+        badgeEl.innerText = getTierLabel(p.type);
+      }
+      document.getElementById('convert-current-tickets').innerText = `${p.matchesLeft} Match`;
+      document.getElementById('convert-current-mode').innerText = pTicketMode === '1v1' ? '1vs1' : 'TIM';
+
+      const dirLabel = document.getElementById('convert-direction-label');
+      const amountLabel = document.getElementById('convert-amount-label');
+      const amountInput = document.getElementById('convert-amount-input');
+
+      if (pTicketMode === '1v1') {
+        dirLabel.innerHTML = '⚡ <b>1vs1</b> ➔ 👑 <b>TIM</b> (2 Tiket 1v1 = 1 Tiket TIM)';
+        amountLabel.innerText = `Jumlah Tiket 1vs1 yang Ditukar (Maks ${p.matchesLeft}):`;
+        amountInput.value = (p.matchesLeft >= 2) ? 2 : (p.matchesLeft > 0 ? p.matchesLeft : 1);
+        amountInput.max = p.matchesLeft;
+        amountInput.step = 2;
+      } else {
+        dirLabel.innerHTML = '👑 <b>TIM</b> ➔ ⚡ <b>1vs1</b> (1 Tiket TIM = 2 Tiket 1v1)';
+        amountLabel.innerText = `Jumlah Tiket TIM yang Ditukar (Maks ${p.matchesLeft}):`;
+        amountInput.value = (p.matchesLeft >= 1) ? 1 : 0;
+        amountInput.max = p.matchesLeft;
+        amountInput.step = 1;
+      }
+      updateConvertPreview();
+      modal.classList.add('active');
+    }
+
+    function updateConvertPreview() {
+      if (!convertingPlayer) return;
+      const p = convertingPlayer.player;
+      const pTicketMode = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'TIM' : '1v1';
+      const amountInput = document.getElementById('convert-amount-input');
+      const amount = parseInt(amountInput.value) || 0;
+      const previewText = document.getElementById('convert-preview-text');
+      const errorText = document.getElementById('convert-error-text');
+      const submitBtn = document.getElementById('btn-submit-convert');
+      errorText.style.display = 'none';
+      submitBtn.disabled = false;
+
+      if (amount <= 0) {
+        previewText.innerText = 'Hasil: 0 Match';
+        submitBtn.disabled = true;
+        return;
+      }
+      if (amount > p.matchesLeft) {
+        errorText.innerText = `❌ Melebihi sisa match pemain (${p.matchesLeft} Match).`;
+        errorText.style.display = 'block';
+        submitBtn.disabled = true;
+        return;
+      }
+      if (pTicketMode === '1v1') {
+        if (amount % 2 !== 0) {
+          errorText.innerText = `⚠️ Konversi 1vs1 ke TIM harus kelipatan 2! (2x Match 1v1 = 1x Match TIM).`;
+          errorText.style.display = 'block';
+          submitBtn.disabled = true;
+          return;
+        }
+        const resTim = amount / 2;
+        const rem1v1 = p.matchesLeft - amount;
+        previewText.innerHTML = `Hasil: <b>+${resTim} Match TIM</b> (Sisa di 1vs1: <b>${rem1v1} Match</b>)`;
+      } else {
+        const res1v1 = amount * 2;
+        const remTim = p.matchesLeft - amount;
+        previewText.innerHTML = `Hasil: <b>+${res1v1} Match 1vs1</b> (Sisa di TIM: <b>${remTim} Match</b>)`;
+      }
+    }
+
+    function closeConvertModal() {
+      const modal = document.getElementById('modal-convert-ticket');
+      if (modal) modal.classList.remove('active');
+      convertingPlayer = null;
+    }
+
+    function handleModalConvertBackdrop(event) {
+      if (event.target && event.target.id === 'modal-convert-ticket') {
+        closeConvertModal();
+      }
+    }
+
+    function handleExecuteConversion(e) {
+      if (e) e.preventDefault();
+      if (!convertingPlayer) return;
+      const { player: p, listType } = convertingPlayer;
+      const pTicketMode = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'TIM' : '1v1';
+      const amount = parseInt(document.getElementById('convert-amount-input').value) || 0;
+      const list = listType === 'queue' ? state.queue : state.saved;
+      if (amount <= 0 || amount > p.matchesLeft) return;
+
+      if (pTicketMode === '1v1') {
+        if (amount % 2 !== 0) {
+          alert("Konversi 1v1 ke TIM harus dalam kelipatan 2 match!");
+          return;
+        }
+        const convertedMatches = amount / 2;
+        if (!confirm(`Konversi ${amount} Match 1vs1 milik [ ${p.name} ] menjadi ${convertedMatches} Match TIM?`)) return;
+        p.matchesLeft -= amount;
+        const existingTim = state.saved.find(x => x.name.trim().toLowerCase() === p.name.trim().toLowerCase() && (x.ticketMode === 'TIM' || x.ticketMode === 'DUO'));
+        if (existingTim) {
+          existingTim.matchesLeft += convertedMatches;
+        } else {
+          state.saved.push({
+            id: Date.now().toString(),
+            name: p.name,
+            char: p.char,
+            matchesLeft: convertedMatches,
+            ws: 0,
+            type: p.type,
+            ticketMode: 'TIM',
+            savedAt: Date.now()
+          });
+        }
+        if (p.matchesLeft <= 0) {
+          const idx = list.findIndex(x => String(x.id) === String(p.id));
+          if (idx !== -1) list.splice(idx, 1);
+        }
+      } else {
+        const convertedMatches = amount * 2;
+        if (!confirm(`Konversi ${amount} Match TIM milik [ ${p.name} ] menjadi ${convertedMatches} Match 1vs1?`)) return;
+        p.matchesLeft -= amount;
+        const existing1v1 = state.saved.find(x => x.name.trim().toLowerCase() === p.name.trim().toLowerCase() && (x.ticketMode === '1v1' || !x.ticketMode));
+        if (existing1v1) {
+          existing1v1.matchesLeft += convertedMatches;
+        } else {
+          state.saved.push({
+            id: Date.now().toString(),
+            name: p.name,
+            char: p.char,
+            matchesLeft: convertedMatches,
+            ws: 0,
+            type: p.type,
+            ticketMode: '1v1',
+            savedAt: Date.now()
+          });
+        }
+        if (p.matchesLeft <= 0) {
+          const idx = list.findIndex(x => String(x.id) === String(p.id));
+          if (idx !== -1) list.splice(idx, 1);
+        }
+      }
       saveState();
-      alert("✅ Berhasil memasang teks harga tiket ke Ticker Running Text Overlay!");
+      closeConvertModal();
+      renderAll();
+      alert(`✅ Sukses mengonversi tiket [ ${p.name} ]!`);
     }
 
     // Modal Tambah Pemain Baru
@@ -4461,6 +4649,7 @@
                     ${ticketOptions}
                   </select>
                 </div>
+                <button class="btn btn-sm btn-blue" onclick="promptConvertPlayerTicket('${p.id}', 'queue')" title="Konversi Tiket (2x 1v1 ⇄ 1x TIM)">🔄 KONVERSI</button>
                 <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${originalIdx}])" title="Ubah Karakter">🥋 CHAR</button>
                 <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')" title="Simpan ke List Tabungan">💾 TABUNG</button>
                 <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')" title="Hapus Pemain">🗑️</button>
@@ -4478,6 +4667,16 @@
       const container = document.getElementById('saved-list-container');
       const sCountEl = document.getElementById('save-count');
       if (sCountEl) sCountEl.innerText = `${state.saved.length}`;
+
+      const count1v1 = state.saved.filter(p => (p.ticketMode || '1v1') === '1v1').length;
+      const countTim = state.saved.filter(p => (p.ticketMode === 'TIM' || p.ticketMode === 'DUO')).length;
+      const el1v1 = document.getElementById('saved-count-1v1');
+      const elTim = document.getElementById('saved-count-tim');
+      const elAll = document.getElementById('saved-count-all');
+      if (el1v1) el1v1.innerText = `${count1v1}`;
+      if (elTim) elTim.innerText = `${countTim}`;
+      if (elAll) elAll.innerText = `${state.saved.length}`;
+
       container.innerHTML = '';
 
       if (state.saved.length === 0) {
@@ -4492,8 +4691,8 @@
 
       state.saved.forEach((p, idx) => {
         const pTicketMode = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'TIM' : '1v1';
-        if (currentSavedTicketFilter === '1v1' && pTicketMode !== '1v1') return;
-        if (currentSavedTicketFilter === 'TIM' && pTicketMode !== 'TIM') return;
+        if (currentSavedModeTab === '1v1' && pTicketMode !== '1v1') return;
+        if (currentSavedModeTab === 'TIM' && pTicketMode !== 'TIM') return;
 
         const pTier = getTierLabel(p.type);
         if (pTier === 'SB') {
@@ -4616,6 +4815,7 @@
                     ${ticketOptions}
                   </select>
                 </div>
+                <button class="btn btn-sm btn-blue" onclick="promptConvertPlayerTicket('${p.id}', 'saved')" title="Konversi Tiket (2x 1v1 ⇄ 1x TIM)">🔄 KONVERSI</button>
                 <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${originalIdx}])" title="Ubah Karakter">🥋 CHAR</button>
                 <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')" title="Hapus Pemain">🗑️</button>
               </div>
@@ -4877,6 +5077,7 @@
       if (e.key === 'Escape') {
         closeAddPlayerModal();
         closeModal();
+        closeConvertModal();
       }
 
       const activeEl = document.activeElement;

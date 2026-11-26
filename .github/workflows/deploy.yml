@@ -1,0 +1,36 @@
+name: Auto Deploy to herz.kesug.com
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Memungkinkan deploy manual dari menu Actions di GitHub
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to InfinityFree (herz.kesug.com)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📤 Sync files to Hosting via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: htdocs/
+          protocol: ftp
+          exclude: |
+            **/.git*
+            **/.git*/**
+            scratch/**
+            __pycache__/**
+            server.py
+            start.bat
+            deploy.bat
+            deploy.py
+            README.md
+            state.json

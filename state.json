@@ -5,7 +5,8 @@
     "char": "Rōshi",
     "matchesLeft": 0,
     "ws": 1,
-    "type": "FREE"
+    "type": "FREE",
+    "ticketMode": "1v1"
   },
   "p2": null,
   "queue": [],
@@ -17,7 +18,8 @@
       "matchesLeft": 10,
       "ws": 0,
       "type": "VIP",
-      "savedAt": 1794316804874
+      "savedAt": 1794316804874,
+      "ticketMode": "1v1"
     },
     {
       "id": "1794315787831",
@@ -26,7 +28,8 @@
       "matchesLeft": 1,
       "ws": 0,
       "type": "VIP",
-      "savedAt": 1794315787831
+      "savedAt": 1794315787831,
+      "ticketMode": "1v1"
     },
     {
       "id": "1794474281688",
@@ -35,7 +38,8 @@
       "matchesLeft": 2,
       "ws": 0,
       "type": "VIP",
-      "savedAt": 1794474281688
+      "savedAt": 1794474281688,
+      "ticketMode": "1v1"
     },
     {
       "id": "1794475963248",
@@ -44,7 +48,8 @@
       "matchesLeft": 13,
       "ws": 0,
       "type": "VIP",
-      "savedAt": 1794475963248
+      "savedAt": 1794475963248,
+      "ticketMode": "1v1"
     },
     {
       "id": "1794475083145",
@@ -55,7 +60,8 @@
       "type": "VIP",
       "bonusBase": 1,
       "bonusAnimUntil": 1794832251699,
-      "savedAt": 1794832738965
+      "savedAt": 1794832738965,
+      "ticketMode": "1v1"
     },
     {
       "id": "1794310961321",
@@ -64,7 +70,8 @@
       "matchesLeft": 4,
       "ws": 0,
       "type": "VIP",
-      "savedAt": 1794310961321
+      "savedAt": 1794310961321,
+      "ticketMode": "1v1"
     },
     {
       "id": "1795437345553",
@@ -75,7 +82,8 @@
       "type": "VIP",
       "bonusBase": 0,
       "bonusAnimUntil": 1795439801116,
-      "savedAt": 1795440124618
+      "savedAt": 1795440124618,
+      "ticketMode": "1v1"
     },
     {
       "id": "1795330219019",
@@ -86,7 +94,8 @@
       "type": "VIP",
       "bonusBase": 0,
       "bonusAnimUntil": 1795441264952,
-      "savedAt": 1795441996757
+      "savedAt": 1795441996757,
+      "ticketMode": "1v1"
     },
     {
       "id": "1794475325264",
@@ -97,7 +106,8 @@
       "type": "VIP",
       "bonusBase": 3,
       "bonusAnimUntil": 1794727917017,
-      "savedAt": 1794729531721
+      "savedAt": 1794729531721,
+      "ticketMode": "1v1"
     },
     {
       "id": "1795329936391",
@@ -106,7 +116,8 @@
       "matchesLeft": 1,
       "ws": 0,
       "type": "VIP",
-      "savedAt": 1795335218352
+      "savedAt": 1795335218352,
+      "ticketMode": "1v1"
     }
   ],
   "overlayListMode": "queue",
@@ -189,7 +200,8 @@
       "char": "Rōshi",
       "matchesLeft": 0,
       "ws": 1,
-      "type": "FREE"
+      "type": "FREE",
+      "ticketMode": "1v1"
     },
     "p2": null
   },

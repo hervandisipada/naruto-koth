@@ -1097,6 +1097,15 @@
 
     function applyMarquee(wrap, container, speed = 30, pauseStart = 3000, pauseEnd = 2500) {
       if (!wrap || !container) return;
+
+      const currentText = wrap.innerText || wrap.textContent || '';
+      // JIKA ANIMASI SUDAH BERJALAN DENGAN TEKS YANG SAMA: JANGAN DI-RESET!
+      // Ini mencegah glitch teks melompat/berhenti saat ada pembaruan data live.
+      if (wrap._marqueeAnim && wrap._marqueeText === currentText) {
+        return;
+      }
+      wrap._marqueeText = currentText;
+
       if (wrap._marqueeAnim) {
         try { wrap._marqueeAnim.cancel(); } catch (e) { }
         wrap._marqueeAnim = null;
@@ -1795,7 +1804,8 @@
       const container = document.getElementById('queue-list');
       if (!container) return;
 
-      clearInterval(autoScrollTimer);
+      // Jika scroll timer sudah aktif berjalan, jangan bunuh & reset ke atas agar tidak glitch freeze
+      if (autoScrollTimer) return;
 
       let stateMode = 'paused_at_top'; // 'paused_at_top', 'scrolling', 'paused_at_bottom'
       let pauseTicks = 60; // 3 detik awal di posisi atas (60 * 50ms = 3000ms)

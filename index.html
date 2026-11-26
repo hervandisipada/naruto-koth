@@ -2518,6 +2518,7 @@
     let editingTarget = null; // for modal
 
     let cloudMqttClient = null;
+    const LOCAL_CLIENT_ID = 'adm_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
     const urlParams = new URLSearchParams(window.location.search);
     let streamKey = urlParams.get('room') || urlParams.get('key') || localStorage.getItem('koth_stream_key') || 'hervandisipada';
     const MQTT_TOPIC = `koth/naruto/${streamKey}`;
@@ -2572,6 +2573,9 @@
       };
       fixP(st.p1);
       fixP(st.p2);
+      if (st.arena1v1) { fixP(st.arena1v1.p1); fixP(st.arena1v1.p2); }
+      if (st.arenaDuo) { fixP(st.arenaDuo.p1); fixP(st.arenaDuo.p2); }
+      if (st.arenaTim) { fixP(st.arenaTim.p1); fixP(st.arenaTim.p2); }
       if (Array.isArray(st.queue)) st.queue.forEach(fixP);
       if (Array.isArray(st.saved)) {
         st.saved.forEach(p => {
@@ -2801,7 +2805,10 @@
       // Cloud MQTT Sync (Real-time across Internet / TikTok Live Studio)
       if (cloudMqttClient && cloudMqttClient.connected) {
         try {
-          cloudMqttClient.publish(MQTT_TOPIC, currentStateJson, { retain: true, qos: 0 });
+          state._clientId = LOCAL_CLIENT_ID;
+          state._ts = Date.now();
+          const syncJson = JSON.stringify(state);
+          cloudMqttClient.publish(MQTT_TOPIC, syncJson, { retain: true, qos: 0 });
         } catch (e) {
           console.warn('MQTT publish error', e);
         }
@@ -2933,7 +2940,7 @@
       if (typeof mqtt !== 'undefined') {
         try {
           cloudMqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
-            clientId: 'adm_' + Math.random().toString(16).substring(2, 8),
+            clientId: LOCAL_CLIENT_ID,
             clean: true,
             reconnectPeriod: 2500
           });
@@ -2951,13 +2958,17 @@
           cloudMqttClient.on('message', (topic, payload) => {
             try {
               const remoteData = JSON.parse(payload.toString());
-              const hadMigration = sanitizeState(remoteData);
-              if (JSON.stringify(remoteData) !== JSON.stringify(state) || hadMigration) {
+              // ABAIKAN PESAN DARI DIRI SENDIRI: Mencegah echo loop & glitch re-render terus menerus!
+              if (remoteData && remoteData._clientId === LOCAL_CLIENT_ID) {
+                return;
+              }
+              sanitizeState(remoteData);
+              const cleanRemoteStr = JSON.stringify(remoteData);
+              if (cleanRemoteStr !== JSON.stringify(state) && cleanRemoteStr !== lastSavedStateJson) {
                 state = remoteData;
-                lastSavedStateJson = JSON.stringify(state);
-                localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+                lastSavedStateJson = cleanRemoteStr;
+                localStorage.setItem('koth_naruto_state', cleanRemoteStr);
                 renderAll();
-                if (hadMigration) saveState();
               }
             } catch (e) { }
           });
@@ -2980,13 +2991,17 @@
         evtSource.onmessage = (e) => {
           try {
             const data = JSON.parse(e.data);
-            const hadMigration = sanitizeState(data);
-            if (JSON.stringify(data) !== JSON.stringify(state) || hadMigration) {
+            // Abaikan pesan dari diri sendiri untuk mencegah glitch re-render ganda
+            if (data && data._clientId === LOCAL_CLIENT_ID) {
+              return;
+            }
+            sanitizeState(data);
+            const cleanDataStr = JSON.stringify(data);
+            if (cleanDataStr !== JSON.stringify(state) && cleanDataStr !== lastSavedStateJson) {
               state = data;
-              lastSavedStateJson = JSON.stringify(state);
-              localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+              lastSavedStateJson = cleanDataStr;
+              localStorage.setItem('koth_naruto_state', cleanDataStr);
               renderAll();
-              if (hadMigration) saveState();
             }
           } catch (err) { }
         };

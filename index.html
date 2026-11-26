@@ -1176,88 +1176,14 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- FORM TAMBAH PEMAIN -->
-      <div class="card">
-        <div class="card-title">Tambah Pemain</div>
-        <form id="add-player-form" onsubmit="handleAddPlayer(event)">
-          <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <label style="margin: 0;">Username * (Pilih Terdaftar / Ketik Baru)</label>
-              <span id="registered-user-count" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;"></span>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-              <select id="select-registered-user" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleSelectRegisteredUser(this.value)">
-                <option value="">▼ PILIH DARI USER TERDAFTAR (A-Z)...</option>
-              </select>
-              <input type="text" id="input-username" class="form-control" placeholder="Atau ketik username pemain di sini..." list="registered-users-datalist" autocomplete="off" required oninput="updatePlayerFormValidation()" onchange="updatePlayerFormValidation()">
-              <div id="username-duplicate-warning" style="display:none; padding: 8px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; line-height: 1.4;"></div>
-              <datalist id="registered-users-datalist"></datalist>
-            </div>
-          </div>
-          <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label style="margin: 0;">Karakter: <span id="add-player-mode-badge" style="font-size: 0.78rem; font-weight: 800; color: var(--accent-gold);">(Mode: 1v1)</span></label>
-            </div>
-
-            <!-- SLOT 1 (Leader / Utama) -->
-            <div id="group-char-1" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;">
-              <div id="label-char-1" style="font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); display: none;">Karakter 1 (Utama / Leader):</div>
-              <select id="select-char-1" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(1, this.value)">
-                <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
-              </select>
-              <input type="text" id="input-char-1" class="form-control" placeholder="Atau ketik nama karakter di sini..."
-                list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
-            </div>
-
-            <!-- SLOT 2 (Support 1 - Duo/Trio) -->
-            <div id="group-char-2" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
-              <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa;">Karakter 2 (Support 1):</div>
-              <select id="select-char-2" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(2, this.value)">
-                <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
-              </select>
-              <input type="text" id="input-char-2" class="form-control" placeholder="Atau ketik nama Karakter 2..."
-                list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
-            </div>
-
-            <!-- SLOT 3 (Support 2 - Trio) -->
-            <div id="group-char-3" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
-              <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2 - Opsional):</div>
-              <select id="select-char-3" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(3, this.value)">
-                <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER) - OPSIONAL...</option>
-              </select>
-              <input type="text" id="input-char-3" class="form-control" placeholder="Atau ketik nama Karakter 3 (bisa kosong jika hanya 2 char)..."
-                list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
-            </div>
-
-            <!-- Hidden input kompatibilitas & Preview Tim -->
-            <input type="hidden" id="input-char" value="">
-            <select id="select-char-picker" style="display: none;"></select>
-            <div id="preview-team-char" style="display: none; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.25); border: 1px dashed var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
-              Format Tim: <b id="preview-team-char-text" style="color: var(--text-light);">-</b>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="flex: 1;">
-              <label>Jumlah Match *</label>
-              <input type="number" id="input-matches" class="form-control" value="1" min="1" required>
-            </div>
-            <div class="form-group" style="flex: 1;">
-              <label>Tier *</label>
-              <select id="input-type" class="form-control">
-                <option value="SROBOT">SROBOT (SB - Prioritas Tertinggi)</option>
-                <option value="VIP">VIP (Prioritas Menengah)</option>
-                <option value="FREE" selected>FREE (Normal)</option>
-              </select>
-            </div>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button type="submit" id="btn-add-queue" class="btn btn-primary" style="flex: 1;">+ Match Queue</button>
-            <button type="button" id="btn-add-saved" class="btn btn-blue" style="flex: 1;" onclick="handleAddPlayerDirectSave()">+
-              Tabungan</button>
-          </div>
-        </form>
+        <!-- TOMBOL TAMBAH PEMAIN BARU DI BAWAH ARENA -->
+        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-primary btn-block" onclick="openAddPlayerModal()"
+            style="font-size: 0.98rem; font-weight: 800; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 6px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4); cursor: pointer;">
+            ➕ TAMBAH PEMAIN BARU
+          </button>
+        </div>
       </div>
 
       <!-- KELOLA MATCH QUEUE & LIST TABUNGAN -->
@@ -1281,18 +1207,21 @@
           </div>
         </div>
 
-        <!-- Toggle Mode Tampilan Live Overlay -->
-        <div
-          style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;">
-          <div>
-            <span style="font-weight: 700; font-size: 0.88rem; color: var(--text-light);">Tampil di Overlay:</span>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Pilih daftar untuk layar live</div>
+        <!-- Ceklis Pilihan Tampilan Daftar di Overlay (Centang Salah Satu) -->
+        <div style="background: var(--panel-subtle); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-gold);">📺 TAMPILKAN DAFTAR DI OVERLAY:</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted);">(Hanya bisa centang salah satu)</span>
           </div>
-          <div style="display: flex; gap: 8px;">
-            <button id="mode-queue-btn" class="btn btn-sm btn-primary"
-              onclick="setOverlayListMode('queue')">Match Queue</button>
-            <button id="mode-saved-btn" class="btn btn-sm btn-danger"
-              onclick="setOverlayListMode('saved')">List Tabungan</button>
+          <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; margin: 0; color: #fff;">
+              <input type="checkbox" id="chk-overlay-queue" onchange="handleOverlayListCheck('queue', this.checked)">
+              <span>Match Queue (Antrean)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; margin: 0; color: #fff;">
+              <input type="checkbox" id="chk-overlay-saved" onchange="handleOverlayListCheck('saved', this.checked)">
+              <span>List Tabungan (Saved)</span>
+            </label>
           </div>
         </div>
 
@@ -1490,6 +1419,95 @@
       <div class="overlay-queue-title">MATCH QUEUE:</div>
       <div id="ov-queue-list"></div>
       <div id="ov-free-closed-banner" class="free-closed-banner" style="display:none;">FREE TUTUP</div>
+    </div>
+  </div>
+
+  <!-- MODAL TAMBAH PEMAIN -->
+  <div id="modal-add-player" class="modal-overlay" onclick="handleModalAddPlayerBackdrop(event)">
+    <div class="modal-box" style="max-width: 480px; max-height: 90vh; overflow-y: auto; border: 2px solid var(--border-strong); box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+        <h3 style="margin: 0; color: var(--accent-gold); font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+          <span>➕ Tambah Pemain Baru</span>
+        </h3>
+        <button type="button" class="btn btn-sm btn-danger" onclick="closeAddPlayerModal()" style="padding: 2px 8px; font-weight: 900; font-size: 1rem; border-radius: 4px;">✕</button>
+      </div>
+
+      <form id="add-player-form" onsubmit="handleAddPlayer(event)">
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <label style="margin: 0;">Username * (Pilih Terdaftar / Ketik Baru)</label>
+            <span id="registered-user-count" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;"></span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <select id="select-registered-user" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleSelectRegisteredUser(this.value)">
+              <option value="">▼ PILIH DARI USER TERDAFTAR (A-Z)...</option>
+            </select>
+            <input type="text" id="input-username" class="form-control" placeholder="Atau ketik username pemain di sini..." list="registered-users-datalist" autocomplete="off" required oninput="updatePlayerFormValidation()" onchange="updatePlayerFormValidation()">
+            <div id="username-duplicate-warning" style="display:none; padding: 8px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; line-height: 1.4;"></div>
+            <datalist id="registered-users-datalist"></datalist>
+          </div>
+        </div>
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="margin: 0;">Karakter: <span id="add-player-mode-badge" style="font-size: 0.78rem; font-weight: 800; color: var(--accent-gold);">(Mode: 1v1)</span></label>
+          </div>
+
+          <!-- SLOT 1 (Leader / Utama) -->
+          <div id="group-char-1" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+            <div id="label-char-1" style="font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); display: none;">Karakter 1 (Utama / Leader):</div>
+            <select id="select-char-1" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(1, this.value)">
+              <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+            </select>
+            <input type="text" id="input-char-1" class="form-control" placeholder="Atau ketik nama karakter di sini..."
+              list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
+          </div>
+
+          <!-- SLOT 2 (Support 1 - Duo/Trio) -->
+          <div id="group-char-2" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa;">Karakter 2 (Support 1):</div>
+            <select id="select-char-2" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(2, this.value)">
+              <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER)...</option>
+            </select>
+            <input type="text" id="input-char-2" class="form-control" placeholder="Atau ketik nama Karakter 2..."
+              list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
+          </div>
+
+          <!-- SLOT 3 (Support 2 - Trio) -->
+          <div id="group-char-3" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2 - Opsional):</div>
+            <select id="select-char-3" class="form-control" style="background: var(--panel-subtle); cursor: pointer;" onchange="handleCharSelect(3, this.value)">
+              <option value="">▼ PILIH DARI DROPDOWN (148+ KARAKTER) - OPSIONAL...</option>
+            </select>
+            <input type="text" id="input-char-3" class="form-control" placeholder="Atau ketik nama Karakter 3 (bisa kosong jika hanya 2 char)..."
+              list="storm-characters" autocomplete="off" oninput="updateTeamCharValue()">
+          </div>
+
+          <!-- Hidden input kompatibilitas & Preview Tim -->
+          <input type="hidden" id="input-char" value="">
+          <select id="select-char-picker" style="display: none;"></select>
+          <div id="preview-team-char" style="display: none; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.25); border: 1px dashed var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
+            Format Tim: <b id="preview-team-char-text" style="color: var(--text-light);">-</b>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex: 1;">
+            <label>Jumlah Match *</label>
+            <input type="number" id="input-matches" class="form-control" value="1" min="1" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Tier *</label>
+            <select id="input-type" class="form-control">
+              <option value="SROBOT">SROBOT (SB - Prioritas Tertinggi)</option>
+              <option value="VIP">VIP (Prioritas Menengah)</option>
+              <option value="FREE" selected>FREE (Normal)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+          <button type="submit" id="btn-add-queue" class="btn btn-primary" style="flex: 1; padding: 10px; font-weight: 700;">+ Match Queue</button>
+          <button type="button" id="btn-add-saved" class="btn btn-blue" style="flex: 1; padding: 10px; font-weight: 700;" onclick="handleAddPlayerDirectSave()">+ Tabungan</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -3062,6 +3080,7 @@
       updatePlayerFormValidation();
 
       saveState();
+      closeAddPlayerModal();
     }
 
     // Move Saved to Active Queue: MEMPERTAHANKAN TIER (SROBOT / VIP / FREE)
@@ -3207,15 +3226,54 @@
       saveState();
     }
 
-    // Mode Tampilan Live Overlay (Antrean vs Saved)
+    // Modal Tambah Pemain Baru
+    function openAddPlayerModal() {
+      const modal = document.getElementById('modal-add-player');
+      if (!modal) return;
+      setTeamCharMode((state.masterMode || '1v1').toLowerCase());
+      renderRegisteredUsersDropdown();
+      updatePlayerFormValidation();
+      modal.classList.add('active');
+      setTimeout(() => {
+        const inputName = document.getElementById('input-username');
+        if (inputName) inputName.focus();
+      }, 100);
+    }
+
+    function closeAddPlayerModal() {
+      const modal = document.getElementById('modal-add-player');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function handleModalAddPlayerBackdrop(event) {
+      if (event.target && event.target.id === 'modal-add-player') {
+        closeAddPlayerModal();
+      }
+    }
+
+    // Mode Tampilan Live Overlay (Antrean vs Saved) - Centang Eksklusif (Hanya salah satu yang bisa aktif)
+    function handleOverlayListCheck(mode, isChecked) {
+      if (!isChecked) {
+        // Jika user mencoba uncheck opsi yang sedang aktif, tolak uncheck karena salah satu harus aktif
+        updateModeButtons();
+        return;
+      }
+      setOverlayListMode(mode);
+    }
+
     function setOverlayListMode(mode) {
-      state.overlayListMode = mode;
+      state.overlayListMode = (mode === 'saved') ? 'saved' : 'queue';
       saveState();
       updateModeButtons();
     }
 
     function updateModeButtons() {
       const mode = state.overlayListMode || 'queue';
+      const chkQueue = document.getElementById('chk-overlay-queue');
+      const chkSaved = document.getElementById('chk-overlay-saved');
+      if (chkQueue) chkQueue.checked = (mode === 'queue');
+      if (chkSaved) chkSaved.checked = (mode === 'saved');
+
       const qBtn = document.getElementById('mode-queue-btn');
       const sBtn = document.getElementById('mode-saved-btn');
       if (qBtn && sBtn) {
@@ -4610,8 +4668,13 @@
       if (btn) btn.innerText = savedTheme === 'dark' ? 'Tema: Gelap' : 'Tema: Terang';
     })();
 
-    // Keyboard Shortcuts: Ctrl+Z untuk Undo, Ctrl+Y / Ctrl+Shift+Z untuk Redo
+    // Keyboard Shortcuts: Ctrl+Z untuk Undo, Ctrl+Y / Ctrl+Shift+Z untuk Redo, ESC untuk tutup modal
     window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAddPlayerModal();
+        closeModal();
+      }
+
       const activeEl = document.activeElement;
       const tag = activeEl ? activeEl.tagName.toLowerCase() : '';
       if (tag === 'input' || tag === 'textarea' || tag === 'select' || (activeEl && activeEl.isContentEditable)) {

@@ -856,7 +856,7 @@
 
     <!-- Top Record WS Banner (Top 3) -->
     <div id="overlay-top-record" class="overlay-top-record">
-      <span class="record-label" id="record-label">TOP 3 WS:</span>
+      <span class="record-label" id="record-label">TOP WS:</span>
       <div class="record-marquee-wrap">
         <span id="record-text" class="record-content">
           <span class="rec-item">
@@ -1093,7 +1093,7 @@
       return parts[0] || c;
     }
 
-    function applyMarquee(wrap, container) {
+    function applyMarquee(wrap, container, speed = 30, pauseStart = 3000, pauseEnd = 2500) {
       if (!wrap || !container) return;
       if (wrap._marqueeAnim) {
         try { wrap._marqueeAnim.cancel(); } catch (e) { }
@@ -1105,12 +1105,12 @@
       if (diff <= 3) return; // Tidak overflow, tidak perlu scroll
 
       const dist = -(diff + 16);
-      // Durasi berjalan: minimum 3 detik, kecepatan ~35px/s
-      const walkDuration = Math.max(3000, Math.min(8000, (diff / 35) * 1000));
-      const totalDuration = 3000 + walkDuration + 3000;
+      // Durasi berjalan: dihitung proporsional dari jarak pixel overflow / speed px per detik
+      const walkDuration = Math.max(3000, (diff / speed) * 1000);
+      const totalDuration = pauseStart + walkDuration + pauseEnd;
 
-      const p1 = 3000 / totalDuration; // tahan 3 detik di kiri
-      const p2 = (3000 + walkDuration) / totalDuration; // sampai di ujung kanan
+      const p1 = pauseStart / totalDuration; // tahan di awal
+      const p2 = (pauseStart + walkDuration) / totalDuration; // sampai di ujung kanan
 
       try {
         wrap._marqueeAnim = wrap.animate([
@@ -1377,32 +1377,22 @@
           }).join('<span class="rec-divider">•</span>');
         };
 
-        if (enabledModes.length === 1) {
-          const single = enabledModes[0];
-          if (recordLabel) {
-            recordLabel.innerText = `TOP WS ${single}:`;
-            recordLabel.style.display = 'inline-block';
-          }
-          if (recContent) {
-            recContent.innerHTML = renderItems(getModeRecords(single));
-          }
-        } else {
-          if (recordLabel) {
-            recordLabel.innerText = 'TOP WS:';
-            recordLabel.style.display = 'inline-block';
-          }
-          if (recContent) {
-            const blocks = enabledModes.map(m => {
-              const col = m === '1v1' ? '#ffd700' : (m === 'DUO' ? '#60a5fa' : '#c084fc');
-              return `
-                <span class="rec-mode-block" style="display:inline-flex; align-items:center; gap:5px;">
-                  <span class="rec-mode-title" style="font-weight:900; color:${col}; font-size:0.86rem; letter-spacing:0.5px;">TOP WS ${m}:</span>
-                  ${renderItems(getModeRecords(m))}
-                </span>
-              `;
-            }).join('<span class="rec-mode-sep" style="margin: 0 10px; color: rgba(255,255,255,0.7); font-weight:900;">❖</span>');
-            recContent.innerHTML = blocks;
-          }
+        if (recordLabel) {
+          recordLabel.innerText = 'TOP WS:';
+          recordLabel.style.display = 'inline-block';
+        }
+
+        if (recContent) {
+          const blocks = enabledModes.map(m => {
+            const col = m === '1v1' ? '#ffd700' : (m === 'DUO' ? '#60a5fa' : '#c084fc');
+            return `
+              <span class="rec-mode-block" style="display:inline-flex; align-items:center; gap:5px;">
+                <span class="rec-mode-title" style="font-weight:900; color:${col}; font-size:0.86rem; letter-spacing:0.5px;">${m}:</span>
+                ${renderItems(getModeRecords(m))}
+              </span>
+            `;
+          }).join('<span class="rec-mode-sep" style="margin: 0 10px; color: rgba(255,255,255,0.7); font-weight:900; font-size: 0.95rem;">;</span>');
+          recContent.innerHTML = blocks;
         }
       }
 
@@ -1749,11 +1739,11 @@
 
       // Marquee & auto-scroll triggers after DOM paint
       requestAnimationFrame(() => {
-        // TOP WS Marquee
+        // TOP WS Marquee (kecepatan pelan & santai dibaca)
         const recWrap = document.querySelector('.record-marquee-wrap');
         const recContent = document.getElementById('record-text');
         if (recWrap && recContent) {
-          applyMarquee(recContent, recWrap);
+          applyMarquee(recContent, recWrap, 18, 3500, 3000);
         }
 
         // Ticker Marquee

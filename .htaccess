@@ -1,0 +1,10 @@
+DirectoryIndex index.html
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Rewrite /admin or /admin/ to admin.html
+RewriteRule ^admin/?$ admin.html [L,QSA]
+</IfModule>

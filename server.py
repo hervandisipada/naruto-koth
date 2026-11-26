@@ -140,9 +140,11 @@ class KotHHandler(http.server.SimpleHTTPRequestHandler):
                     if self.wfile in sse_clients:
                         sse_clients.remove(self.wfile)
             return
-        elif self.path == '/' or self.path == '/admin':
+        elif self.path == '/' or self.path == '/index.html':
             self.path = '/index.html'
-        elif self.path == '/overlay':
+        elif self.path == '/admin' or self.path == '/admin/' or self.path == '/admin.html':
+            self.path = '/admin.html'
+        elif self.path == '/overlay' or self.path == '/overlay/' or self.path == '/overlay.html':
             self.path = '/overlay.html'
 
         return super().do_GET()
@@ -185,12 +187,15 @@ def run():
     print("🎬 LINK OVERLAY UNTUK TIKTOK LIVE STUDIO (DI PC):")
     print(f"   http://localhost:{PORT}/overlay.html")
     print()
-    print("💻 LINK PANEL ADMIN DI PC (BROWSER PC):")
+    print("📱 LINK PENDAFTARAN PEMAIN (DI HP / BROWSER):")
     print(f"   http://localhost:{PORT}")
-    print()
-    print("📱 LINK PANEL ADMIN DI HP (Pilih salah satu sesuai koneksi HP):")
     for ip in local_ips:
         print(f"   👉 http://{ip}:{PORT}")
+    print()
+    print("💻 LINK PANEL ADMIN (PIN: 7878):")
+    print(f"   http://localhost:{PORT}/admin")
+    for ip in local_ips:
+        print(f"   👉 http://{ip}:{PORT}/admin")
     print("=" * 65)
     print("STATUS: SERVER BERJALAN AKTIF")
     print("PENTING: Jangan tutup jendela hitam ini selama live stream berlangsung!")

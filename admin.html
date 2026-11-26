@@ -1231,30 +1231,32 @@
 <body>
 
   <!-- PIN LOCK SCREEN FOR ADMIN (PIN: 7878) -->
-  <div id="admin-pin-lock-modal" style="display: flex;">
-    <div class="pin-card">
-      <div style="width: 60px; height: 60px; margin: 0 auto 14px; background: rgba(245, 158, 11, 0.15); border: 2px solid #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px;">
+  <div id="admin-pin-lock-modal" style="position: fixed; inset: 0; z-index: 99999999; background: rgba(34, 40, 49, 0.98); display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Consolas', 'Courier New', monospace;">
+    <div style="background: #393E46; border: 2px solid #F7F7F7; box-shadow: 0 10px 40px rgba(0,0,0,0.85); border-radius: 12px; padding: 30px 24px; width: 100%; max-width: 380px; text-align: center; color: #F7F7F7;">
+      <div style="width: 58px; height: 58px; margin: 0 auto 12px; background: rgba(247, 247, 247, 0.1); border: 2px solid #F7F7F7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px;">
         🔒
       </div>
-      <h2 style="margin: 0 0 6px; font-family: 'Cinzel', serif; font-size: 1.35rem; color: #f59e0b; letter-spacing: 1px; font-weight: 800;">
+      <h2 style="margin: 0 0 6px; font-size: 1.3rem; color: #F7F7F7; letter-spacing: 1px; font-weight: 900;">
         PANEL ADMIN TERKUNCI
       </h2>
-      <p style="margin: 0 0 20px; font-size: 0.85rem; color: #94a3b8; line-height: 1.4;">
+      <p style="margin: 0 0 18px; font-size: 0.85rem; color: #929AAB; line-height: 1.4;">
         Masukkan 4 digit PIN keamanan untuk mengakses kontrol arena & live stream:
       </p>
 
-      <!-- PIN Boxes Display -->
-      <div id="pin-dots-container" style="display: flex; justify-content: center; gap: 12px; margin-bottom: 16px;">
-        <div class="pin-box" id="pin-box-0"></div>
-        <div class="pin-box" id="pin-box-1"></div>
-        <div class="pin-box" id="pin-box-2"></div>
-        <div class="pin-box" id="pin-box-3"></div>
+      <!-- Input PIN Langsung (Keyboard PC & HP Otomatis Muncul) -->
+      <div style="margin-bottom: 14px;">
+        <input type="password" id="admin-pin-direct-input" maxlength="4" inputmode="numeric" pattern="[0-9]*" 
+               autocomplete="off" autofocus placeholder="• • • •" 
+               style="width: 100%; max-width: 220px; font-size: 2rem; text-align: center; letter-spacing: 12px; 
+                      padding: 10px 14px; background: #222831; border: 2px solid #F7F7F7; 
+                      border-radius: 8px; color: #F7F7F7; font-family: 'Consolas', monospace; font-weight: 900; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);"
+               oninput="handleDirectPinInput(this.value)" onkeydown="if(event.key==='Enter')submitPin();">
       </div>
 
-      <div id="pin-error-msg" style="min-height: 22px; font-size: 0.82rem; font-weight: 700; color: #ef4444; margin-bottom: 16px;"></div>
+      <div id="pin-error-msg" style="min-height: 22px; font-size: 0.82rem; font-weight: 800; color: #ef4444; margin-bottom: 14px;"></div>
 
-      <!-- Numeric Keypad -->
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px;">
+      <!-- Numeric Keypad Virtual -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;">
         <button type="button" class="pin-key-btn" onclick="pressPinKey('1')">1</button>
         <button type="button" class="pin-key-btn" onclick="pressPinKey('2')">2</button>
         <button type="button" class="pin-key-btn" onclick="pressPinKey('3')">3</button>
@@ -1264,19 +1266,114 @@
         <button type="button" class="pin-key-btn" onclick="pressPinKey('7')">7</button>
         <button type="button" class="pin-key-btn" onclick="pressPinKey('8')">8</button>
         <button type="button" class="pin-key-btn" onclick="pressPinKey('9')">9</button>
-        <button type="button" class="pin-key-btn" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;" onclick="pressPinClear()">C</button>
+        <button type="button" class="pin-key-btn" style="background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #fca5a5;" onclick="pressPinClear()">C</button>
         <button type="button" class="pin-key-btn" onclick="pressPinKey('0')">0</button>
-        <button type="button" class="pin-key-btn" style="background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.4); color: #86efac;" onclick="submitPin()">✓</button>
+        <button type="button" class="pin-key-btn" style="background: rgba(34, 197, 94, 0.25); border-color: #22c55e; color: #86efac;" onclick="submitPin()">✓</button>
       </div>
 
-      <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px; margin-top: 4px;">
-        <a href="index.html" style="color: #38bdf8; text-decoration: none; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+      <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 12px; margin-top: 4px;">
+        <a href="index.html" style="color: #EEEEEE; text-decoration: none; font-size: 0.85rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">
           ← Kembali ke Halaman Pendaftaran
         </a>
       </div>
     </div>
   </div>
 
+  <script>
+    // Standalone PIN Security Script (Runs immediately at document top)
+    const ADMIN_PIN_CODE = '7878';
+
+    function checkAdminAuth() {
+      const isAuth = sessionStorage.getItem('koth_admin_auth') === ADMIN_PIN_CODE;
+      const modal = document.getElementById('admin-pin-lock-modal');
+      const input = document.getElementById('admin-pin-direct-input');
+      if (modal) {
+        if (isAuth) {
+          modal.style.display = 'none';
+        } else {
+          modal.style.display = 'flex';
+          if (input) {
+            input.value = '';
+            setTimeout(() => input.focus(), 100);
+          }
+        }
+      }
+    }
+
+    function handleDirectPinInput(val) {
+      const cleaned = val.replace(/[^0-9]/g, '');
+      const input = document.getElementById('admin-pin-direct-input');
+      if (input && input.value !== cleaned) input.value = cleaned;
+      const errMsg = document.getElementById('pin-error-msg');
+      if (errMsg) errMsg.innerText = '';
+
+      if (cleaned.length === 4) {
+        setTimeout(submitPin, 120);
+      }
+    }
+
+    function pressPinKey(num) {
+      const input = document.getElementById('admin-pin-direct-input');
+      if (!input) return;
+      if (input.value.length < 4) {
+        input.value += num;
+        handleDirectPinInput(input.value);
+      }
+    }
+
+    function pressPinClear() {
+      const input = document.getElementById('admin-pin-direct-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      const errMsg = document.getElementById('pin-error-msg');
+      if (errMsg) errMsg.innerText = '';
+    }
+
+    function submitPin() {
+      const input = document.getElementById('admin-pin-direct-input');
+      const entered = input ? input.value.trim() : '';
+      const errMsg = document.getElementById('pin-error-msg');
+
+      if (entered === ADMIN_PIN_CODE) {
+        if (errMsg) {
+          errMsg.style.color = '#86efac';
+          errMsg.innerText = '✅ Akses Diterima! Membuka panel...';
+        }
+        sessionStorage.setItem('koth_admin_auth', ADMIN_PIN_CODE);
+        setTimeout(() => {
+          const modal = document.getElementById('admin-pin-lock-modal');
+          if (modal) modal.style.display = 'none';
+        }, 200);
+      } else {
+        if (errMsg) {
+          errMsg.style.color = '#ef4444';
+          errMsg.innerText = '❌ PIN SALAH! Akses ditolak.';
+        }
+        if (input) {
+          input.style.borderColor = '#ef4444';
+          setTimeout(() => {
+            input.value = '';
+            input.style.borderColor = '#F7F7F7';
+            input.focus();
+          }, 600);
+        }
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem('koth_admin_auth');
+      checkAdminAuth();
+    }
+
+    // Auto check auth saat script dimuat
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkAdminAuth);
+    } else {
+      checkAdminAuth();
+    }
+  </script>
 
   <!-- Switcher Tab -->
   <div class="view-switcher">
@@ -2456,6 +2553,20 @@
     }
 
     let activePickerSlideFilter = 0; // 0 = Semua
+    let activePickerSortMode = localStorage.getItem('koth_admin_char_sort') || 'slide'; // 'slide' atau 'alpha'
+
+    function togglePickerSortMode(context, slot, mode, e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      activePickerSortMode = mode;
+      localStorage.setItem('koth_admin_char_sort', mode);
+      const popupId = `picker-popup-${context}-${slot}`;
+      const popup = document.getElementById(popupId);
+      const inputId = context === 'add' ? `input-char-${slot}` : `modal-char-input-${slot}`;
+      const inputEl = document.getElementById(inputId);
+      if (popup && inputEl) {
+        renderCharPickerPopup(popup, slot, context, inputEl.value.trim(), activePickerSlideFilter);
+      }
+    }
 
     function openCharPicker(inputEl, slot, context) {
       closeAllCharPickers();
@@ -2501,26 +2612,51 @@
     function renderCharPickerPopup(popup, slot, context, query, slideFilter = 0) {
       const q = (query || '').toLowerCase().trim();
       
-      let filtered = NARUTO_CHARACTERS;
-      if (slideFilter > 0) {
-        filtered = filtered.filter(c => c.slide === slideFilter);
-      }
-      if (q) {
-        filtered = filtered.filter(c => c.name.toLowerCase().includes(q));
+      let filtered = NARUTO_CHARACTERS.slice();
+      if (activePickerSortMode === 'slide') {
+        if (slideFilter > 0) {
+          filtered = filtered.filter(c => c.slide === slideFilter);
+        }
+      } else {
+        // Abjad A-Z
+        filtered.sort((a, b) => a.name.localeCompare(b.name, 'id', { sensitivity: 'base' }));
       }
 
-      let slideTabsHtml = `<button type="button" class="char-slide-tab-btn ${slideFilter === 0 ? 'active' : ''}" onmousedown="filterPickerSlide('${context}', ${slot}, 0, event)">Semua</button>`;
-      for (let s = 1; s <= 8; s++) {
-        slideTabsHtml += `<button type="button" class="char-slide-tab-btn ${slideFilter === s ? 'active' : ''}" onmousedown="filterPickerSlide('${context}', ${slot}, ${s}, event)">S${s}</button>`;
+      if (q) {
+        filtered = filtered.filter(c => {
+          return c.name.toLowerCase().includes(q) ||
+                 normCharName(c.name).includes(normCharName(q)) ||
+                 c.short1v1.toLowerCase().includes(q) ||
+                 c.shortTeam.toLowerCase().includes(q);
+        });
+      }
+
+      let sortSwitcherHtml = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:4px;">
+          <span style="font-size:0.70rem; font-weight:800; color:var(--accent-gold);">📜 DAFTAR KARAKTER</span>
+          <div style="display:flex; gap:3px;">
+            <button type="button" class="char-slide-tab-btn ${activePickerSortMode === 'slide' ? 'active' : ''}" onmousedown="togglePickerSortMode('${context}', ${slot}, 'slide', event)">📑 Per Slide</button>
+            <button type="button" class="char-slide-tab-btn ${activePickerSortMode === 'alpha' ? 'active' : ''}" onmousedown="togglePickerSortMode('${context}', ${slot}, 'alpha', event)">🔤 Abjad A-Z</button>
+          </div>
+        </div>
+      `;
+
+      let slideTabsHtml = '';
+      if (activePickerSortMode === 'slide') {
+        slideTabsHtml = `<div class="char-slide-tabs">`;
+        slideTabsHtml += `<button type="button" class="char-slide-tab-btn ${slideFilter === 0 ? 'active' : ''}" onmousedown="filterPickerSlide('${context}', ${slot}, 0, event)">Semua (163)</button>`;
+        for (let s = 1; s <= 8; s++) {
+          slideTabsHtml += `<button type="button" class="char-slide-tab-btn ${slideFilter === s ? 'active' : ''}" onmousedown="filterPickerSlide('${context}', ${slot}, ${s}, event)">S${s}</button>`;
+        }
+        slideTabsHtml += `</div>`;
+      } else {
+        slideTabsHtml = `<div style="font-size:0.68rem; color:#929AAB; font-weight:700; padding:2px 0;">Urutan Abjad A sampai Z (${filtered.length} karakter ditemukan)</div>`;
       }
 
       let headerHtml = `
         <div class="char-picker-sticky-header">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.72rem; font-weight:800; color:var(--accent-gold);">📜 PILIH KARAKTER NARUTO</span>
-            <span style="font-size:0.70rem; color:#94a3b8; font-weight:600;">${filtered.length} Karakter</span>
-          </div>
-          <div class="char-slide-tabs">${slideTabsHtml}</div>
+          ${sortSwitcherHtml}
+          ${slideTabsHtml}
         </div>
       `;
 
@@ -2535,17 +2671,27 @@
       }
 
       let itemsHtml = `<div style="overflow-y:auto; flex:1;">`;
-      let currentSlideInList = -1;
+      let currentGroupHeader = '';
+
       filtered.forEach(c => {
-        if (c.slide !== currentSlideInList) {
-          currentSlideInList = c.slide;
-          itemsHtml += `<div class="char-slide-group-header">⚡ SLIDE ${c.slide}</div>`;
+        if (activePickerSortMode === 'slide') {
+          if (c.slide !== currentGroupHeader) {
+            currentGroupHeader = c.slide;
+            itemsHtml += `<div class="char-slide-group-header">⚡ SLIDE ${c.slide}</div>`;
+          }
+        } else {
+          const firstChar = c.name.charAt(0).toUpperCase();
+          if (firstChar !== currentGroupHeader) {
+            currentGroupHeader = firstChar;
+            itemsHtml += `<div class="char-slide-group-header">🔤 HURUF ${firstChar}</div>`;
+          }
         }
+
         const ultiBadge = c.ultis.length > 1
           ? `<span class="badge-multi-ulti">⚡ ${c.ultis.length} Ulti</span>`
           : `<span class="badge-single-ulti">1 Ulti (Kunci)</span>`;
 
-        const safeName = escapeHtml(c.name).replace(/'/g, "\\'");
+        const safeName = escapeHtml(c.name).replace(/'/g, "\'");
         itemsHtml += `
           <div class="char-picker-item" onmousedown="selectCharFromPicker(${slot}, '${context}', '${safeName}')">
             <div class="char-item-title">${escapeHtml(c.name)}</div>

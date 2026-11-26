@@ -7,379 +7,464 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pendaftaran Match Arena - Naruto Storm KOTH</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Pendaftaran Match Arena - Naruto Storm KotH</title>
   <script src="https://unpkg.com/mqtt@4.3.7/dist/mqtt.min.js"></script>
 
   <style>
     :root {
-      --bg-dark: #090d16;
-      --bg-card: #111827;
-      --bg-card-subtle: #172033;
-      --border-color: #1e293b;
-      --border-highlight: #334155;
-      --accent-gold: #f59e0b;
-      --accent-gold-hover: #d97706;
-      --accent-blue: #38bdf8;
-      --accent-purple: #c084fc;
-      --accent-green: #22c55e;
-      --accent-red: #ef4444;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-light: #cbd5e1;
+      /* Palette Selaras dengan Overlay: #F7F7F7, #EEEEEE, #393E46, #929AAB, #222831 */
+      --c-white: #F7F7F7;
+      --c-light: #EEEEEE;
+      --c-dark: #393E46;
+      --c-slate: #929AAB;
+      --bg-main: #222831;
+      --bg-panel: rgba(57, 62, 70, 0.96);
+      --border-subtle: #929AAB;
+      --accent-gold: #F7F7F7;
+      --text-main: #F7F7F7;
+      --text-muted: #EEEEEE;
+      --text-dim: #929AAB;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
+    }
+
+    button, input, select, textarea {
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
     }
 
     body {
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08) 0%, transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+      background-color: var(--bg-main);
       color: var(--text-main);
-      font-family: 'Outfit', sans-serif;
       min-height: 100vh;
-      padding-bottom: 60px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    /* TOP NAVBAR */
-    .top-navbar {
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 10px 16px;
-    }
-    .top-navbar-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-    .brand-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--text-main);
-    }
-    .brand-logo-badge {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-    }
-    .brand-name {
-      font-family: 'Cinzel', serif;
-      font-weight: 800;
-      font-size: 1.05rem;
-      color: #fff;
-      letter-spacing: 0.5px;
-      line-height: 1.1;
-    }
-    .brand-sub {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--accent-gold);
-      letter-spacing: 0.5px;
-    }
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .sync-pill {
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      background: rgba(34, 197, 94, 0.15);
-      border: 1px solid rgba(34, 197, 94, 0.4);
-      color: #86efac;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .sync-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 8px #22c55e;
-    }
-    .btn-nav {
-      font-size: 0.78rem;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .btn-nav-overlay {
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: #7dd3fc;
-    }
-    .btn-nav-overlay:hover {
-      background: rgba(56, 189, 248, 0.25);
-      border-color: #38bdf8;
-    }
-    .btn-nav-admin {
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      color: #fef08a;
-    }
-    .btn-nav-admin:hover {
-      background: rgba(245, 158, 11, 0.25);
-      border-color: #f59e0b;
-    }
-
-    /* CONTAINER */
-    .main-container {
-      max-width: 1100px;
-      margin: 16px auto;
-      padding: 0 16px;
-    }
-
-    /* HERO BANNER */
-    .hero-banner {
-      background: linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
-      border: 1px solid var(--border-color);
-      border-top: 2px solid var(--accent-gold);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    .app-wrapper {
+      width: 100%;
+      max-width: 900px;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    .hero-header {
+
+    /* TOP HEADER BAR */
+    .top-header {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
     }
-    .hero-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.35rem;
-      font-weight: 900;
-      color: #fff;
+
+    .brand-title {
       display: flex;
       align-items: center;
       gap: 8px;
+      text-decoration: none;
+      color: var(--c-white);
     }
-    .hero-title span {
-      color: var(--accent-gold);
+    .brand-badge {
+      background: var(--c-white);
+      color: var(--bg-main);
+      font-weight: 900;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
     }
-    .mode-indicator-badge {
-      padding: 4px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 800;
-      background: #0284c7;
-      color: #fff;
-      border: 1px solid #38bdf8;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
-    }
-
-    /* LIVE ARENA MINI DISPLAY */
-    .arena-mini-card {
-      background: rgba(11, 15, 25, 0.8);
-      border: 1px solid var(--border-highlight);
-      border-radius: 10px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .player-mini-slot {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .player-mini-slot.right {
-      text-align: right;
-      align-items: flex-end;
-    }
-    .player-role-label {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--text-muted);
+    .brand-text {
+      font-weight: 900;
+      font-size: 1.05rem;
       letter-spacing: 0.5px;
     }
-    .player-name-text {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 220px;
-    }
-    .player-char-text {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--accent-gold);
+
+    .top-nav-links {
       display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-top {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      border: 1px solid var(--border-subtle);
+      color: var(--c-white);
+      background: rgba(255, 255, 255, 0.06);
+      transition: all 0.15s ease;
+      display: inline-flex;
       align-items: center;
       gap: 4px;
     }
-    .player-ws-badge {
+    .btn-top:hover {
+      background: var(--c-white);
+      color: var(--bg-main);
+      border-color: var(--c-white);
+    }
+    .sync-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid #22c55e;
+      color: #86efac;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+    }
+
+    /* TICKER / NOTE MARQUEE (SELARAS OVERLAY) */
+    .overlay-ticker {
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 4px solid #ffffff;
+      color: #ffffff;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+    }
+    .ticker-label {
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 0.92rem;
+      letter-spacing: 0.8px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .ticker-content {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.90rem;
+    }
+
+    /* ARENA LIVE DISPLAY (MATCH-BOX SELARAS OVERLAY) */
+    .match-box {
+      background: var(--bg-panel);
+      border-radius: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 6px;
+    }
+    .match-header-title {
+      font-size: 0.85rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      color: var(--c-white);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .live-mode-badge {
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--c-white);
+      color: var(--bg-main);
+      letter-spacing: 0.5px;
+    }
+
+    .arena-grid-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+    }
+    .player-slot {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 6px 10px;
+      border-radius: 6px;
+      min-height: 52px;
+      justify-content: center;
+    }
+    .player-slot.p1 {
+      border-left: 3px solid var(--c-slate);
+    }
+    .player-slot.p2 {
+      border-right: 3px solid var(--c-slate);
+      text-align: right;
+      align-items: flex-end;
+    }
+    .p-tag-line {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--c-slate);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .p-name-line {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+    }
+    .p-char-line {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--c-light);
+    }
+    .p-ulti-line {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fef08a;
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      background: rgba(234, 179, 8, 0.18);
-      border: 1px solid rgba(234, 179, 8, 0.4);
-      color: #fef08a;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-      margin-top: 3px;
     }
-    .vs-mini-badge {
-      width: 42px;
-      height: 42px;
+    .p-ws-badge {
+      font-weight: 900;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      margin-top: 2px;
+      display: inline-block;
+    }
+
+    .vs-circle {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: radial-gradient(circle, #ef4444 0%, #991b1b 100%);
-      border: 2px solid #f87171;
-      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+      background: #393E46;
+      border: 2px solid #F7F7F7;
+      color: #F7F7F7;
+      font-weight: 900;
+      font-size: 0.85rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Cinzel', serif;
-      font-weight: 900;
-      font-size: 0.95rem;
-      color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
       flex-shrink: 0;
     }
 
-    /* TWO-COLUMN LAYOUT */
-    .content-grid {
+    /* MAIN 2-COLUMN LAYOUT */
+    .columns-grid {
       display: grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap: 18px;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 12px;
     }
-    @media (max-width: 860px) {
-      .content-grid {
+    @media (max-width: 768px) {
+      .columns-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    /* CARD STYLING */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    /* CARD CONTAINER */
+    .card-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
-    .card-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border-color);
+    .card-panel-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      color: var(--c-white);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* LOCKED MODE BANNER (ADMIN CONTROLLED) */
+    .locked-mode-banner {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
+    }
+    .locked-mode-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .locked-mode-title {
+      font-size: 0.82rem;
+      font-weight: 900;
+      color: var(--c-white);
+      letter-spacing: 0.5px;
+    }
+    .locked-mode-sub {
+      font-size: 0.70rem;
+      color: var(--c-slate);
+      font-weight: 600;
+    }
+    .locked-mode-pill {
+      background: #ffffff;
+      color: var(--bg-main);
+      font-size: 0.75rem;
+      font-weight: 900;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
     }
 
-    /* FORM ELEMENTS */
+    /* FORM GROUPS */
     .form-group {
-      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
     .form-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--c-light);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text-light);
-      margin-bottom: 6px;
     }
     .form-control {
+      background: #222831;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--c-white);
+      font-size: 0.88rem;
+      font-weight: 700;
+      outline: none;
+      transition: all 0.15s ease;
       width: 100%;
-      background: var(--bg-card-subtle);
-      border: 1px solid var(--border-highlight);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: #fff;
-      font-size: 0.92rem;
-      font-family: inherit;
-      transition: all 0.2s ease;
     }
     .form-control:focus {
-      outline: none;
-      border-color: var(--accent-gold);
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+      border-color: var(--c-white);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
     }
     .form-control:disabled {
-      background: rgba(15, 23, 42, 0.5);
-      color: var(--text-muted);
+      background: rgba(34, 40, 49, 0.5);
+      color: var(--c-slate);
       cursor: not-allowed;
-      border-color: rgba(255,255,255,0.06);
+      border-color: rgba(146, 154, 171, 0.3);
     }
 
-    /* TICKET MODE SELECTOR */
-    .mode-switch-grid {
+    /* TIER SELECTION (SELARAS OVERLAY) */
+    .tier-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
+      gap: 6px;
     }
-    .mode-switch-btn {
-      background: var(--bg-card-subtle);
-      border: 1px solid var(--border-highlight);
-      border-radius: 8px;
-      padding: 10px 8px;
+    .tier-btn {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 4px;
       text-align: center;
       cursor: pointer;
-      color: var(--text-light);
-      font-size: 0.82rem;
-      font-weight: 800;
-      transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
+      transition: all 0.15s ease;
     }
-    .mode-switch-btn:hover {
-      border-color: var(--accent-blue);
-      color: #fff;
+    .tier-btn:hover:not(.disabled) {
+      border-color: var(--c-white);
     }
-    .mode-switch-btn.active {
-      background: rgba(245, 158, 11, 0.18);
-      border: 1.5px solid var(--accent-gold);
-      color: #fef08a;
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+    .tier-btn.active.tier-srobot {
+      background: linear-gradient(135deg, #581c87 0%, #7e22ce 60%, #9333ea 100%);
+      border: 1px solid #d8b4fe;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+    }
+    .tier-btn.active.tier-vip {
+      background: #FFD700;
+      border: 1px solid #FFD700;
+      color: #000000;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    .tier-btn.active.tier-vip .tier-btn-title,
+    .tier-btn.active.tier-vip .tier-btn-sub {
+      color: #000000 !important;
+    }
+    .tier-btn.active.tier-free {
+      background: rgba(255, 255, 255, 0.18);
+      border: 1.5px solid #ffffff;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    .tier-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .tier-btn-title {
+      font-size: 0.80rem;
+      font-weight: 900;
+      color: var(--c-white);
+    }
+    .tier-btn-sub {
+      font-size: 0.65rem;
+      color: var(--c-slate);
+      font-weight: 700;
+    }
+    .tier-status-pill {
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .status-open {
+      background: rgba(34, 197, 94, 0.2);
+      color: #86efac;
+    }
+    .status-closed {
+      background: rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
     }
 
-    /* CHAR PICKER */
+    /* CHAR PICKER POPUP */
     .char-picker-container {
       position: relative;
     }
@@ -389,616 +474,526 @@
       left: 0;
       right: 0;
       z-index: 999;
-      background: #0f172a;
-      border: 1px solid var(--accent-gold);
-      border-radius: 8px;
-      max-height: 280px;
+      background: #222831;
+      border: 2px solid var(--c-white);
+      border-radius: 6px;
+      max-height: 290px;
       overflow-y: auto;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9);
       margin-top: 4px;
     }
-    .char-picker-tabs {
-      display: flex;
-      overflow-x: auto;
-      background: #090d16;
-      border-bottom: 1px solid var(--border-color);
-      padding: 4px;
-      gap: 4px;
+    .char-picker-header {
+      background: #1a1e24;
+      padding: 6px;
+      border-bottom: 1px solid var(--border-subtle);
       position: sticky;
       top: 0;
       z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
-    .char-picker-tab-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      font-size: 0.68rem;
+    .char-sort-tabs {
+      display: flex;
+      gap: 4px;
+    }
+    .char-sort-tab-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-subtle);
+      color: var(--c-light);
+      font-size: 0.70rem;
       font-weight: 800;
-      padding: 3px 8px;
+      padding: 4px 6px;
       border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .char-sort-tab-btn.active {
+      background: var(--c-white);
+      color: var(--bg-main);
+      border-color: var(--c-white);
+    }
+    .char-slide-tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 4px;
+      padding-bottom: 2px;
+    }
+    .char-slide-tab-btn {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle);
+      color: var(--c-slate);
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 3px;
       cursor: pointer;
       white-space: nowrap;
     }
-    .char-picker-tab-btn.active {
-      background: rgba(245, 158, 11, 0.2);
-      border-color: var(--accent-gold);
-      color: #fef08a;
+    .char-slide-tab-btn.active {
+      background: var(--c-white);
+      color: var(--bg-main);
+      border-color: var(--c-white);
+    }
+    .char-group-header {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 8px;
+      font-size: 0.68rem;
+      font-weight: 900;
+      color: var(--c-white);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
     .char-picker-item {
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background 0.15s ease;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
     }
     .char-picker-item:hover {
-      background: rgba(245, 158, 11, 0.18);
+      background: rgba(255, 255, 255, 0.12);
     }
-    .char-picker-item .char-item-name {
-      font-weight: 700;
-      color: #fff;
-    }
-    .char-picker-item .char-item-badges {
-      display: flex;
-      gap: 5px;
-      align-items: center;
+    .char-item-name {
+      font-weight: 800;
+      color: #ffffff;
     }
     .badge-slide {
-      background: #1e293b;
-      color: #94a3b8;
-      font-size: 0.65rem;
+      background: #393E46;
+      color: #F7F7F7;
+      font-size: 0.62rem;
       font-weight: 700;
-      padding: 1px 5px;
+      padding: 1px 4px;
       border-radius: 3px;
     }
-    .badge-ulti-count {
+    .badge-multi-ulti {
       background: rgba(234, 179, 8, 0.2);
       color: #fef08a;
       border: 1px solid rgba(234, 179, 8, 0.4);
-      font-size: 0.65rem;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .badge-single-ulti {
+      background: rgba(146, 154, 171, 0.2);
+      color: #929AAB;
+      font-size: 0.62rem;
       font-weight: 700;
       padding: 1px 5px;
       border-radius: 3px;
     }
 
-    /* ULTI SELECTOR ROW */
-    .ulti-selector-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0,0,0,0.3);
-      padding: 6px 10px;
+    /* SUBMIT BUTTON (HIGH CONTRAST) */
+    .btn-submit-reg {
+      background: var(--c-white);
+      color: var(--bg-main);
+      border: 2px solid #ffffff;
       border-radius: 6px;
-      border: 1px solid rgba(255,255,255,0.06);
-      margin-top: 4px;
-    }
-    .ulti-label {
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: var(--accent-gold);
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* TIER SELECTION CARDS */
-    .tier-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .tier-card-btn {
-      background: var(--bg-card-subtle);
-      border: 1.5px solid var(--border-highlight);
-      border-radius: 8px;
-      padding: 12px 8px;
-      text-align: center;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
       cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .tier-card-btn:hover:not(.disabled) {
-      transform: translateY(-2px);
-    }
-    .tier-card-btn.active.tier-free {
-      background: rgba(56, 189, 248, 0.15);
-      border-color: #38bdf8;
-      color: #7dd3fc;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
-    }
-    .tier-card-btn.active.tier-vip {
-      background: rgba(245, 158, 11, 0.2);
-      border-color: #f59e0b;
-      color: #fef08a;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
-    }
-    .tier-card-btn.active.tier-srobot {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: #ef4444;
-      color: #fca5a5;
-      box-shadow: 0 0 14px rgba(239, 68, 68, 0.25);
-    }
-    .tier-card-btn.disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      border-color: rgba(255,255,255,0.06);
-    }
-    .tier-status-text {
-      font-size: 0.68rem;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .tier-status-open {
-      background: rgba(34, 197, 94, 0.2);
-      color: #86efac;
-    }
-    .tier-status-closed {
-      background: rgba(239, 68, 68, 0.25);
-      color: #fca5a5;
-    }
-
-    /* SUBMIT BUTTON */
-    .btn-submit-queue {
-      width: 100%;
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      border: 1px solid #fef08a;
-      border-radius: 8px;
-      padding: 13px;
-      font-size: 1.02rem;
-      font-weight: 800;
-      color: #000;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
+      letter-spacing: 0.5px;
+      transition: all 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
-    .btn-submit-queue:hover {
-      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
-    }
-    .btn-submit-queue:active {
-      transform: translateY(1px);
+    .btn-submit-reg:hover {
+      background: #EEEEEE;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 255, 255, 0.25);
     }
 
-    /* QUEUE LIST DISPLAY */
-    .queue-stats-bar {
+    /* QUEUE LIST (SELARAS OVERLAY) */
+    .queue-summary-line {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-color);
+      font-size: 0.72rem;
+      color: var(--c-slate);
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 6px;
     }
-    .queue-items-container {
+    .queue-list-wrap {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      max-height: 520px;
+      gap: 6px;
+      max-height: 480px;
       overflow-y: auto;
-      padding-right: 4px;
+      padding-right: 2px;
     }
-    .queue-player-card {
-      background: var(--bg-card-subtle);
-      border: 1px solid var(--border-highlight);
-      border-radius: 8px;
-      padding: 10px 12px;
+    .queue-item-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 6px 10px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      transition: all 0.2s ease;
+      gap: 8px;
     }
-    .queue-player-card:hover {
-      border-color: rgba(245, 158, 11, 0.4);
+    .queue-item-card.is-me {
+      border: 2px solid var(--c-white);
+      background: rgba(255, 255, 255, 0.08);
     }
-    .queue-player-card.my-registration {
-      border: 1.5px solid var(--accent-gold);
-      background: rgba(245, 158, 11, 0.12);
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-    }
-    .queue-num-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      background: #0f172a;
-      border: 1px solid var(--border-highlight);
+    .queue-rank-badge {
+      font-size: 0.80rem;
+      font-weight: 900;
+      color: var(--c-white);
+      background: #222831;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 900;
-      font-size: 0.88rem;
-      color: var(--text-light);
       flex-shrink: 0;
     }
-    .queue-info-col {
+    .queue-info-wrap {
       flex: 1;
       min-width: 0;
     }
     .queue-name-row {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       margin-bottom: 2px;
     }
     .queue-name-text {
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: #fff;
+      font-weight: 900;
+      font-size: 0.88rem;
+      color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .queue-char-text {
-      font-size: 0.78rem;
-      color: var(--text-muted);
+    .queue-char-row {
+      font-size: 0.75rem;
+      color: var(--c-light);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .badge-tier {
-      font-size: 0.68rem;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 4px;
-      text-transform: uppercase;
+    .p-role-tag {
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      line-height: 1.3;
     }
-    .badge-tier-srobot {
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #fca5a5;
+    .p-role-tag.fast, .p-role-tag.srobot {
+      background: linear-gradient(135deg, #581c87 0%, #7e22ce 60%, #9333ea 100%);
+      border: 1px solid #d8b4fe;
+      color: #ffffff;
     }
-    .badge-tier-vip {
-      background: rgba(245, 158, 11, 0.2);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      color: #fef08a;
+    .p-role-tag.vip {
+      background: #FFD700;
+      color: #000000;
     }
-    .badge-tier-free {
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: #7dd3fc;
+    .p-role-tag.free {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
     }
 
-    /* EMPTY QUEUE STATE */
+    /* EMPTY QUEUE */
     .empty-queue-box {
       text-align: center;
-      padding: 36px 16px;
-      color: var(--text-muted);
-    }
-    .empty-queue-icon {
-      font-size: 42px;
-      margin-bottom: 10px;
+      padding: 24px 10px;
+      color: var(--c-slate);
+      font-size: 0.80rem;
     }
 
     /* MODAL SUKSES */
-    .modal-overlay {
+    .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(8px);
-      z-index: 99999;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 999999;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 16px;
     }
     .modal-box {
-      background: #111827;
-      border: 2px solid var(--accent-gold);
-      box-shadow: 0 0 40px rgba(245, 158, 11, 0.3), 0 20px 40px rgba(0,0,0,0.8);
-      border-radius: 14px;
-      padding: 26px 22px;
+      background: #393E46;
+      border: 2px solid var(--c-white);
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 400px;
       width: 100%;
-      max-width: 440px;
       text-align: center;
-      color: #fff;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      color: #ffffff;
     }
 
-    /* TOAST */
     #reg-toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: #0f172a;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      border: 1px solid rgba(255,255,255,0.2);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      background: #222831;
+      border: 1px solid var(--c-white);
+      color: var(--c-white);
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.85rem;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.25s ease;
-      z-index: 999999;
+      transition: all 0.2s ease;
+      z-index: 9999999;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- TOP NAVBAR -->
-  <nav class="top-navbar">
-    <div class="top-navbar-inner">
+  <div class="app-wrapper">
+
+    <!-- TOP HEADER BAR -->
+    <header class="top-header">
       <a href="index.html" class="brand-title">
-        <div class="brand-logo-badge">⚡</div>
-        <div>
-          <div class="brand-name">NARUTO STORM</div>
-          <div class="brand-sub">KING OF THE HILL ARENA</div>
-        </div>
+        <span class="brand-badge">KOTH</span>
+        <span class="brand-text">NARUTO STORM CONNECTIONS</span>
       </a>
-      <div class="nav-actions">
-        <div class="sync-pill" id="sync-status-pill">
+      <div class="top-nav-links">
+        <div class="sync-badge" id="sync-status-badge">
           <div class="sync-dot"></div>
           <span id="sync-text">Live Sync</span>
         </div>
-        <a href="overlay.html" target="_blank" class="btn-nav btn-nav-overlay" title="Buka Live Overlay">📺 Overlay</a>
-        <a href="admin.html" class="btn-nav btn-nav-admin" title="Buka Panel Admin (PIN 7878)">⚙️ Admin</a>
+        <a href="overlay.html" target="_blank" class="btn-top" title="Buka Live Overlay OBS">📺 Overlay</a>
+        <a href="admin.html" class="btn-top" title="Buka Panel Admin (PIN: 7878)">🔒 Admin</a>
       </div>
-    </div>
-  </nav>
+    </header>
 
-  <!-- MAIN WRAPPER -->
-  <div class="main-container">
-
-    <!-- HERO & LIVE ARENA BANNER -->
-    <div class="hero-banner">
-      <div class="hero-header">
-        <div class="hero-title">
-          <span>⚔️</span> LIVE ARENA PERTANDINGAN
-        </div>
-        <div class="mode-indicator-badge" id="hero-active-mode-badge">MODE: 1vs1</div>
-      </div>
-
-      <!-- ARENA MINI DISPLAY -->
-      <div class="arena-mini-card">
-        <!-- P1 (KING) -->
-        <div class="player-mini-slot">
-          <div class="player-role-label">👑 JUARA BERTAHAN (P1)</div>
-          <div class="player-name-text" id="arena-p1-name">-</div>
-          <div class="player-char-text" id="arena-p1-char">Karakter: -</div>
-          <div><span class="player-ws-badge" id="arena-p1-ws">⚡ 0 WS</span></div>
-        </div>
-
-        <!-- VS BADGE -->
-        <div class="vs-mini-badge">VS</div>
-
-        <!-- P2 (CHALLENGER) -->
-        <div class="player-mini-slot right">
-          <div class="player-role-label">⚔️ PENANTANG (P2)</div>
-          <div class="player-name-text" id="arena-p2-name">-</div>
-          <div class="player-char-text" id="arena-p2-char">Karakter: -</div>
-          <div><span class="player-ws-badge" id="arena-p2-ws">⚡ 0 WS</span></div>
-        </div>
-      </div>
-
-      <!-- MARQUEE ANNOUNCEMENT -->
-      <div id="arena-note-container" style="display: none; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 6px 10px; font-size: 0.8rem; color: #fef08a; border-left: 3px solid var(--accent-gold);">
-        📢 <b id="arena-note-text">-</b>
-      </div>
+    <!-- TICKER NOTE MARQUEE (SELARAS OVERLAY) -->
+    <div class="overlay-ticker" id="ticker-wrap" style="display: none;">
+      <span class="ticker-label">NOTE:</span>
+      <span class="ticker-content" id="ticker-text">-</span>
     </div>
 
-    <!-- CONTENT GRID (FORM PENDAFTARAN & LIVE ANTRIAN) -->
-    <div class="content-grid">
+    <!-- ARENA LIVE DISPLAY (SELARAS OVERLAY) -->
+    <section class="match-box">
+      <div class="match-header">
+        <div class="match-header-title">
+          <span>⚔️ ARENA PERTANDINGAN LIVE</span>
+        </div>
+        <div class="live-mode-badge" id="arena-mode-badge">1vs1</div>
+      </div>
 
-      <!-- COLUMN 1: FORM PENDAFTARAN -->
-      <div class="card">
-        <div class="card-title">
-          <span>📝 FORMULIR PENDAFTARAN</span>
-          <span style="font-size: 0.72rem; color: var(--accent-gold); font-weight: 700;">Mandiri</span>
+      <div class="arena-grid-row">
+        <!-- P1 SLOT (JUARA BERTAHAN) -->
+        <div class="player-slot p1" id="arena-p1-slot">
+          <div class="p-tag-line">👑 JUARA BERTAHAN (P1)</div>
+          <div class="p-name-line" id="arena-p1-name">Menunggu...</div>
+          <div class="p-char-line" id="arena-p1-char">-</div>
+          <div class="p-ulti-line" id="arena-p1-ulti" style="display:none;"></div>
+          <div><span class="p-ws-badge" id="arena-p1-ws">⚡ 0 WS</span></div>
         </div>
 
-        <form id="form-self-registration" onsubmit="handleRegistrationSubmit(event)">
+        <div class="vs-circle">VS</div>
 
-          <!-- 1. USERNAME / IGN -->
+        <!-- P2 SLOT (PENANTANG) -->
+        <div class="player-slot p2" id="arena-p2-slot">
+          <div class="p-tag-line">⚔️ PENANTANG (P2)</div>
+          <div class="p-name-line" id="arena-p2-name">Menunggu Penantang...</div>
+          <div class="p-char-line" id="arena-p2-char">-</div>
+          <div class="p-ulti-line" id="arena-p2-ulti" style="display:none;"></div>
+          <div><span class="p-ws-badge" id="arena-p2-ws">⚡ 0 WS</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN 2-COLUMN LAYOUT -->
+    <main class="columns-grid">
+
+      <!-- COLUMN 1: FORMULIR PENDAFTARAN -->
+      <section class="card-panel">
+        <div class="card-panel-title">
+          <span>📝 PENDAFTARAN MATCH</span>
+          <span style="font-size:0.70rem; color:var(--c-slate); font-weight:800;">MANDIRI</span>
+        </div>
+
+        <!-- LOCKED MODE BANNER (ADMIN CONTROLLED) -->
+        <div class="locked-mode-banner">
+          <div class="locked-mode-left">
+            <span class="locked-mode-title" id="locked-mode-title">🎮 MODE SAAT INI: 1vs1 (SOLO)</span>
+            <span class="locked-mode-sub" id="locked-mode-desc">Mode pertandingan dikontrol langsung oleh Admin stream</span>
+          </div>
+          <span class="locked-mode-pill" id="locked-mode-pill">1v1</span>
+        </div>
+
+        <form id="form-registration" onsubmit="handleRegistrationSubmit(event)">
+
+          <!-- 1. USERNAME -->
           <div class="form-group">
-            <div class="form-label">
-              <span>1. Nama Pemain / In-Game Name *</span>
-            </div>
-            <input type="text" id="reg-name" class="form-control" placeholder="Ketik nama atau IGN kamu..." autocomplete="off" required oninput="validateRegistrationName()">
-            <div id="reg-name-warning" style="display: none; margin-top: 5px; font-size: 0.78rem; font-weight: 700; color: #fca5a5; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); padding: 5px 8px; border-radius: 6px;"></div>
+            <label class="form-label" for="reg-name">
+              <span>1. Username / IGN Kamu *</span>
+            </label>
+            <input type="text" id="reg-name" class="form-control" placeholder="Ketik nama atau IGN kamu..." autocomplete="off" required oninput="validatePlayerName()">
+            <div id="reg-name-warning" style="display:none; margin-top:4px; font-size:0.75rem; font-weight:800; color:#fca5a5; background:rgba(239,68,68,0.2); border:1px solid #ef4444; padding:4px 8px; border-radius:4px;"></div>
           </div>
 
-          <!-- 2. PILIHAN MODE TIKET MATCH -->
+          <!-- 2. PEMILIHAN KARAKTER (OTOMATIS SESUAI MODE ADMIN) -->
           <div class="form-group">
-            <div class="form-label">
-              <span>2. Mode Pertandingan *</span>
-            </div>
-            <div class="mode-switch-grid">
-              <button type="button" class="mode-switch-btn active" id="btn-mode-1v1" onclick="selectTicketMode('1v1')">
-                <span style="font-size: 1.1rem;">⚡</span>
-                <span>1vs1 (Solo)</span>
-              </button>
-              <button type="button" class="mode-switch-btn" id="btn-mode-duo" onclick="selectTicketMode('DUO')">
-                <span style="font-size: 1.1rem;">⚔️</span>
-                <span>DUO (2 Char)</span>
-              </button>
-              <button type="button" class="mode-switch-btn" id="btn-mode-tim" onclick="selectTicketMode('TIM')">
-                <span style="font-size: 1.1rem;">👑</span>
-                <span>TIM (3 Char)</span>
-              </button>
-            </div>
-            <input type="hidden" id="reg-ticket-mode" value="1v1">
-          </div>
+            <label class="form-label">
+              <span>2. Pilih Karakter Naruto & Ulti (163 Roster) *</span>
+            </label>
 
-          <!-- 3. PILIHAN KARAKTER & ULTI -->
-          <div class="form-group">
-            <div class="form-label">
-              <span>3. Karakter & Ultimate Jutsu (163 Roster) *</span>
-            </div>
-
-            <!-- SLOT 1 (Leader / Utama) -->
-            <div id="reg-slot-group-1" style="margin-bottom: 8px;">
-              <div style="font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); margin-bottom: 3px;" id="reg-slot-label-1">Karakter Utama (Leader):</div>
+            <!-- SLOT 1: LEADER / UTAMA -->
+            <div id="slot-wrap-1" style="margin-bottom: 6px;">
+              <div style="font-size: 0.72rem; font-weight: 800; color: var(--c-light); margin-bottom: 2px;" id="slot-label-1">Karakter Utama (Leader):</div>
               <div class="char-picker-container">
-                <input type="text" id="reg-char-1" class="form-control" placeholder="Ketik atau klik untuk cari karakter..." autocomplete="off" onfocus="openRegCharPicker(1)" oninput="filterRegCharPicker(1)">
-                <div id="reg-picker-popup-1" class="char-picker-popup" style="display: none;"></div>
+                <input type="text" id="reg-char-1" class="form-control" placeholder="Ketik atau klik untuk cari karakter..." autocomplete="off" onfocus="openCharPicker(1)" oninput="filterCharPicker(1)">
+                <div id="picker-popup-1" class="char-picker-popup" style="display: none;"></div>
               </div>
-              <div class="ulti-selector-row">
-                <span class="ulti-label">⚡ Ulti:</span>
-                <select id="reg-ulti-1" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;" disabled>
+              <div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); margin-top: 3px;">
+                <span style="font-size: 0.72rem; font-weight: 800; color: #fef08a; white-space: nowrap;">⚡ Ulti:</span>
+                <select id="reg-ulti-1" class="form-control" style="font-size: 0.75rem; padding: 2px 6px;" disabled>
                   <option value="">(Pilih karakter dulu)</option>
                 </select>
               </div>
             </div>
 
-            <!-- SLOT 2 (Support 1 - DUO & TIM) -->
-            <div id="reg-slot-group-2" style="display: none; margin-bottom: 8px;">
-              <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa; margin-bottom: 3px;">Karakter 2 (Support 1):</div>
+            <!-- SLOT 2: SUPPORT 1 (DUO & TIM) -->
+            <div id="slot-wrap-2" style="display: none; margin-bottom: 6px;">
+              <div style="font-size: 0.72rem; font-weight: 800; color: #93c5fd; margin-bottom: 2px;">Karakter 2 (Support 1):</div>
               <div class="char-picker-container">
-                <input type="text" id="reg-char-2" class="form-control" placeholder="Ketik atau klik Karakter 2..." autocomplete="off" onfocus="openRegCharPicker(2)" oninput="filterRegCharPicker(2)">
-                <div id="reg-picker-popup-2" class="char-picker-popup" style="display: none;"></div>
+                <input type="text" id="reg-char-2" class="form-control" placeholder="Ketik atau klik Karakter 2..." autocomplete="off" onfocus="openCharPicker(2)" oninput="filterCharPicker(2)">
+                <div id="picker-popup-2" class="char-picker-popup" style="display: none;"></div>
               </div>
-              <div class="ulti-selector-row">
-                <span class="ulti-label" style="color: #60a5fa;">⚡ Ulti:</span>
-                <select id="reg-ulti-2" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;" disabled>
+              <div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); margin-top: 3px;">
+                <span style="font-size: 0.72rem; font-weight: 800; color: #93c5fd; white-space: nowrap;">⚡ Ulti:</span>
+                <select id="reg-ulti-2" class="form-control" style="font-size: 0.75rem; padding: 2px 6px;" disabled>
                   <option value="">(Pilih karakter dulu)</option>
                 </select>
               </div>
             </div>
 
-            <!-- SLOT 3 (Support 2 - TIM) -->
-            <div id="reg-slot-group-3" style="display: none; margin-bottom: 8px;">
-              <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc; margin-bottom: 3px;">Karakter 3 (Support 2):</div>
+            <!-- SLOT 3: SUPPORT 2 (TIM) -->
+            <div id="slot-wrap-3" style="display: none; margin-bottom: 6px;">
+              <div style="font-size: 0.72rem; font-weight: 800; color: #d8b4fe; margin-bottom: 2px;">Karakter 3 (Support 2):</div>
               <div class="char-picker-container">
-                <input type="text" id="reg-char-3" class="form-control" placeholder="Ketik atau klik Karakter 3..." autocomplete="off" onfocus="openRegCharPicker(3)" oninput="filterRegCharPicker(3)">
-                <div id="reg-picker-popup-3" class="char-picker-popup" style="display: none;"></div>
+                <input type="text" id="reg-char-3" class="form-control" placeholder="Ketik atau klik Karakter 3..." autocomplete="off" onfocus="openCharPicker(3)" oninput="filterCharPicker(3)">
+                <div id="picker-popup-3" class="char-picker-popup" style="display: none;"></div>
               </div>
-              <div class="ulti-selector-row">
-                <span class="ulti-label" style="color: #c084fc;">⚡ Ulti:</span>
-                <select id="reg-ulti-3" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;" disabled>
+              <div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); margin-top: 3px;">
+                <span style="font-size: 0.72rem; font-weight: 800; color: #d8b4fe; white-space: nowrap;">⚡ Ulti:</span>
+                <select id="reg-ulti-3" class="form-control" style="font-size: 0.75rem; padding: 2px 6px;" disabled>
                   <option value="">(Pilih karakter dulu)</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <!-- 4. PILIHAN TIER ANTRIAN -->
+          <!-- 3. PILIHAN TIER -->
           <div class="form-group">
-            <div class="form-label">
-              <span>4. Pilih Tier Antrian *</span>
-            </div>
-            <div class="tier-cards-grid">
-              <!-- FREE -->
-              <div class="tier-card-btn active tier-free" id="tier-btn-free" onclick="selectTierType('FREE')">
-                <span style="font-size: 0.85rem; font-weight: 800;">FREE</span>
-                <span style="font-size: 0.68rem; color: var(--text-muted);">Normal</span>
-                <span class="tier-status-text tier-status-open" id="tier-badge-free">AKTIF</span>
+            <label class="form-label">
+              <span>3. Pilih Tier Antrian *</span>
+            </label>
+            <div class="tier-grid">
+              <div class="tier-btn active tier-free" id="tier-btn-free" onclick="selectTier('FREE')">
+                <span class="tier-btn-title">FREE</span>
+                <span class="tier-btn-sub">Normal</span>
+                <span class="tier-status-pill status-open" id="tier-pill-free">AKTIF</span>
               </div>
-              <!-- VIP -->
-              <div class="tier-card-btn tier-vip" id="tier-btn-vip" onclick="selectTierType('VIP')">
-                <span style="font-size: 0.85rem; font-weight: 800;">VIP</span>
-                <span style="font-size: 0.68rem; color: var(--text-muted);">Prioritas</span>
-                <span class="tier-status-text tier-status-open" id="tier-badge-vip">AKTIF</span>
+              <div class="tier-btn tier-vip" id="tier-btn-vip" onclick="selectTier('VIP')">
+                <span class="tier-btn-title">VIP</span>
+                <span class="tier-btn-sub">Prioritas</span>
+                <span class="tier-status-pill status-open" id="tier-pill-vip">AKTIF</span>
               </div>
-              <!-- SROBOT -->
-              <div class="tier-card-btn tier-srobot" id="tier-btn-srobot" onclick="selectTierType('SROBOT')">
-                <span style="font-size: 0.85rem; font-weight: 800;">SROBOT (SB)</span>
-                <span style="font-size: 0.68rem; color: var(--text-muted);">Paling Atas</span>
-                <span class="tier-status-text tier-status-open" id="tier-badge-srobot">AKTIF</span>
+              <div class="tier-btn tier-srobot" id="tier-btn-srobot" onclick="selectTier('SROBOT')">
+                <span class="tier-btn-title">SROBOT</span>
+                <span class="tier-btn-sub">Paling Atas</span>
+                <span class="tier-status-pill status-open" id="tier-pill-srobot">AKTIF</span>
               </div>
             </div>
-            <input type="hidden" id="reg-tier-type" value="FREE">
+            <input type="hidden" id="selected-tier-val" value="FREE">
           </div>
 
-          <!-- 5. JUMLAH MATCH -->
+          <!-- 4. JUMLAH MATCH -->
           <div class="form-group">
-            <div class="form-label">
-              <span>5. Jumlah Match *</span>
+            <label class="form-label">
+              <span>4. Jumlah Match *</span>
+            </label>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" class="btn-top" id="btn-m-1" style="flex:1; justify-content:center; background:#ffffff; color:#222831; border-color:#ffffff;" onclick="setMatches(1)">1 Match</button>
+              <button type="button" class="btn-top" id="btn-m-2" style="flex:1; justify-content:center;" onclick="setMatches(2)">2 Match</button>
+              <button type="button" class="btn-top" id="btn-m-3" style="flex:1; justify-content:center;" onclick="setMatches(3)">3 Match</button>
             </div>
-            <div style="display: flex; gap: 8px;">
-              <button type="button" class="btn-nav" id="btn-match-1" style="flex:1; justify-content:center; background: rgba(245, 158, 11, 0.2); border: 1px solid var(--accent-gold); color: #fef08a;" onclick="setMatchesCount(1)">1 Match</button>
-              <button type="button" class="btn-nav" id="btn-match-2" style="flex:1; justify-content:center; background: var(--bg-card-subtle); border: 1px solid var(--border-highlight); color: var(--text-light);" onclick="setMatchesCount(2)">2 Match</button>
-              <button type="button" class="btn-nav" id="btn-match-3" style="flex:1; justify-content:center; background: var(--bg-card-subtle); border: 1px solid var(--border-highlight); color: var(--text-light);" onclick="setMatchesCount(3)">3 Match</button>
-            </div>
-            <input type="hidden" id="reg-matches-count" value="1">
+            <input type="hidden" id="selected-matches-val" value="1">
           </div>
 
-          <!-- SUBMIT BUTTON -->
-          <button type="submit" id="btn-submit-reg" class="btn-submit-queue">
+          <!-- SUBMIT -->
+          <button type="submit" class="btn-submit-reg">
             <span>🚀</span> DAFTAR KE ANTRIAN
           </button>
         </form>
-      </div>
+      </section>
 
-      <!-- COLUMN 2: LIVE DAFTAR ANTRIAN -->
-      <div class="card">
-        <div class="card-title">
+      <!-- COLUMN 2: DAFTAR ANTRIAN LIVE (SELARAS OVERLAY) -->
+      <section class="card-panel">
+        <div class="card-panel-title">
           <span>📋 DAFTAR ANTRIAN LIVE</span>
-          <span id="queue-total-count-badge" class="badge-tier badge-tier-free">0 Pemain</span>
+          <span id="queue-count-tag" class="p-role-tag free">0 Pemain</span>
         </div>
 
-        <div class="queue-stats-bar">
-          <span id="queue-tier-summary">SB: 0 | VIP: 0 | FREE: 0</span>
-          <span style="font-size: 0.72rem; color: var(--accent-gold);">⚡ Urutan Otomatis</span>
+        <div class="queue-summary-line">
+          <span id="queue-stats-text">SB: 0 | VIP: 0 | FREE: 0</span>
+          <span>⚡ PRIORITAS OTOMATIS</span>
         </div>
 
-        <!-- LIST ITEMS CONTAINER -->
-        <div class="queue-items-container" id="queue-list-container">
-          <!-- Populated by JavaScript -->
+        <div class="queue-list-wrap" id="queue-items-container">
           <div class="empty-queue-box">
-            <div class="empty-queue-icon">🍃</div>
-            <p style="font-weight: 700; color: #fff;">Antrian Masih Kosong</p>
-            <p style="font-size: 0.78rem; margin-top: 4px;">Jadilah yang pertama mendaftar untuk langsung bertanding di Arena!</p>
+            🍃 Antrian masih kosong.<br>Jadilah yang pertama mendaftar!
           </div>
         </div>
-      </div>
+      </section>
 
-    </div>
+    </main>
   </div>
 
   <!-- MODAL SUKSES PENDAFTARAN -->
-  <div id="modal-reg-success" class="modal-overlay" onclick="closeSuccessModal(event)">
+  <div id="modal-success" class="modal-backdrop" onclick="closeSuccessModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
-      <div style="width: 60px; height: 60px; margin: 0 auto 12px; background: rgba(34, 197, 94, 0.15); border: 2px solid #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-        🎉
-      </div>
-      <h3 style="font-family: 'Cinzel', serif; font-size: 1.35rem; color: var(--accent-gold); margin-bottom: 6px;">
-        PENDAFTARAN BERHASIL!
-      </h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-        Kamu telah terdaftar ke dalam antrian pertandingan live!
-      </p>
+      <div style="font-size: 32px; margin-bottom: 8px;">🎉</div>
+      <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 4px; color: #ffffff;">PENDAFTARAN BERHASIL!</h3>
+      <p style="font-size: 0.78rem; color: var(--c-slate); margin-bottom: 14px;">Kamu telah terdaftar di antrian pertandingan stream!</p>
 
-      <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--border-highlight); border-radius: 8px; padding: 12px; text-align: left; margin-bottom: 18px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 6px;">
-        <div style="display: flex; justify-content: space-between;">
-          <span style="color: var(--text-muted);">Nama Pemain:</span>
-          <b id="success-player-name" style="color: #fff;">-</b>
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px; text-align: left; font-size: 0.80rem; display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px;">
+        <div style="display:flex; justify-content:space-between;">
+          <span style="color:var(--c-slate);">Nama:</span>
+          <b id="suc-name" style="color:#ffffff;">-</b>
         </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span style="color: var(--text-muted);">Tier Antrian:</span>
-          <span id="success-player-tier" class="badge-tier badge-tier-free">FREE</span>
+        <div style="display:flex; justify-content:space-between;">
+          <span style="color:var(--c-slate);">Tier:</span>
+          <span id="suc-tier" class="p-role-tag free">FREE</span>
         </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span style="color: var(--text-muted);">Mode & Karakter:</span>
-          <b id="success-player-char" style="color: var(--accent-gold);">-</b>
+        <div style="display:flex; justify-content:space-between;">
+          <span style="color:var(--c-slate);">Karakter:</span>
+          <b id="suc-char" style="color:var(--c-light);">-</b>
         </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span style="color: var(--text-muted);">Ultimate Jutsu:</span>
-          <b id="success-player-ulti" style="color: #fef08a;">-</b>
+        <div style="display:flex; justify-content:space-between;">
+          <span style="color:var(--c-slate);">Ulti:</span>
+          <b id="suc-ulti" style="color:#fef08a;">-</b>
         </div>
-        <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--border-color); padding-top: 6px; margin-top: 2px;">
-          <span style="color: var(--text-muted);">Posisi Kamu:</span>
-          <b id="success-player-position" style="color: #38bdf8; font-size: 1rem;">Antrian #1</b>
+        <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(255,255,255,0.15); padding-top:4px; margin-top:2px;">
+          <span style="color:var(--c-slate);">Posisi Kamu:</span>
+          <b id="suc-pos" style="color:#86efac; font-size:0.92rem;">Antrian #1</b>
         </div>
       </div>
 
-      <button type="button" class="btn-submit-queue" onclick="closeSuccessModal()">
+      <button type="button" class="btn-submit-reg" style="padding: 8px;" onclick="closeSuccessModal()">
         Siap, Pantau Antrian!
       </button>
     </div>
@@ -1009,26 +1004,19 @@
   <!-- SCRIPT -->
   <script>
     // ==========================================
-    // DATASET 163 KARAKTER NARUTO (SLIDE 1 - 8)
+    // 163 NARUTO CHARACTERS MASTER DATASET
     // ==========================================
     const NARUTO_CHARACTERS = [{"id": 1, "name": "Naruto Uzumaki (Mode Petapa Enam Jalan)", "slide": 1, "ultis": ["Enam Jalan: Rasen Shuriken Bola Raksasa", "Rasen Shuriken Planet Siluman Berekor"], "short1v1": "Naruto (Enam Jalan)", "shortTeam": "N6J"}, {"id": 2, "name": "Naruto Uzumaki (Mode Link Kurama)", "slide": 1, "ultis": ["Rasen Shuriken Panet Siluman Berekor"], "short1v1": "Naruto (Kurama)", "shortTeam": "NLK"}, {"id": 3, "name": "Naruto Uzumaki (Bola Siluman Berekor)", "slide": 1, "ultis": ["Bola Siluman Berekor"], "short1v1": "Naruto (Bijuu)", "shortTeam": "NBS"}, {"id": 4, "name": "Naruto Uzumaki (Teknik Petapa: Rentetan Rasengan Bola Raksasa)", "slide": 1, "ultis": ["Teknik Petapa: Rentetan Rasengan Bola Raksasa"], "short1v1": "Naruto (Petapa Rasen)", "shortTeam": "NPR"}, {"id": 5, "name": "Naruto Uzumaki (Mode Petapa)", "slide": 1, "ultis": ["Sejati: Elemen Angin - Rasen Shuriken"], "short1v1": "Naruto (Petapa)", "shortTeam": "NSP"}, {"id": 6, "name": "Naruto Uzumaki", "slide": 1, "ultis": ["Elemen Angin: Rasen Shuriken", "Rasengan Ekor Sembilan"], "short1v1": "Naruto", "shortTeam": "NRT"}, {"id": 7, "name": "Sakura Haruno", "slide": 1, "ultis": ["Mekar Penuh: Tumbukan Bunga Sakura", "Teknik Seratus Penyembuhan"], "short1v1": "Sakura", "shortTeam": "SKR"}, {"id": 8, "name": "Sai", "slide": 1, "ultis": ["Teknik Ninja: Gambar Replika Monster - Gerombolan"], "short1v1": "Sai", "shortTeam": "SAI"}, {"id": 9, "name": "Kakashi Hatake (Kedua Mata Sharingan)", "slide": 1, "ultis": ["Raikiri: Kilat", "Susanoo: Kamui Raikiri", "Kamui"], "short1v1": "Kakashi (DMS)", "shortTeam": "K2S"}, {"id": 10, "name": "Kakashi Hatake (Perang Dunia Ninja)", "slide": 1, "ultis": ["Kamui", "Gempa Petir Ganda Raikiri"], "short1v1": "Kakashi (Perang)", "shortTeam": "KPD"}, {"id": 11, "name": "Kakashi Hatake", "slide": 1, "ultis": ["Kamui", "Gempa Petir Ganda Raikiri"], "short1v1": "Kakashi", "shortTeam": "KKS"}, {"id": 12, "name": "Might Guy (Perang Dunia Ninja)", "slide": 1, "ultis": ["Merak Pagi", "Harimau Siang", "Guy Malam"], "short1v1": "Guy (Perang)", "shortTeam": "GPD"}, {"id": 13, "name": "Might Guy", "slide": 1, "ultis": ["Merak Pagi", "Harimau Siang"], "short1v1": "Guy", "shortTeam": "GUY"}, {"id": 14, "name": "Yamato", "slide": 1, "ultis": ["Gen Hokage Pertama"], "short1v1": "Yamato", "shortTeam": "YMT"}, {"id": 15, "name": "Shikamaru Nara", "slide": 1, "ultis": ["Teknik Pengumpul Bayangan"], "short1v1": "Shikamaru", "shortTeam": "SKM"}, {"id": 16, "name": "Chouji Akimichi", "slide": 1, "ultis": ["Tamparan Super"], "short1v1": "Chouji", "shortTeam": "CHJ"}, {"id": 17, "name": "Ino Yamanaka", "slide": 1, "ultis": ["Taman Bunga Tarian Kelopak"], "short1v1": "Ino", "shortTeam": "INO"}, {"id": 18, "name": "Neji Hyuga", "slide": 1, "ultis": ["8 Trigraf 64 Tapak"], "short1v1": "Neji", "shortTeam": "NEJ"}, {"id": 19, "name": "Rock Lee", "slide": 1, "ultis": ["Angin Panas Konoha"], "short1v1": "Rock Lee", "shortTeam": "LEE"}, {"id": 20, "name": "Tenten", "slide": 1, "ultis": ["Kendali Senjata: Bola Besi Raksasa"], "short1v1": "Tenten", "shortTeam": "TTN"}, {"id": 21, "name": "Kiba Inuzuka", "slide": 1, "ultis": ["Absolut: Taring ke Taring"], "short1v1": "Kiba", "shortTeam": "KBA"}, {"id": 22, "name": "Shino Aburame", "slide": 1, "ultis": ["Teknik Rahasia: Rawa Serangga"], "short1v1": "Shino", "shortTeam": "SHN"}, {"id": 23, "name": "Hinata Hyuga", "slide": 1, "ultis": ["Tinju Singa Kembar Halus"], "short1v1": "Hinata", "shortTeam": "HNT"}, {"id": 24, "name": "Asuma Sarutobi", "slide": 1, "ultis": ["Bilah Chakra: Lurus"], "short1v1": "Asuma", "shortTeam": "ASM"}, {"id": 25, "name": "Konohamaru Sarutobi", "slide": 2, "ultis": ["Teknik Harem Hebat"], "short1v1": "Konohamaru", "shortTeam": "KNH"}, {"id": 26, "name": "Shisui Uchiha", "slide": 2, "ultis": ["Kotoamatsukami: Sinar"], "short1v1": "Shisui", "shortTeam": "SSU"}, {"id": 27, "name": "Iruka Umino", "slide": 2, "ultis": ["Auman Cinta"], "short1v1": "Iruka", "shortTeam": "IRK"}, {"id": 28, "name": "Kushina Uzumaki", "slide": 2, "ultis": ["Habanero Merah Darah"], "short1v1": "Kushina", "shortTeam": "KSN"}, {"id": 29, "name": "Jiraiya", "slide": 2, "ultis": ["Rasengan Pahlawan"], "short1v1": "Jiraiya", "shortTeam": "JRY"}, {"id": 30, "name": "Hashirama Senju (Edo Tensei)", "slide": 2, "ultis": ["Teknik Petapa: Elemen Kayu - Seribu Tangan Sejati"], "short1v1": "Hashirama (Edo)", "shortTeam": "HSE"}, {"id": 31, "name": "Hashirama Senju", "slide": 2, "ultis": ["Teknik Rahasia Elemen Kayu: Pencipta Hutan Belantara"], "short1v1": "Hashirama", "shortTeam": "HSR"}, {"id": 32, "name": "Tobirama Senju", "slide": 2, "ultis": ["Elemen Air: Terjangan Naga Air", "Kertas Bom Tandem Lipat  Ganda"], "short1v1": "Tobirama", "shortTeam": "TBR"}, {"id": 33, "name": "Hiruzen Sarutobi", "slide": 2, "ultis": ["Teknik Penyegelan: Segel Malaikat Maut"], "short1v1": "Hiruzen", "shortTeam": "HRZ"}, {"id": 34, "name": "Minato Namikaze (Edo Tensei)", "slide": 2, "ultis": ["Dewa Petir Terbang: Langkah Kilat Badai Ruang Waktu, Jurus Nol"], "short1v1": "Minato (Edo)", "shortTeam": "MNE"}, {"id": 35, "name": "Minato Namikaze", "slide": 2, "ultis": ["Kilat Kuning", "Dewa Petir Terbang: Langkah Dua"], "short1v1": "Minato", "shortTeam": "MNT"}, {"id": 36, "name": "Tsunade", "slide": 2, "ultis": ["Tanah Murni Kayangan"], "short1v1": "Tsunade", "shortTeam": "TSN"}, {"id": 37, "name": "Danzou Shimura", "slide": 2, "ultis": ["Izanagi"], "short1v1": "Danzou", "shortTeam": "DNZ"}, {"id": 38, "name": "Kakashi Hatake (Masa Kecil)", "slide": 2, "ultis": ["Pedang Cahaya Putih"], "short1v1": "Kakashi (Kecil)", "shortTeam": "KKC"}, {"id": 39, "name": "Obito Uchiha (Masa Kecil)", "slide": 2, "ultis": ["Elemen Api: Teknik Api Phoenix"], "short1v1": "Obito (Kecil)", "shortTeam": "OBC"}, {"id": 40, "name": "Rin Nohara", "slide": 2, "ultis": ["Amukan Ekor Tiga"], "short1v1": "Rin", "shortTeam": "RIN"}, {"id": 41, "name": "Naruto Uzumaki (The Last)", "slide": 2, "ultis": ["Kombo 5.000 Naruto Uzumaki"], "short1v1": "Naruto (The Last)", "shortTeam": "NTL"}, {"id": 42, "name": "Sasuke Uchiha (The Last)", "slide": 2, "ultis": ["Chidori: Penghancur Bintang"], "short1v1": "Sasuke (The Last)", "shortTeam": "STL"}, {"id": 43, "name": "Hanabi Hyuga", "slide": 2, "ultis": ["Aliran Hanabi: 8 Trigraf 64 Tapak"], "short1v1": "Hanabi", "shortTeam": "HNB"}, {"id": 44, "name": "Hanabi Hyuga (Shippuden)", "slide": 2, "ultis": ["Aliran Hanabi: 8 Trigraf 64 Tapak"], "short1v1": "Hanabi (Shippuden)", "shortTeam": "HNS"}, {"id": 45, "name": "Robot Naruto", "slide": 2, "ultis": ["Meriam Siluman Berekor"], "short1v1": "Robot Naruto", "shortTeam": "RBN"}, {"id": 46, "name": "Kurenai", "slide": 2, "ultis": ["Ilusi Iblis: Ikatan Pohon Kemarian - Tebaran Kelopak"], "short1v1": "Kurenai", "shortTeam": "KRN"}, {"id": 47, "name": "Sasuke Uchiha (Rinne Sharingan)", "slide": 3, "ultis": ["Takemikazuchi", "Elemen Kobaran: Susanoo Kagutsuchi"], "short1v1": "Sasuke (Rinnegan)", "shortTeam": "SRN"}, {"id": 48, "name": "Sasuke Uchiha (Mangekyou Sharingan Abadi)", "slide": 3, "ultis": ["Pedang Kagutsuchi", "Elemen Kobaran: Susanoo Kagutsuchi"], "short1v1": "Sasuke (EMS)", "shortTeam": "SEA"}, {"id": 49, "name": "Sasuke Uchiha (Pertemuan Lima Kage)", "slide": 3, "ultis": ["Susanoo"], "short1v1": "Sasuke (5 Kage)", "shortTeam": "S5K"}, {"id": 50, "name": "Sasuke Uchiha (Taka)", "slide": 3, "ultis": ["Amaterasu"], "short1v1": "Sasuke (Taka)", "shortTeam": "STK"}, {"id": 51, "name": "Sasuke Uchiha", "slide": 3, "ultis": ["Kirin", "Tombak Chidori"], "short1v1": "Sasuke", "shortTeam": "SSK"}, {"id": 52, "name": "Orochimaru", "slide": 3, "ultis": ["Teknik Pawang Ular Besar"], "short1v1": "Orochimaru", "shortTeam": "ORC"}, {"id": 53, "name": "Kabuto Yakushi (Mode Petapa)", "slide": 3, "ultis": ["Teknik Petapa: Reinkarnasi Anorganik"], "short1v1": "Kabuto (Petapa)", "shortTeam": "KBP"}, {"id": 54, "name": "Kabuto Yakushi (Jubah Ular)", "slide": 3, "ultis": ["Pemanggilan: Edo Tensei"], "short1v1": "Kabuto (Ular)", "shortTeam": "KBU"}, {"id": 55, "name": "Kabuto Yakushi", "slide": 3, "ultis": ["Teknik Terlarang: Teknik Jiwa Mati"], "short1v1": "Kabuto", "shortTeam": "KBT"}, {"id": 56, "name": "Suigetsu Hozuki", "slide": 3, "ultis": ["Jeram: Teknik Transformasi Air"], "short1v1": "Suigetsu", "shortTeam": "SGT"}, {"id": 57, "name": "Juugo", "slide": 3, "ultis": ["Tinju Piston: Jurus Nol"], "short1v1": "Juugo", "shortTeam": "JUG"}, {"id": 58, "name": "Karin", "slide": 3, "ultis": ["Tamparan Ekstrem"], "short1v1": "Karin", "shortTeam": "KRN"}, {"id": 59, "name": "Kimimaro", "slide": 3, "ultis": ["Tarian Tunas Pakis"], "short1v1": "Kimimaro", "shortTeam": "KMM"}, {"id": 60, "name": "Jiroubou", "slide": 3, "ultis": ["Tinju Arahat"], "short1v1": "Jiroubou", "shortTeam": "JRB"}, {"id": 61, "name": "Kidoumaru", "slide": 3, "ultis": ["Panah Laba-Laba: Koyak"], "short1v1": "Kidoumaru", "shortTeam": "KDM"}, {"id": 62, "name": "Sakon/Ukon", "slide": 3, "ultis": ["Rentetan Tinju: Rakshasa"], "short1v1": "Sakon/Ukon", "shortTeam": "SKN"}, {"id": 63, "name": "Tayuya", "slide": 3, "ultis": ["Seruling Setan: Rantai Suara Ilusi"], "short1v1": "Tayuya", "shortTeam": "TYY"}, {"id": 64, "name": "Gaara (Perang Dunia Ninja)", "slide": 4, "ultis": ["Makam Gurun", "Peti Segel Pasir", "Serangan Tombak Penjara Pasir"], "short1v1": "Gaara (Perang)", "shortTeam": "GPD"}, {"id": 65, "name": "Gaara (Pertemuan Lima Kage)", "slide": 4, "ultis": ["Peti Segel Pasir", "Serangan Tombak Penjara Pasir", "Makam Gurun"], "short1v1": "Gaara (5 Kage)", "shortTeam": "G5K"}, {"id": 66, "name": "Gaara", "slide": 4, "ultis": ["Peti Segel Pasir", "Serangan Tombak Penjara Pasir", "Makam Gurun"], "short1v1": "Gaara", "shortTeam": "GRA"}, {"id": 67, "name": "Kankurou", "slide": 4, "ultis": ["Teknik Hitam Rahasia: 3 Tragedi", "Teknik Hitam Rahasia: Pentas Kalajengking Api"], "short1v1": "Kankurou", "shortTeam": "KNK"}, {"id": 68, "name": "Temari", "slide": 4, "ultis": ["Bantingan Topan"], "short1v1": "Temari", "shortTeam": "TMR"}, {"id": 69, "name": "Raikage: A", "slide": 4, "ultis": ["Bom Liger", "Lightning Straight"], "short1v1": "Raikage A", "shortTeam": "RKA"}, {"id": 70, "name": "Killer Bee (Samehada)", "slide": 4, "ultis": ["Lariat"], "short1v1": "Killer Bee (Samehada)", "shortTeam": "KBS"}, {"id": 71, "name": "Killer Bee", "slide": 4, "ultis": ["Lariat"], "short1v1": "Killer Bee", "shortTeam": "KBE"}, {"id": 72, "name": "Darui", "slide": 4, "ultis": ["Elemen Badai: Hitam Berburu"], "short1v1": "Darui", "shortTeam": "DRI"}, {"id": 73, "name": "Oonoki", "slide": 4, "ultis": ["Elemen Debu: Teknik Belah Dunia Purba"], "short1v1": "Oonoki", "shortTeam": "ONK"}, {"id": 74, "name": "Mei Terumi", "slide": 4, "ultis": ["Elemen Korosi: Asam Pelarut"], "short1v1": "Mei", "shortTeam": "MEI"}, {"id": 75, "name": "Mifune", "slide": 4, "ultis": ["Tebas Wujud"], "short1v1": "Mifune", "shortTeam": "MFN"}, {"id": 76, "name": "Yugito Nii", "slide": 4, "ultis": ["Mangkuk Api Kucing"], "short1v1": "Yugito", "shortTeam": "YGT"}, {"id": 77, "name": "Yagura", "slide": 4, "ultis": ["Hempasan Laut Badai"], "short1v1": "Yagura", "shortTeam": "YGR"}, {"id": 78, "name": "Roushi", "slide": 4, "ultis": ["Letusan Sungai Berapi"], "short1v1": "Roushi", "shortTeam": "RSH"}, {"id": 79, "name": "Han", "slide": 4, "ultis": ["Melompat Lima Gunung"], "short1v1": "Han", "shortTeam": "HAN"}, {"id": 80, "name": "Utakata", "slide": 4, "ultis": ["Muatan Gelembung"], "short1v1": "Utakata", "shortTeam": "UTK"}, {"id": 81, "name": "Fuu", "slide": 4, "ultis": ["Ledakan Sisik"], "short1v1": "Fuu", "shortTeam": "FUU"}, {"id": 82, "name": "Kazekage 4: Rasa", "slide": 4, "ultis": ["Elemen Magnet: Pemakaman Pasir Emas"], "short1v1": "Rasa (Kazekage 4)", "shortTeam": "KZ4"}, {"id": 83, "name": "Raikage 3", "slide": 4, "ultis": ["Tikaman Neraka Satu Jari: Ekstrem"], "short1v1": "Raikage 3", "shortTeam": "RK3"}, {"id": 84, "name": "Tsuchikage 2", "slide": 4, "ultis": ["Elemen Debu: Teknik Pemisah Belah Dunia Purba"], "short1v1": "Tsuchikage 2", "shortTeam": "TC2"}, {"id": 85, "name": "Mizukage 2", "slide": 4, "ultis": ["Teknik Pistol Air"], "short1v1": "Mizukage 2", "shortTeam": "MZ2"}, {"id": 86, "name": "Hanzou", "slide": 4, "ultis": ["Teknik Ninja: Kabut Sabit"], "short1v1": "Hanzou", "shortTeam": "HNZ"}, {"id": 87, "name": "Nenek Chiyo", "slide": 4, "ultis": ["3 Harta Isap Lebur"], "short1v1": "Nenek Chiyo", "shortTeam": "CHY"}, {"id": 88, "name": "Madara Uchiha (Enam Jalan)", "slide": 5, "ultis": ["Meteor Cakrawala"], "short1v1": "Madara (Enam Jalan)", "shortTeam": "M6J"}, {"id": 89, "name": "Madara Uchiha (Edo Tensei: Lepas)", "slide": 5, "ultis": ["Bintang Pengguncang Langit", "Susanoo Sempurna"], "short1v1": "Madara (Edo)", "shortTeam": "MDE"}, {"id": 90, "name": "Madara Uchiha", "slide": 5, "ultis": ["Bintang Pengguncang Langit"], "short1v1": "Madara", "shortTeam": "MDR"}, {"id": 91, "name": "Kaguya Otsutsuki", "slide": 5, "ultis": ["Bola Maut Pencari Makna"], "short1v1": "Kaguya", "shortTeam": "KGY"}, {"id": 92, "name": "Indra Otsutsuki", "slide": 5, "ultis": ["Tujuh Petir Dewa"], "short1v1": "Indra", "shortTeam": "IND"}, {"id": 93, "name": "Asura Otsutsuki", "slide": 5, "ultis": ["Seribu Tangan Sejati: Tapak Spiral"], "short1v1": "Asura", "shortTeam": "ASR"}, {"id": 94, "name": "Obito Uchiha (Jinchuuriki Ekor Sepuluh)", "slide": 5, "ultis": ["Pedang Dewa: Pedang Nunoboko"], "short1v1": "Obito (Jinchuuriki)", "shortTeam": "OBJ"}, {"id": 95, "name": "Obito Uchiha", "slide": 5, "ultis": ["Pemanggilan: Ekor Sepuluh"], "short1v1": "Obito", "shortTeam": "OBT"}, {"id": 96, "name": "Tobi (Perang Dunia Ninja)", "slide": 5, "ultis": ["Pemanggilan: Patung Iblis Asing"], "short1v1": "Tobi (Perang)", "shortTeam": "TPD"}, {"id": 97, "name": "Tobi", "slide": 5, "ultis": ["Teknik Ladang Ranjau"], "short1v1": "Tobi", "shortTeam": "TOB"}, {"id": 98, "name": "Pria Bertopeng", "slide": 5, "ultis": ["Pemanggilan: Ekor Sembilan"], "short1v1": "Pria Bertopeng", "shortTeam": "PBM"}, {"id": 99, "name": "Obito Uchiha (Pelarian)", "slide": 5, "ultis": ["Elemen Kayu: Neraka Berontak"], "short1v1": "Obito (Pelarian)", "shortTeam": "OBP"}, {"id": 100, "name": "Pain", "slide": 5, "ultis": ["Enam Jalan Samsara"], "short1v1": "Pain", "shortTeam": "PAN"}, {"id": 101, "name": "Nagato", "slide": 5, "ultis": ["Chibaku Tensei"], "short1v1": "Nagato", "shortTeam": "NGT"}, {"id": 102, "name": "Konan", "slide": 5, "ultis": ["Tarian Kertas: Hukuman"], "short1v1": "Konan", "shortTeam": "KNN"}, {"id": 103, "name": "Itachi Uchiha", "slide": 5, "ultis": ["Pedang Totsuka", "Tsukoyomi", "Yasaka no Magatama"], "short1v1": "Itachi", "shortTeam": "ITC"}, {"id": 104, "name": "Kisame Hoshigaki", "slide": 5, "ultis": ["Elemen Air: Terjangan Ombak", "Elemen Air: Teknik Peluru Hiu Besar"], "short1v1": "Kisame", "shortTeam": "KSM"}, {"id": 105, "name": "Kakuzu", "slide": 5, "ultis": ["Dendam Bumi: Tembakan Terakhir"], "short1v1": "Kakuzu", "shortTeam": "KKZ"}, {"id": 106, "name": "Hidan", "slide": 5, "ultis": ["Teknik Kutukan: Kuasa Darah Maut"], "short1v1": "Hidan", "shortTeam": "HDN"}, {"id": 107, "name": "Deidara", "slide": 5, "ultis": ["C3"], "short1v1": "Deidara", "shortTeam": "DDR"}, {"id": 108, "name": "Sasori", "slide": 5, "ultis": ["Dunia Pasir Besi"], "short1v1": "Sasori", "shortTeam": "SSR"}, {"id": 109, "name": "Hagoromo Otsutsuki", "slide": 5, "ultis": ["Cahaya Petapa Halilintar"], "short1v1": "Hagoromo", "shortTeam": "HGR"}, {"id": 110, "name": "Naruto Uzumaki (Masa Kecil)", "slide": 6, "ultis": ["Kombo 2.000 Naruto Uzumaki"], "short1v1": "Naruto (Kecil)", "shortTeam": "NKC"}, {"id": 111, "name": "Sasuke Uchiha (Masa Kecil - Pakaian Akhir)", "slide": 6, "ultis": ["Chidori"], "short1v1": "Sasuke (Kecil Akhir)", "shortTeam": "SKA"}, {"id": 112, "name": "Sasuke Uchiha (Masa Kecil)", "slide": 6, "ultis": ["Chidori"], "short1v1": "Sasuke (Kecil)", "shortTeam": "SKC"}, {"id": 113, "name": "Sakura Haruno (Masa Kecil)", "slide": 6, "ultis": ["Sakura Agung"], "short1v1": "Sakura (Kecil)", "shortTeam": "SKK"}, {"id": 114, "name": "Shikamaru Nara (Masa Kecil)", "slide": 6, "ultis": ["Teknik Ninja: Jurus Bayangan Cekik"], "short1v1": "Shikamaru (Kecil)", "shortTeam": "SMC"}, {"id": 115, "name": "Chouji Akimichi (Masa Kecil)", "slide": 6, "ultis": ["Teknik Super Besar"], "short1v1": "Chouji (Kecil)", "shortTeam": "CJC"}, {"id": 116, "name": "Ino Yamanaka (Masa Kecil)", "slide": 6, "ultis": ["Teknik Ninja: Seribu Taburan Bunga"], "short1v1": "Ino (Kecil)", "shortTeam": "INC"}, {"id": 117, "name": "Neji Hyuga (Masa Kecil)", "slide": 6, "ultis": ["8 Trigraf 64 Tapak"], "short1v1": "Neji (Kecil)", "shortTeam": "NJC"}, {"id": 118, "name": "Rock Lee (Masa Kecil)", "slide": 6, "ultis": ["Tangkai Teratai"], "short1v1": "Rock Lee (Kecil)", "shortTeam": "LKC"}, {"id": 119, "name": "Tenten (Masa Kecil)", "slide": 6, "ultis": ["Kendali Senjata: Seribu Amukan Pedang"], "short1v1": "Tenten (Kecil)", "shortTeam": "TTC"}, {"id": 120, "name": "Kiba Inuzuka (Masa Kecil)", "slide": 6, "ultis": ["Taring Serigala"], "short1v1": "Kiba (Kecil)", "shortTeam": "KBC"}, {"id": 121, "name": "Shino Aburame (Masa Kecil)", "slide": 6, "ultis": ["Serangga Parasit: Lonceng"], "short1v1": "Shino (Kecil)", "shortTeam": "SHC"}, {"id": 122, "name": "Hinata Hyuga (Masa Kecil)", "slide": 6, "ultis": ["8 Trigraf Pelindung 64 Tapak"], "short1v1": "Hinata (Kecil)", "shortTeam": "HNC"}, {"id": 123, "name": "Gaara (Masa Kecil)", "slide": 6, "ultis": ["Makam Agung Arus Pasir"], "short1v1": "Gaara (Kecil)", "shortTeam": "GKC"}, {"id": 124, "name": "Kankurou (Masa Kecil)", "slide": 6, "ultis": ["Teknik Hitam Rahasia: Mekanisme Sekali Basmi"], "short1v1": "Kankurou (Kecil)", "shortTeam": "KKC"}, {"id": 125, "name": "Temari (Masa Kecil)", "slide": 6, "ultis": ["Pemanggilan: Tarian Penggal Cepat"], "short1v1": "Temari (Kecil)", "shortTeam": "TMC"}, {"id": 126, "name": "Zabuza Momochi", "slide": 6, "ultis": ["Membunuh Tanpa Suara"], "short1v1": "Zabuza", "shortTeam": "ZBZ"}, {"id": 127, "name": "Haku", "slide": 6, "ultis": ["Teknik Rahasia: Cermin Kristal Es"], "short1v1": "Haku", "shortTeam": "HAK"}, {"id": 128, "name": "Boruto Uzumaki \"Karma\"", "slide": 7, "ultis": ["\"Karma\" Rasengan"], "short1v1": "Boruto (Karma)", "shortTeam": "BKM"}, {"id": 129, "name": "Boruto Uzumaki (Ujian Chuunin)", "slide": 7, "ultis": ["Spiral Boruto Storm"], "short1v1": "Boruto (Chuunin)", "shortTeam": "BCN"}, {"id": 130, "name": "Boruto Uzumaki (Alat Ilmiah Ninja)", "slide": 7, "ultis": ["Overwind Ride"], "short1v1": "Boruto (Alat Ilmiah)", "shortTeam": "BAI"}, {"id": 131, "name": "Boruto Uzumaki", "slide": 7, "ultis": ["Boruto Strike"], "short1v1": "Boruto", "shortTeam": "BRT"}, {"id": 132, "name": "Sarada Uchiha (Chidori)", "slide": 7, "ultis": ["Penghancur Langit Hujan Sore", "Tarian Bunga Chidori"], "short1v1": "Sarada (Chidori)", "shortTeam": "SRC"}, {"id": 133, "name": "Sarada Uchiha", "slide": 7, "ultis": ["Formasi Shuriken Uchiha: Petir Musim Semi"], "short1v1": "Sarada", "shortTeam": "SRD"}, {"id": 134, "name": "Mitsuki", "slide": 7, "ultis": ["Teknik Petapa: Petir Ular Agung - Ular Putih", "Ular Liar"], "short1v1": "Mitsuki", "shortTeam": "MTK"}, {"id": 135, "name": "Kawaki", "slide": 7, "ultis": ["\"Karma\" Ombak Pemakaman Besar"], "short1v1": "Kawaki", "shortTeam": "KWK"}, {"id": 136, "name": "Naruto Uzumaki (Mode Barion)", "slide": 7, "ultis": ["Rasengan Barion: Hujaman Langit"], "short1v1": "Naruto (Barion)", "shortTeam": "NBR"}, {"id": 137, "name": "Naruto Uzumaki (Boruto)", "slide": 7, "ultis": ["Sejati: Rasen Shuriken Siluman Berekor"], "short1v1": "Naruto (Boruto)", "shortTeam": "NBT"}, {"id": 138, "name": "Sasuke Uchiha (Bayangan Pendukung)", "slide": 7, "ultis": ["Chibaku Tensei: Kirin Kembar"], "short1v1": "Sasuke (Bayangan)", "shortTeam": "SBP"}, {"id": 139, "name": "Sasuke Uchiha (Boruto)", "slide": 7, "ultis": ["Chibaku Tensei: Langit Runtuh"], "short1v1": "Sasuke (Boruto)", "shortTeam": "SBT"}, {"id": 140, "name": "Sakura Haruno (Boruto)", "slide": 7, "ultis": ["Mekar Penuh: Tumbukan Bunga Sakura", "Teknik Seratus Penyembuhan"], "short1v1": "Sakura (Boruto)", "shortTeam": "SKB"}, {"id": 141, "name": "Hinata Hyuga (Boruto)", "slide": 7, "ultis": ["Tinju Singa Kembar Halus"], "short1v1": "Hinata (Boruto)", "shortTeam": "HNB"}, {"id": 142, "name": "Shikamaru Nara (Boruto)", "slide": 7, "ultis": ["Teknik Pengumpul Bayangan"], "short1v1": "Shikamaru (Boruto)", "shortTeam": "SMB"}, {"id": 143, "name": "Chouji Akimichi (Boruto)", "slide": 7, "ultis": ["Tamparan Super"], "short1v1": "Chouji (Boruto)", "shortTeam": "CJB"}, {"id": 144, "name": "Ino Yamanaka (Boruto)", "slide": 7, "ultis": ["Taman Bunga Tarian Kelopak"], "short1v1": "Ino (Boruto)", "shortTeam": "INB"}, {"id": 145, "name": "Sai Yamanaka (Boruto)", "slide": 7, "ultis": ["Teknik Ninja: Gambar Replika Monster - Gerombolan"], "short1v1": "Sai (Boruto)", "shortTeam": "SAB"}, {"id": 146, "name": "Rock Lee (Boruto)", "slide": 7, "ultis": ["Angin Panas Konoha"], "short1v1": "Rock Lee (Boruto)", "shortTeam": "LBT"}, {"id": 147, "name": "Tenten (Boruto)", "slide": 7, "ultis": ["Kendali Senjata: Bola Besi Raksasa"], "short1v1": "Tenten (Boruto)", "shortTeam": "TTB"}, {"id": 148, "name": "Kiba Inuzuka (Boruto)", "slide": 7, "ultis": ["Taring Serigala"], "short1v1": "Kiba (Boruto)", "shortTeam": "KBB"}, {"id": 149, "name": "Shino Aburame (Boruto)", "slide": 7, "ultis": ["Teknik Rahasia: Rawa Serangga"], "short1v1": "Shino (Boruto)", "shortTeam": "SHB"}, {"id": 150, "name": "Kawaki (Evolusi \"Karma\")", "slide": 7, "ultis": ["Peluru Pelarungan Kekaisaran"], "short1v1": "Kawaki (Karma)", "shortTeam": "KWE"}, {"id": 151, "name": "Boruto Uzumaki (Evolusi \"Karma\")", "slide": 7, "ultis": ["Rasengan Bola Raksasa: Penghancur Langit"], "short1v1": "Boruto (Karma 2)", "shortTeam": "BKE"}, {"id": 152, "name": "Gaara (Boruto)", "slide": 8, "ultis": ["Makam Gurun", "Peti Segel Pasir", "Serangan Tombak Penjara Pasir"], "short1v1": "Gaara (Boruto)", "shortTeam": "GBT"}, {"id": 153, "name": "Kankurou (Boruto)", "slide": 8, "ultis": ["Teknik Hitam Rahasia: 3 Tragedi", "Teknik Hitam Rahasia: Pentas Kalajengking Api"], "short1v1": "Kankurou (Boruto)", "shortTeam": "KNB"}, {"id": 154, "name": "Temari Nara (Boruto)", "slide": 8, "ultis": ["Bantingan Topan"], "short1v1": "Temari (Boruto)", "shortTeam": "TMB"}, {"id": 155, "name": "Darui (Boruto)", "slide": 8, "ultis": ["Elemen Badai: Hitam Berburu"], "short1v1": "Darui (Boruto)", "shortTeam": "DRB"}, {"id": 156, "name": "Momoshiki Otsutsuki", "slide": 8, "ultis": ["3 Dewa Setan"], "short1v1": "Momoshiki", "shortTeam": "MMS"}, {"id": 157, "name": "Kinshiki Otsutsuki", "slide": 8, "ultis": ["Amukan Marah"], "short1v1": "Kinshiki", "shortTeam": "KNS"}, {"id": 158, "name": "Jigen", "slide": 8, "ultis": ["Sukunahikona: Kotak Kubah Jatuh"], "short1v1": "Jigen", "shortTeam": "JGN"}, {"id": 159, "name": "Koji Kashin", "slide": 8, "ultis": ["Teknik Petapa: Kipas Lima"], "short1v1": "Koji Kashin", "shortTeam": "KOJ"}, {"id": 160, "name": "Delta", "slide": 8, "ultis": ["Aerobatic Strike"], "short1v1": "Delta", "shortTeam": "DLT"}, {"id": 161, "name": "Boro", "slide": 8, "ultis": ["Ledakan Mesiu Bom Besar"], "short1v1": "Boro", "shortTeam": "BOR"}, {"id": 162, "name": "Isshiki Otsutsuki", "slide": 8, "ultis": ["Daikokuten Sukunahikona Ambruk Ganda"], "short1v1": "Isshiki", "shortTeam": "ISK"}, {"id": 163, "name": "Nanashi Uchiha", "slide": 8, "ultis": ["8.000 Tombak: Api Ganas Yang Memukau"], "short1v1": "Nanashi", "shortTeam": "NNS"}];
 
-    // Normalizer Nama Karakter
     function normCharName(str) {
       if (!str) return '';
-      return str
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/ō/g, 'o').replace(/ū/g, 'u')
-        .replace(/ou/g, 'o').replace(/uu/g, 'u')
+      return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/ō/g, 'o').replace(/ū/g, 'u').replace(/ou/g, 'o').replace(/uu/g, 'u')
         .replace(/[^a-z0-9]/g, '');
     }
 
     const NARUTO_NORM_MAP = new Map();
-    NARUTO_CHARACTERS.forEach(c => {
-      NARUTO_NORM_MAP.set(normCharName(c.name), c);
-    });
+    NARUTO_CHARACTERS.forEach(c => NARUTO_NORM_MAP.set(normCharName(c.name), c));
 
     function findNarutoChar(name) {
       if (!name) return null;
@@ -1044,9 +1032,7 @@
       const ultis = [];
       parts.forEach(p => {
         const c = findNarutoChar(p);
-        if (c && c.ultis && c.ultis.length > 0) {
-          ultis.push(c.ultis[0]);
-        }
+        if (c && c.ultis && c.ultis.length > 0) ultis.push(c.ultis[0]);
       });
       return ultis.length > 0 ? ultis.join(' / ') : '-';
     }
@@ -1066,7 +1052,7 @@
     }
 
     // ==========================================
-    // CLIENT STATE & SYNC
+    // STATE & SYNC
     // ==========================================
     let state = {
       p1: null,
@@ -1085,11 +1071,14 @@
     let streamKey = urlParams.get('room') || urlParams.get('key') || localStorage.getItem('koth_stream_key') || 'hervandisipada';
     const MQTT_TOPIC = `koth/naruto/${streamKey}`;
 
-    let currentSelectedTicketMode = '1v1';
     let currentSelectedTier = 'FREE';
-    let currentRegisteredPlayerId = null;
+    let currentRegisteredId = null;
 
-    // Queue interleaving algorithm
+    // Character Picker State: Sorting (slide vs alpha) & slide filter
+    let regPickerSortMode = localStorage.getItem('koth_reg_char_sort') || 'slide'; // 'slide' atau 'alpha'
+    let regPickerSlideFilter = 0; // 0 = Semua
+
+    // Queue Interleaving & Sorting
     function interleaveVipFree(vipPlayers, freePlayers, vipConsecutiveCount = 0) {
       const result = [];
       let vipIndex = 0;
@@ -1130,12 +1119,8 @@
 
     function checkAutoFillArena(st) {
       if (!st || !Array.isArray(st.queue)) return;
-      if (!st.p1 && st.queue.length > 0) {
-        st.p1 = st.queue.shift();
-      }
-      if (!st.p2 && st.queue.length > 0) {
-        st.p2 = st.queue.shift();
-      }
+      if (!st.p1 && st.queue.length > 0) st.p1 = st.queue.shift();
+      if (!st.p2 && st.queue.length > 0) st.p2 = st.queue.shift();
     }
 
     function checkDuplicatePlayer(name, st) {
@@ -1144,70 +1129,122 @@
       if (clean === '-' || clean === 'menunggu...') return null;
 
       if (st.p1 && st.p1.name && st.p1.name.trim().toLowerCase() === clean) {
-        return { duplicate: true, message: `Pemain "${name}" sedang bertanding di Arena sebagai Juara Bertahan (P1)` };
+        return { duplicate: true, message: `Pemain "${name}" sedang bertanding di Arena (P1)` };
       }
       if (st.p2 && st.p2.name && st.p2.name.trim().toLowerCase() === clean) {
-        return { duplicate: true, message: `Pemain "${name}" sedang bertanding di Arena sebagai Penantang (P2)` };
+        return { duplicate: true, message: `Pemain "${name}" sedang bertanding di Arena (P2)` };
       }
       if (Array.isArray(st.queue)) {
         const qIdx = st.queue.findIndex(p => p.name && p.name.trim().toLowerCase() === clean);
         if (qIdx !== -1) {
-          return { duplicate: true, message: `Pemain "${name}" sudah ada dalam antrian di urutan #${qIdx + 1}` };
+          return { duplicate: true, message: `Pemain "${name}" sudah ada di antrian #${qIdx + 1}` };
         }
       }
       return null;
     }
 
     // ==========================================
-    // RENDER UI
+    // RENDER UI & ACTIVE MODE ADAPTATION
     // ==========================================
+    function applyActiveModeUI() {
+      // User TIDAK BISA MEMILIH MODE. Mode yang aktif adalah mode yang dipilih oleh ADMIN!
+      const activeMode = state.masterMode || '1v1';
+      const modeBadge = document.getElementById('arena-mode-badge');
+      if (modeBadge) modeBadge.innerText = activeMode.toUpperCase();
+
+      const bannerTitle = document.getElementById('locked-mode-title');
+      const bannerDesc = document.getElementById('locked-mode-desc');
+      const bannerPill = document.getElementById('locked-mode-pill');
+
+      const slot2 = document.getElementById('slot-wrap-2');
+      const slot3 = document.getElementById('slot-wrap-3');
+      const slotLabel1 = document.getElementById('slot-label-1');
+
+      if (activeMode === '1v1') {
+        if (bannerTitle) bannerTitle.innerText = '🎮 MODE AKTIF LIVE: 1vs1 (SOLO)';
+        if (bannerDesc) bannerDesc.innerText = 'Format 1 Karakter Utama + Pilihan Ultimate Jutsu';
+        if (bannerPill) bannerPill.innerText = '1vs1';
+        if (slot2) slot2.style.display = 'none';
+        if (slot3) slot3.style.display = 'none';
+        if (slotLabel1) slotLabel1.innerText = 'Karakter Utama:';
+      } else if (activeMode === 'DUO') {
+        if (bannerTitle) bannerTitle.innerText = '⚔️ MODE AKTIF LIVE: DUO (2 KARAKTER)';
+        if (bannerDesc) bannerDesc.innerText = 'Format 2 Karakter (Leader + Support 1) + Pilihan Ultimate Jutsu';
+        if (bannerPill) bannerPill.innerText = 'DUO';
+        if (slot2) slot2.style.display = 'block';
+        if (slot3) slot3.style.display = 'none';
+        if (slotLabel1) slotLabel1.innerText = 'Karakter 1 (Leader):';
+      } else {
+        // TIM
+        if (bannerTitle) bannerTitle.innerText = '👑 MODE AKTIF LIVE: TIM (3 KARAKTER)';
+        if (bannerDesc) bannerDesc.innerText = 'Format 3 Karakter (Leader + Support 1 + Support 2) + Pilihan Ultimate Jutsu';
+        if (bannerPill) bannerPill.innerText = 'TIM';
+        if (slot2) slot2.style.display = 'block';
+        if (slot3) slot3.style.display = 'block';
+        if (slotLabel1) slotLabel1.innerText = 'Karakter 1 (Leader):';
+      }
+    }
+
     function renderArenaMini() {
-      const modeLabel = state.masterMode || '1v1';
-      const modeBadge = document.getElementById('hero-active-mode-badge');
-      if (modeBadge) modeBadge.innerText = `MODE: ${modeLabel.toUpperCase()}`;
+      applyActiveModeUI();
+      const mode = state.masterMode || '1v1';
 
       // P1
-      const p1NameEl = document.getElementById('arena-p1-name');
-      const p1CharEl = document.getElementById('arena-p1-char');
-      const p1WsEl = document.getElementById('arena-p1-ws');
+      const p1Name = document.getElementById('arena-p1-name');
+      const p1Char = document.getElementById('arena-p1-char');
+      const p1Ulti = document.getElementById('arena-p1-ulti');
+      const p1Ws = document.getElementById('arena-p1-ws');
       if (state.p1 && state.p1.name && state.p1.name !== '-') {
-        if (p1NameEl) p1NameEl.innerText = state.p1.name;
-        if (p1CharEl) {
-          const ultiTxt = state.p1.ulti ? ` [⚡ ${state.p1.ulti}]` : '';
-          p1CharEl.innerText = `${formatChar(state.p1.char, modeLabel)}${ultiTxt}`;
+        if (p1Name) p1Name.innerText = state.p1.name;
+        if (p1Char) p1Char.innerText = formatChar(state.p1.char, mode);
+        if (p1Ulti) {
+          if (state.p1.ulti) {
+            p1Ulti.style.display = 'inline-flex';
+            p1Ulti.innerText = `⚡ ${state.p1.ulti}`;
+          } else {
+            p1Ulti.style.display = 'none';
+          }
         }
-        if (p1WsEl) p1WsEl.innerText = `⚡ ${state.p1.ws || 0} WS`;
+        if (p1Ws) p1Ws.innerText = `⚡ ${state.p1.ws || 0} WS`;
       } else {
-        if (p1NameEl) p1NameEl.innerText = 'Menunggu...';
-        if (p1CharEl) p1CharEl.innerText = 'Karakter: -';
-        if (p1WsEl) p1WsEl.innerText = '⚡ 0 WS';
+        if (p1Name) p1Name.innerText = 'Menunggu...';
+        if (p1Char) p1Char.innerText = '-';
+        if (p1Ulti) p1Ulti.style.display = 'none';
+        if (p1Ws) p1Ws.innerText = '⚡ 0 WS';
       }
 
       // P2
-      const p2NameEl = document.getElementById('arena-p2-name');
-      const p2CharEl = document.getElementById('arena-p2-char');
-      const p2WsEl = document.getElementById('arena-p2-ws');
+      const p2Name = document.getElementById('arena-p2-name');
+      const p2Char = document.getElementById('arena-p2-char');
+      const p2Ulti = document.getElementById('arena-p2-ulti');
+      const p2Ws = document.getElementById('arena-p2-ws');
       if (state.p2 && state.p2.name && state.p2.name !== '-') {
-        if (p2NameEl) p2NameEl.innerText = state.p2.name;
-        if (p2CharEl) {
-          const ultiTxt = state.p2.ulti ? ` [⚡ ${state.p2.ulti}]` : '';
-          p2CharEl.innerText = `${formatChar(state.p2.char, modeLabel)}${ultiTxt}`;
+        if (p2Name) p2Name.innerText = state.p2.name;
+        if (p2Char) p2Char.innerText = formatChar(state.p2.char, mode);
+        if (p2Ulti) {
+          if (state.p2.ulti) {
+            p2Ulti.style.display = 'inline-flex';
+            p2Ulti.innerText = `⚡ ${state.p2.ulti}`;
+          } else {
+            p2Ulti.style.display = 'none';
+          }
         }
-        if (p2WsEl) p2WsEl.innerText = `⚡ ${state.p2.ws || 0} WS`;
+        if (p2Ws) p2Ws.innerText = `⚡ ${state.p2.ws || 0} WS`;
       } else {
-        if (p2NameEl) p2NameEl.innerText = 'Menunggu Penantang...';
-        if (p2CharEl) p2CharEl.innerText = 'Karakter: -';
-        if (p2WsEl) p2WsEl.innerText = '⚡ 0 WS';
+        if (p2Name) p2Name.innerText = 'Menunggu Penantang...';
+        if (p2Char) p2Char.innerText = '-';
+        if (p2Ulti) p2Ulti.style.display = 'none';
+        if (p2Ws) p2Ws.innerText = '⚡ 0 WS';
       }
 
-      // Announcement
-      const noteBox = document.getElementById('arena-note-container');
-      const noteTxt = document.getElementById('arena-note-text');
+      // Ticker announcement
+      const tickerWrap = document.getElementById('ticker-wrap');
+      const tickerText = document.getElementById('ticker-text');
       if (state.announcement && state.announcement.trim()) {
-        if (noteBox) noteBox.style.display = 'block';
-        if (noteTxt) noteTxt.innerText = state.announcement.trim();
+        if (tickerWrap) tickerWrap.style.display = 'flex';
+        if (tickerText) tickerText.innerText = state.announcement.trim();
       } else {
-        if (noteBox) noteBox.style.display = 'none';
+        if (tickerWrap) tickerWrap.style.display = 'none';
       }
     }
 
@@ -1215,42 +1252,34 @@
       const tierStatus = state.tierStatus || { 'SROBOT': 'AKTIF', 'VIP': 'AKTIF', 'FREE': 'AKTIF' };
 
       ['FREE', 'VIP', 'SROBOT'].forEach(k => {
-        const status = tierStatus[k] || 'AKTIF';
-        const isClosed = (status === 'CLOSED' || status === 'PENUH');
-        const badgeEl = document.getElementById(`tier-badge-${k.toLowerCase()}`);
-        const btnEl = document.getElementById(`tier-btn-${k.toLowerCase()}`);
+        const s = tierStatus[k] || 'AKTIF';
+        const isClosed = (s === 'CLOSED' || s === 'PENUH');
+        const pill = document.getElementById(`tier-pill-${k.toLowerCase()}`);
+        const btn = document.getElementById(`tier-btn-${k.toLowerCase()}`);
 
-        if (badgeEl) {
-          badgeEl.innerText = isClosed ? 'PENUH' : 'AKTIF';
-          badgeEl.className = 'tier-status-text ' + (isClosed ? 'tier-status-closed' : 'tier-status-open');
+        if (pill) {
+          pill.innerText = isClosed ? 'PENUH' : 'AKTIF';
+          pill.className = 'tier-status-pill ' + (isClosed ? 'status-closed' : 'status-open');
         }
-
-        if (btnEl) {
+        if (btn) {
           if (isClosed) {
-            btnEl.classList.add('disabled');
+            btn.classList.add('disabled');
             if (currentSelectedTier === k) {
-              // Jika tier terpilih sedang penuh, beralih ke tier yang aktif
-              if (!isTierClosed('FREE')) selectTierType('FREE');
-              else if (!isTierClosed('VIP')) selectTierType('VIP');
-              else if (!isTierClosed('SROBOT')) selectTierType('SROBOT');
+              if (tierStatus['FREE'] !== 'PENUH') selectTier('FREE');
+              else if (tierStatus['VIP'] !== 'PENUH') selectTier('VIP');
+              else if (tierStatus['SROBOT'] !== 'PENUH') selectTier('SROBOT');
             }
           } else {
-            btnEl.classList.remove('disabled');
+            btn.classList.remove('disabled');
           }
         }
       });
     }
 
-    function isTierClosed(tier) {
-      if (!state.tierStatus) return false;
-      const s = state.tierStatus[tier] || 'AKTIF';
-      return s === 'CLOSED' || s === 'PENUH';
-    }
-
     function renderQueueList() {
-      const container = document.getElementById('queue-list-container');
-      const totalBadge = document.getElementById('queue-total-count-badge');
-      const summaryEl = document.getElementById('queue-tier-summary');
+      const container = document.getElementById('queue-items-container');
+      const countTag = document.getElementById('queue-count-tag');
+      const statsText = document.getElementById('queue-stats-text');
       if (!container) return;
 
       const queue = Array.isArray(state.queue) ? state.queue : [];
@@ -1263,15 +1292,13 @@
         else countFree++;
       });
 
-      if (totalBadge) totalBadge.innerText = `${queue.length} Pemain`;
-      if (summaryEl) summaryEl.innerText = `SB: ${countSb} | VIP: ${countVip} | FREE: ${countFree}`;
+      if (countTag) countTag.innerText = `${queue.length} Pemain`;
+      if (statsText) statsText.innerText = `SB: ${countSb} | VIP: ${countVip} | FREE: ${countFree}`;
 
       if (queue.length === 0) {
         container.innerHTML = `
           <div class="empty-queue-box">
-            <div class="empty-queue-icon">🍃</div>
-            <p style="font-weight: 700; color: #fff;">Antrian Masih Kosong</p>
-            <p style="font-size: 0.78rem; margin-top: 4px;">Jadilah yang pertama mendaftar untuk langsung bertanding di Arena!</p>
+            🍃 Antrian masih kosong.<br>Jadilah yang pertama mendaftar!
           </div>
         `;
         return;
@@ -1279,33 +1306,38 @@
 
       let html = '';
       queue.forEach((p, idx) => {
-        const isMe = (p.id === currentRegisteredPlayerId);
+        const isMe = (p.id === currentRegisteredId);
         const t = (p.type || 'FREE').toUpperCase();
-        let tierCls = 'badge-tier-free';
-        let tierLabel = 'FREE';
-        if (t === 'SROBOT' || t === 'SB') { tierCls = 'badge-tier-srobot'; tierLabel = 'SB'; }
-        else if (t === 'VIP') { tierCls = 'badge-tier-vip'; tierLabel = 'VIP'; }
+        let roleCls = 'free';
+        let roleLabel = 'FREE';
+        if (t === 'SROBOT' || t === 'SB' || t === 'FAST' || t === 'VVIP') {
+          roleCls = 'srobot';
+          roleLabel = 'SB';
+        } else if (t === 'VIP') {
+          roleCls = 'vip';
+          roleLabel = 'VIP';
+        }
 
-        const modeBadge = p.ticketMode === 'TIM' ? '👑 TIM' : (p.ticketMode === 'DUO' ? '⚔️ DUO' : '⚡ 1v1');
-        const formattedChar = formatChar(p.char, p.ticketMode || '1v1');
+        const modeBadge = p.ticketMode === 'TIM' ? 'TIM' : (p.ticketMode === 'DUO' ? 'DUO' : '1v1');
+        const formatted = formatChar(p.char, p.ticketMode || '1v1');
         const ultiTxt = p.ulti ? ` • ⚡ ${p.ulti}` : '';
 
         html += `
-          <div class="queue-player-card ${isMe ? 'my-registration' : ''}">
-            <div class="queue-num-badge">#${idx + 1}</div>
-            <div class="queue-info-col">
+          <div class="queue-item-card ${isMe ? 'is-me' : ''}">
+            <div class="queue-rank-badge">#${idx + 1}</div>
+            <div class="queue-info-wrap">
               <div class="queue-name-row">
                 <span class="queue-name-text">${escapeHtml(p.name)}</span>
-                <span class="badge-tier ${tierCls}">${tierLabel}</span>
-                <span style="font-size: 0.68rem; font-weight: 700; color: #60a5fa; background: rgba(96,165,250,0.15); padding: 1px 5px; border-radius: 3px;">${modeBadge}</span>
-                ${isMe ? '<span style="font-size: 0.68rem; font-weight: 800; color: #fef08a; background: rgba(245,158,11,0.25); border: 1px solid #f59e0b; padding: 1px 5px; border-radius: 3px;">Kamu</span>' : ''}
+                <span class="p-role-tag ${roleCls}">${roleLabel}</span>
+                <span style="font-size:0.65rem; font-weight:800; color:#929AAB; border:1px solid #929AAB; padding:1px 4px; border-radius:3px;">${modeBadge}</span>
+                ${isMe ? '<span style="font-size:0.65rem; font-weight:900; color:#ffffff; background:#22c55e; padding:1px 5px; border-radius:3px;">KAMU</span>' : ''}
               </div>
-              <div class="queue-char-text">
-                <b style="color: var(--text-light);">${escapeHtml(formattedChar)}</b>${escapeHtml(ultiTxt)}
+              <div class="queue-char-row">
+                <b style="color:#ffffff;">${escapeHtml(formatted)}</b>${escapeHtml(ultiTxt)}
               </div>
             </div>
-            <div style="font-size: 0.75rem; font-weight: 800; color: var(--accent-gold); white-space: nowrap;">
-              ${p.matchesLeft || 1} M
+            <div style="font-size:0.75rem; font-weight:900; color:#ffffff; white-space:nowrap;">
+              ${p.matchesLeft || 1}M
             </div>
           </div>
         `;
@@ -1321,43 +1353,15 @@
     }
 
     // ==========================================
-    // FORM INTERACTIONS
+    // FORM LOGIC
     // ==========================================
-    function selectTicketMode(mode) {
-      currentSelectedTicketMode = mode;
-      document.getElementById('reg-ticket-mode').value = mode;
-
-      ['1v1', 'duo', 'tim'].forEach(m => {
-        const btn = document.getElementById(`btn-mode-${m}`);
-        if (btn) btn.classList.toggle('active', m.toUpperCase() === mode);
-      });
-
-      const slot2 = document.getElementById('reg-slot-group-2');
-      const slot3 = document.getElementById('reg-slot-group-3');
-      const slotLabel1 = document.getElementById('reg-slot-label-1');
-
-      if (mode === '1v1') {
-        if (slot2) slot2.style.display = 'none';
-        if (slot3) slot3.style.display = 'none';
-        if (slotLabel1) slotLabel1.innerText = 'Karakter:';
-      } else if (mode === 'DUO') {
-        if (slot2) slot2.style.display = 'block';
-        if (slot3) slot3.style.display = 'none';
-        if (slotLabel1) slotLabel1.innerText = 'Karakter 1 (Leader):';
-      } else {
-        if (slot2) slot2.style.display = 'block';
-        if (slot3) slot3.style.display = 'block';
-        if (slotLabel1) slotLabel1.innerText = 'Karakter 1 (Leader):';
-      }
-    }
-
-    function selectTierType(tier) {
-      if (isTierClosed(tier)) {
+    function selectTier(tier) {
+      if (state.tierStatus && (state.tierStatus[tier] === 'PENUH' || state.tierStatus[tier] === 'CLOSED')) {
         showToast(`Tier ${tier} sedang PENUH / Ditutup.`);
         return;
       }
       currentSelectedTier = tier;
-      document.getElementById('reg-tier-type').value = tier;
+      document.getElementById('selected-tier-val').value = tier;
 
       ['free', 'vip', 'srobot'].forEach(t => {
         const btn = document.getElementById(`tier-btn-${t}`);
@@ -1365,96 +1369,107 @@
       });
     }
 
-    function setMatchesCount(count) {
-      document.getElementById('reg-matches-count').value = count;
+    function setMatches(count) {
+      document.getElementById('selected-matches-val').value = count;
       [1, 2, 3].forEach(n => {
-        const btn = document.getElementById(`btn-match-${n}`);
+        const btn = document.getElementById(`btn-m-${n}`);
         if (btn) {
           if (n === count) {
-            btn.style.background = 'rgba(245, 158, 11, 0.2)';
-            btn.style.borderColor = 'var(--accent-gold)';
-            btn.style.color = '#fef08a';
+            btn.style.background = '#ffffff';
+            btn.style.color = '#222831';
+            btn.style.borderColor = '#ffffff';
           } else {
-            btn.style.background = 'var(--bg-card-subtle)';
-            btn.style.borderColor = 'var(--border-highlight)';
-            btn.style.color = 'var(--text-light)';
+            btn.style.background = 'rgba(255,255,255,0.06)';
+            btn.style.color = '#ffffff';
+            btn.style.borderColor = 'var(--border-subtle)';
           }
         }
       });
     }
 
-    function validateRegistrationName() {
+    function validatePlayerName() {
       const input = document.getElementById('reg-name');
-      const warningEl = document.getElementById('reg-name-warning');
-      if (!input || !warningEl) return true;
+      const warn = document.getElementById('reg-name-warning');
+      if (!input || !warn) return true;
 
       const name = input.value.trim();
       if (!name) {
-        warningEl.style.display = 'none';
+        warn.style.display = 'none';
         return true;
       }
 
       const dup = checkDuplicatePlayer(name, state);
       if (dup) {
-        warningEl.style.display = 'block';
-        warningEl.innerText = `⚠️ ${dup.message}`;
+        warn.style.display = 'block';
+        warn.innerText = `⚠️ ${dup.message}`;
         return false;
       } else {
-        warningEl.style.display = 'none';
+        warn.style.display = 'none';
         return true;
       }
     }
 
     // ==========================================
-    // CHAR PICKER & ULTI SYSTEM (SLOTS 1, 2, 3)
+    // CHARACTER PICKER: PER SLIDE & ABJAD A-Z
     // ==========================================
-    let activeRegPickerSlot = null;
-    let activeRegSlideFilter = 'ALL';
+    let activeSlotPicker = null;
 
-    function openRegCharPicker(slot) {
-      activeRegPickerSlot = slot;
-      activeRegSlideFilter = 'ALL';
-      closeAllRegPickers();
-      const popup = document.getElementById(`reg-picker-popup-${slot}`);
+    function openCharPicker(slot) {
+      activeSlotPicker = slot;
+      closeAllPickers();
+      const popup = document.getElementById(`picker-popup-${slot}`);
       if (popup) {
         popup.style.display = 'block';
-        renderRegPickerPopup(slot, '');
+        renderCharPickerPopup(slot, '');
       }
     }
 
-    function closeAllRegPickers() {
+    function closeAllPickers() {
       [1, 2, 3].forEach(s => {
-        const p = document.getElementById(`reg-picker-popup-${s}`);
+        const p = document.getElementById(`picker-popup-${s}`);
         if (p) p.style.display = 'none';
       });
     }
 
-    function filterRegCharPicker(slot) {
-      activeRegPickerSlot = slot;
+    function filterCharPicker(slot) {
+      activeSlotPicker = slot;
       const input = document.getElementById(`reg-char-${slot}`);
-      const popup = document.getElementById(`reg-picker-popup-${slot}`);
+      const popup = document.getElementById(`picker-popup-${slot}`);
       if (popup) {
         popup.style.display = 'block';
-        renderRegPickerPopup(slot, input ? input.value : '');
+        renderCharPickerPopup(slot, input ? input.value : '');
       }
     }
 
-    function setRegSlideFilter(slide, slot) {
-      activeRegSlideFilter = slide;
+    function toggleSortMode(mode, slot, event) {
+      if (event) { event.preventDefault(); event.stopPropagation(); }
+      regPickerSortMode = mode;
+      localStorage.setItem('koth_reg_char_sort', mode);
       const input = document.getElementById(`reg-char-${slot}`);
-      renderRegPickerPopup(slot, input ? input.value : '');
+      renderCharPickerPopup(slot, input ? input.value : '');
     }
 
-    function renderRegPickerPopup(slot, query) {
-      const popup = document.getElementById(`reg-picker-popup-${slot}`);
+    function setSlideFilter(slideNum, slot, event) {
+      if (event) { event.preventDefault(); event.stopPropagation(); }
+      regPickerSlideFilter = slideNum;
+      const input = document.getElementById(`reg-char-${slot}`);
+      renderCharPickerPopup(slot, input ? input.value : '');
+    }
+
+    function renderCharPickerPopup(slot, query) {
+      const popup = document.getElementById(`picker-popup-${slot}`);
       if (!popup) return;
 
       const q = (query || '').toLowerCase().trim();
-      let filtered = NARUTO_CHARACTERS;
+      let filtered = NARUTO_CHARACTERS.slice();
 
-      if (activeRegSlideFilter !== 'ALL') {
-        const slideNum = parseInt(activeRegSlideFilter);
-        filtered = filtered.filter(c => c.slide === slideNum);
+      if (regPickerSortMode === 'slide') {
+        if (regPickerSlideFilter > 0) {
+          filtered = filtered.filter(c => c.slide === regPickerSlideFilter);
+        }
+      } else {
+        // Abjad A-Z
+        filtered.sort((a, b) => a.name.localeCompare(b.name, 'id', { sensitivity: 'base' }));
       }
 
       if (q) {
@@ -1466,47 +1481,87 @@
         });
       }
 
-      // Tabs Header
-      let tabsHtml = '<div class="char-picker-tabs">';
-      tabsHtml += `<button type="button" class="char-picker-tab-btn ${activeRegSlideFilter === 'ALL' ? 'active' : ''}" onclick="event.stopPropagation(); setRegSlideFilter('ALL', ${slot})">SEMUA (163)</button>`;
-      for (let s = 1; s <= 8; s++) {
-        tabsHtml += `<button type="button" class="char-picker-tab-btn ${activeRegSlideFilter === String(s) ? 'active' : ''}" onclick="event.stopPropagation(); setRegSlideFilter('${s}', ${slot})">SLIDE ${s}</button>`;
-      }
-      tabsHtml += '</div>';
+      // Sort Switcher Header
+      let sortSwitcherHtml = `
+        <div class="char-sort-tabs">
+          <button type="button" class="char-sort-tab-btn ${regPickerSortMode === 'slide' ? 'active' : ''}" onmousedown="toggleSortMode('slide', ${slot}, event)">📑 Per Slide</button>
+          <button type="button" class="char-sort-tab-btn ${regPickerSortMode === 'alpha' ? 'active' : ''}" onmousedown="toggleSortMode('alpha', ${slot}, event)">🔤 Abjad A-Z</button>
+        </div>
+      `;
 
-      // Items List
-      let itemsHtml = '';
-      if (filtered.length === 0) {
-        itemsHtml = '<div style="padding: 14px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">Karakter tidak ditemukan. Pilih dari daftar resmi.</div>';
+      let slideTabsHtml = '';
+      if (regPickerSortMode === 'slide') {
+        slideTabsHtml = `<div class="char-slide-tabs">`;
+        slideTabsHtml += `<button type="button" class="char-slide-tab-btn ${regPickerSlideFilter === 0 ? 'active' : ''}" onmousedown="setSlideFilter(0, ${slot}, event)">Semua (163)</button>`;
+        for (let s = 1; s <= 8; s++) {
+          slideTabsHtml += `<button type="button" class="char-slide-tab-btn ${regPickerSlideFilter === s ? 'active' : ''}" onmousedown="setSlideFilter(${s}, ${slot}, event)">S${s}</button>`;
+        }
+        slideTabsHtml += `</div>`;
       } else {
-        filtered.forEach(c => {
-          const ultiBadge = c.ultis.length > 1 ? 
-            `<span class="badge-ulti-count">⚡ ${c.ultis.length} Ulti</span>` : 
-            `<span style="font-size: 0.65rem; color: #64748b;">1 Ulti</span>`;
-
-          itemsHtml += `
-            <div class="char-picker-item" onclick="selectRegChar(${slot}, '${escapeJs(c.name)}')">
-              <span class="char-item-name">${escapeHtml(c.name)}</span>
-              <div class="char-item-badges">
-                <span class="badge-slide">Slide ${c.slide}</span>
-                ${ultiBadge}
-              </div>
-            </div>
-          `;
-        });
+        slideTabsHtml = `<div style="font-size:0.65rem; color:#929AAB; font-weight:700;">Urutan Abjad A sampai Z (${filtered.length} karakter)</div>`;
       }
 
-      popup.innerHTML = tabsHtml + itemsHtml;
+      let headerHtml = `
+        <div class="char-picker-header">
+          ${sortSwitcherHtml}
+          ${slideTabsHtml}
+        </div>
+      `;
+
+      if (filtered.length === 0) {
+        popup.innerHTML = headerHtml + `
+          <div style="padding: 14px; text-align: center; color: #ef4444; font-size: 0.78rem; font-weight: 700;">
+            ❌ Karakter tidak ditemukan.<br>Pilih karakter dari daftar resmi.
+          </div>
+        `;
+        return;
+      }
+
+      let itemsHtml = `<div style="overflow-y:auto; flex:1;">`;
+      let currentGroupHeader = '';
+
+      filtered.forEach(c => {
+        if (regPickerSortMode === 'slide') {
+          if (c.slide !== currentGroupHeader) {
+            currentGroupHeader = c.slide;
+            itemsHtml += `<div class="char-group-header">⚡ SLIDE ${c.slide}</div>`;
+          }
+        } else {
+          const firstChar = c.name.charAt(0).toUpperCase();
+          if (firstChar !== currentGroupHeader) {
+            currentGroupHeader = firstChar;
+            itemsHtml += `<div class="char-group-header">🔤 HURUF ${firstChar}</div>`;
+          }
+        }
+
+        const ultiBadge = c.ultis.length > 1
+          ? `<span class="badge-multi-ulti">⚡ ${c.ultis.length} Ulti</span>`
+          : `<span class="badge-single-ulti">1 Ulti</span>`;
+
+        const safeName = escapeHtml(c.name).replace(/'/g, "\'");
+        itemsHtml += `
+          <div class="char-picker-item" onmousedown="selectChar(${slot}, '${safeName}')">
+            <span class="char-item-name">${escapeHtml(c.name)}</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <span class="badge-slide">S${c.slide}</span>
+              ${ultiBadge}
+            </div>
+          </div>
+        `;
+      });
+      itemsHtml += `</div>`;
+
+      popup.innerHTML = headerHtml + itemsHtml;
     }
 
-    function selectRegChar(slot, charName) {
+    function selectChar(slot, charName) {
       const input = document.getElementById(`reg-char-${slot}`);
       if (input) input.value = charName;
-      updateRegUltiSelector(slot, charName);
-      closeAllRegPickers();
+      updateUltiDropdown(slot, charName);
+      closeAllPickers();
     }
 
-    function updateRegUltiSelector(slot, charName) {
+    function updateUltiDropdown(slot, charName) {
       const select = document.getElementById(`reg-ulti-${slot}`);
       if (!select) return;
 
@@ -1526,16 +1581,13 @@
         select.appendChild(opt);
       });
 
-      if (c.ultis.length <= 1) {
-        select.disabled = true; // KUNCI JIKA HANYA 1 ULTI
-      } else {
-        select.disabled = false; // BISA DIPILIH JIKA > 1 ULTI
-      }
+      // Kunci jika hanya 1 ulti, buka dropdown jika > 1 ulti
+      select.disabled = (c.ultis.length <= 1);
     }
 
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.char-picker-container')) {
-        closeAllRegPickers();
+        closeAllPickers();
       }
     });
 
@@ -1549,43 +1601,43 @@
       const name = nameInput ? nameInput.value.trim() : '';
 
       if (!name) {
-        alert("Masukkan nama pemain / In-Game Name kamu!");
+        alert("Silakan masukkan nama atau In-Game Name kamu!");
         if (nameInput) nameInput.focus();
         return;
       }
 
-      // 1. Validasi Anti-Double
+      // 1. Anti-Double Check
       const dup = checkDuplicatePlayer(name, state);
       if (dup) {
         alert(`❌ PENDAFTARAN DITOLAK!\n\n${dup.message}.\n\nKamu tidak bisa mendaftar dobel saat masih antri atau bertanding.`);
         return;
       }
 
-      // 2. Validasi Karakter
-      const mode = currentSelectedTicketMode;
+      // 2. Mode Pertandingan Dikontrol Admin
+      const activeMode = state.masterMode || '1v1';
       const c1 = document.getElementById('reg-char-1').value.trim();
       const c2 = document.getElementById('reg-char-2').value.trim();
       const c3 = document.getElementById('reg-char-3').value.trim();
 
       if (!c1) {
-        alert("Pilih Karakter Utama (Slot 1) dari daftar resmi!");
-        openRegCharPicker(1);
+        alert("Pilih Karakter Utama (Slot 1) terlebih dahulu!");
+        openCharPicker(1);
         return;
       }
 
       const chars = [c1];
-      if (mode === 'DUO' || mode === 'TIM') {
+      if (activeMode === 'DUO' || activeMode === 'TIM') {
         if (!c2) {
-          alert("Pilih Karakter 2 (Support 1) untuk mode " + mode + "!");
-          openRegCharPicker(2);
+          alert("Pilih Karakter 2 (Support 1) untuk mode " + activeMode + "!");
+          openCharPicker(2);
           return;
         }
         chars.push(c2);
       }
-      if (mode === 'TIM') {
+      if (activeMode === 'TIM') {
         if (!c3) {
           alert("Pilih Karakter 3 (Support 2) untuk mode TIM!");
-          openRegCharPicker(3);
+          openCharPicker(3);
           return;
         }
         chars.push(c3);
@@ -1593,44 +1645,43 @@
 
       for (let i = 0; i < chars.length; i++) {
         if (!findNarutoChar(chars[i])) {
-          alert(`❌ KARAKTER TIDAK VALID!\n\nKarakter "${chars[i]}" tidak ditemukan dalam daftar resmi Naruto 163 roster.\nSilakan pilih dari saran popup.`);
-          openRegCharPicker(i + 1);
+          alert(`❌ KARAKTER TIDAK VALID!\n\nKarakter "${chars[i]}" tidak ditemukan dalam daftar 163 Naruto resmi.\nSilakan pilih dari popup saran.`);
+          openCharPicker(i + 1);
           return;
         }
       }
 
       // 3. Validasi Tier
       const tier = currentSelectedTier;
-      if (isTierClosed(tier)) {
-        alert(`❌ TIER ${tier} PENUH!\n\nAdmin telah menutup pendaftaran untuk tier ${tier}. Silakan pilih tier yang masih AKTIF.`);
+      if (state.tierStatus && (state.tierStatus[tier] === 'PENUH' || state.tierStatus[tier] === 'CLOSED')) {
+        alert(`❌ TIER ${tier} SEDANG PENUH!\n\nSilakan pilih tier lain yang berstatus AKTIF.`);
         return;
       }
 
-      // Format Karakter & Ulti
+      // 4. Ulti
       const fullChar = chars.join(' / ');
       const u1 = document.getElementById('reg-ulti-1').value.trim();
       const u2 = document.getElementById('reg-ulti-2').value.trim();
       const u3 = document.getElementById('reg-ulti-3').value.trim();
       const ultiArr = [u1];
-      if (mode === 'DUO' || mode === 'TIM') ultiArr.push(u2);
-      if (mode === 'TIM') ultiArr.push(u3);
+      if (activeMode === 'DUO' || activeMode === 'TIM') ultiArr.push(u2);
+      if (activeMode === 'TIM') ultiArr.push(u3);
       const fullUlti = ultiArr.filter(Boolean).join(' / ') || getPlayerDefaultUlti(fullChar);
 
-      const matchesCount = parseInt(document.getElementById('reg-matches-count').value) || 1;
+      const matchesCount = parseInt(document.getElementById('selected-matches-val').value) || 1;
 
-      // Konfirmasi Pendaftaran
-      const confirmMsg = `Konfirmasi Pendaftaran:\n\n` +
+      // Konfirmasi
+      const msg = `Konfirmasi Pendaftaran:\n\n` +
         `• Nama: ${name}\n` +
-        `• Mode: ${mode}\n` +
+        `• Mode: ${activeMode}\n` +
         `• Karakter: ${fullChar}\n` +
         `• Ulti: ${fullUlti}\n` +
         `• Tier: ${tier}\n` +
         `• Match: ${matchesCount}\n\n` +
         `Lanjutkan pendaftaran ke antrian?`;
 
-      if (!confirm(confirmMsg)) return;
+      if (!confirm(msg)) return;
 
-      // Tambahkan pemain ke state antrian
       const newPlayer = {
         id: Date.now().toString(),
         name,
@@ -1639,49 +1690,46 @@
         matchesLeft: matchesCount,
         ws: 0,
         type: tier,
-        ticketMode: mode,
+        ticketMode: activeMode,
         registeredAt: Date.now()
       };
 
-      currentRegisteredPlayerId = newPlayer.id;
+      currentRegisteredId = newPlayer.id;
 
       if (!Array.isArray(state.queue)) state.queue = [];
       state.queue.push(newPlayer);
       sortQueue(state);
       checkAutoFillArena(state);
 
-      // Save & Broadcast
       saveAndBroadcastState();
 
-      // Hitung posisi pemain
       let posText = 'Antrian #1';
       if (state.p1 && state.p1.id === newPlayer.id) {
-        posText = '🔥 LANGSUNG NAIK KE ARENA (P1 JUARA)!';
+        posText = '🔥 LANGSUNG DI ARENA (P1 JUARA)!';
       } else if (state.p2 && state.p2.id === newPlayer.id) {
-        posText = '⚔️ LANGSUNG NAIK KE ARENA (P2 PENANTANG)!';
+        posText = '⚔️ LANGSUNG DI ARENA (P2 PENANTANG)!';
       } else {
-        const qPos = state.queue.findIndex(p => p.id === newPlayer.id);
-        posText = `Antrian #${qPos !== -1 ? qPos + 1 : state.queue.length}`;
+        const qIdx = state.queue.findIndex(p => p.id === newPlayer.id);
+        posText = `Antrian #${qIdx !== -1 ? qIdx + 1 : state.queue.length}`;
       }
 
-      // Tampilkan Modal Sukses
       showSuccessModal({
         name,
         tier,
         char: fullChar,
         ulti: fullUlti,
-        position: posText
+        pos: posText
       });
 
-      // Reset Form Input
+      // Reset
       if (nameInput) nameInput.value = '';
       document.getElementById('reg-char-1').value = '';
       document.getElementById('reg-char-2').value = '';
       document.getElementById('reg-char-3').value = '';
-      updateRegUltiSelector(1, '');
-      updateRegUltiSelector(2, '');
-      updateRegUltiSelector(3, '');
-      validateRegistrationName();
+      updateUltiDropdown(1, '');
+      updateUltiDropdown(2, '');
+      updateUltiDropdown(3, '');
+      validatePlayerName();
       renderAll();
     }
 
@@ -1690,54 +1738,49 @@
       state._ts = Date.now();
       const stateJson = JSON.stringify(state);
 
-      // LocalStorage
       try {
         localStorage.setItem('koth_naruto_state', stateJson);
       } catch (e) { }
 
-      // Cloud MQTT Publish
       if (cloudMqttClient && cloudMqttClient.connected) {
         try {
           cloudMqttClient.publish(MQTT_TOPIC, stateJson, { retain: true, qos: 0 });
-        } catch (e) {
-          console.warn('MQTT publish error:', e);
-        }
+        } catch (e) { }
       }
 
-      // Local Python Server API if on localhost
       const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
       if (window.location.protocol.startsWith('http') && isLocal) {
         fetch('/api/state', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: stateJson
-        }).catch(e => console.warn('Local state POST error:', e));
+        }).catch(() => { });
       }
     }
 
     function showSuccessModal(data) {
-      const modal = document.getElementById('modal-reg-success');
+      const modal = document.getElementById('modal-success');
       if (!modal) return;
 
-      document.getElementById('success-player-name').innerText = data.name;
-      document.getElementById('success-player-char').innerText = data.char;
-      document.getElementById('success-player-ulti').innerText = data.ulti;
-      document.getElementById('success-player-position').innerText = data.position;
+      document.getElementById('suc-name').innerText = data.name;
+      document.getElementById('suc-char').innerText = data.char;
+      document.getElementById('suc-ulti').innerText = data.ulti;
+      document.getElementById('suc-pos').innerText = data.pos;
 
-      const tierBadge = document.getElementById('success-player-tier');
+      const tierBadge = document.getElementById('suc-tier');
       if (tierBadge) {
         tierBadge.innerText = data.tier;
-        tierBadge.className = 'badge-tier ' + (data.tier === 'SROBOT' ? 'badge-tier-srobot' : (data.tier === 'VIP' ? 'badge-tier-vip' : 'badge-tier-free'));
+        tierBadge.className = 'p-role-tag ' + (data.tier === 'SROBOT' ? 'srobot' : (data.tier === 'VIP' ? 'vip' : 'free'));
       }
 
       modal.style.display = 'flex';
     }
 
     function closeSuccessModal(e) {
-      if (e && e.target && e.target.id !== 'modal-reg-success') return;
-      const modal = document.getElementById('modal-reg-success');
+      if (e && e.target && e.target.id !== 'modal-success') return;
+      const modal = document.getElementById('modal-success');
       if (modal) modal.style.display = 'none';
-      showToast('Pendaftaran kamu tersimpan di antrian!');
+      showToast('Pendaftaran tersimpan di antrian!');
     }
 
     function showToast(msg) {
@@ -1755,34 +1798,20 @@
 
     function escapeHtml(str) {
       if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function escapeJs(str) {
-      if (!str) return '';
-      return String(str).replace(/'/g, "\\'");
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
     // ==========================================
-    // INITIALIZATION & REAL-TIME SYNC
+    // INIT SYNC
     // ==========================================
     function initSync() {
-      // 1. Load dari localStorage
       try {
         const saved = localStorage.getItem('koth_naruto_state');
-        if (saved) {
-          state = JSON.parse(saved);
-        }
+        if (saved) state = JSON.parse(saved);
       } catch (e) { }
 
       renderAll();
 
-      // 2. Cloud MQTT Sync
       if (typeof mqtt !== 'undefined') {
         try {
           cloudMqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
@@ -1792,34 +1821,28 @@
           });
 
           cloudMqttClient.on('connect', () => {
-            console.log('Connected to MQTT Cloud Realtime Sync!');
-            const syncText = document.getElementById('sync-text');
-            if (syncText) syncText.innerText = 'Live Sync: Aktif';
+            const badge = document.getElementById('sync-text');
+            if (badge) badge.innerText = 'Live Sync: Aktif';
             cloudMqttClient.subscribe(MQTT_TOPIC, { qos: 0 });
           });
 
           cloudMqttClient.on('message', (topic, payload) => {
             try {
               const remote = JSON.parse(payload.toString());
-              if (remote && remote._clientId === LOCAL_CLIENT_ID) return; // Abaikan echo
+              if (remote && remote._clientId === LOCAL_CLIENT_ID) return;
               state = remote;
-              try {
-                localStorage.setItem('koth_naruto_state', JSON.stringify(state));
-              } catch (e) { }
+              try { localStorage.setItem('koth_naruto_state', JSON.stringify(state)); } catch (e) { }
               renderAll();
             } catch (e) { }
           });
 
           cloudMqttClient.on('close', () => {
-            const syncText = document.getElementById('sync-text');
-            if (syncText) syncText.innerText = 'Menghubungkan...';
+            const badge = document.getElementById('sync-text');
+            if (badge) badge.innerText = 'Menghubungkan...';
           });
-        } catch (e) {
-          console.warn('MQTT init error:', e);
-        }
+        } catch (e) { }
       }
 
-      // 3. Local Python Server if running on localhost
       const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
       if (window.location.protocol.startsWith('http') && isLocal) {
         fetch('/api/state')
@@ -1846,10 +1869,7 @@
       }
     }
 
-    // Jalankan inisialisasi saat window load
-    window.addEventListener('DOMContentLoaded', () => {
-      initSync();
-    });
+    window.addEventListener('DOMContentLoaded', initSync);
   </script>
 </body>
 

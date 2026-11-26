@@ -15,13 +15,37 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 📤 Sync files to Hosting via FTP
+      - name: 📤 Sync files to htdocs/ via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        continue-on-error: true
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: htdocs/
+          state-name: .ftp-deploy-sync-state-root.json
+          protocol: ftp
+          exclude: |
+            **/.git*
+            **/.git*/**
+            scratch/**
+            __pycache__/**
+            server.py
+            start.bat
+            deploy.bat
+            deploy.py
+            README.md
+            state.json
+
+      - name: 📤 Sync files to herz.kesug.com/htdocs/ via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        continue-on-error: true
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: herz.kesug.com/htdocs/
+          state-name: .ftp-deploy-sync-state-herz.json
           protocol: ftp
           exclude: |
             **/.git*

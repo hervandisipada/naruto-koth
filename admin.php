@@ -4403,7 +4403,10 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       const appBaseUrl = window.location.protocol.startsWith('http')
         ? getAppBaseUrl()
         : 'http://localhost/naruto-koth/';
-      const overlayUrl = `${appBaseUrl}overlay.php`;
+      let overlayUrl = `${appBaseUrl}overlay.php`;
+      if (window.location.hostname.includes('kesug.com') || window.location.hostname.includes('epizy.com')) {
+        overlayUrl = `https://hervandisipada.github.io/naruto-koth/overlay.html?room=${encodeURIComponent(STREAM_KEY)}`;
+      }
       const adminUrl = appBaseUrl;
 
       const linkEl = document.getElementById('tiktok-link-display');
@@ -4499,9 +4502,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
     function copyOverlayLink() {
       const linkEl = document.getElementById('tiktok-link-display');
-      const text = linkEl ? linkEl.innerText : `${getAppBaseUrl()}overlay.php`;
+      let text = linkEl ? linkEl.innerText : `${getAppBaseUrl()}overlay.php`;
+      if (window.location.hostname.includes('kesug.com') || window.location.hostname.includes('epizy.com')) {
+        text = `https://hervandisipada.github.io/naruto-koth/overlay.html?room=${encodeURIComponent(STREAM_KEY)}`;
+      }
       navigator.clipboard.writeText(text).then(() => {
-        alert('Link Overlay berhasil disalin!\nTempelkan (Paste) ke Browser Source di TikTok Live Studio:\n' + text + '\n\nResolusi Rekomendasi di TT Studio:\nLebar: 400 | Tinggi: 720 (atau 420 x 740)');
+        alert('Link Overlay (Bebas Blokir Cookie TikTok Studio) berhasil disalin!\nTempelkan (Paste) ke Browser Source di TikTok Live Studio:\n' + text + '\n\nResolusi Rekomendasi di TT Studio:\nLebar: 400 | Tinggi: 720 (atau 420 x 740)');
       }).catch(() => {
         prompt('Salin link ini secara manual:', text);
       });

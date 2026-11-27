@@ -1,0 +1,234 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Master Dataset 163 Karakter Naruto Storm Connections
+ * & Helper Fungsi Roster (Termasuk Sorting Alfabetis A-Z)
+ */
+?>
+<script>
+  // ==========================================
+  // 163 NARUTO CHARACTERS MASTER DATASET
+  // ==========================================
+  const NARUTO_CHARACTERS = [
+    { "id": 1, "name": "Naruto Uzumaki (Mode Petapa Enam Jalan)", "slide": 1, "ultis": ["Enam Jalan: Rasen Shuriken Bola Raksasa", "Rasen Shuriken Planet Siluman Berekor"], "short1v1": "Naruto (Enam Jalan)", "shortTeam": "N6J" },
+    { "id": 2, "name": "Naruto Uzumaki (Mode Link Kurama)", "slide": 1, "ultis": ["Rasen Shuriken Panet Siluman Berekor"], "short1v1": "Naruto (Kurama)", "shortTeam": "NLK" },
+    { "id": 3, "name": "Naruto Uzumaki (Bola Siluman Berekor)", "slide": 1, "ultis": ["Bola Siluman Berekor"], "short1v1": "Naruto (Bijuu)", "shortTeam": "NBS" },
+    { "id": 4, "name": "Naruto Uzumaki (Teknik Petapa: Rentetan Rasengan Bola Raksasa)", "slide": 1, "ultis": ["Teknik Petapa: Rentetan Rasengan Bola Raksasa"], "short1v1": "Naruto (Petapa Rasen)", "shortTeam": "NPR" },
+    { "id": 5, "name": "Naruto Uzumaki (Mode Petapa)", "slide": 1, "ultis": ["Sejati: Elemen Angin - Rasen Shuriken"], "short1v1": "Naruto (Petapa)", "shortTeam": "NSP" },
+    { "id": 6, "name": "Naruto Uzumaki", "slide": 1, "ultis": ["Elemen Angin: Rasen Shuriken", "Rasengan Ekor Sembilan"], "short1v1": "Naruto", "shortTeam": "NRT" },
+    { "id": 7, "name": "Sakura Haruno", "slide": 1, "ultis": ["Mekar Penuh: Tumbukan Bunga Sakura", "Teknik Seratus Penyembuhan"], "short1v1": "Sakura", "shortTeam": "SKR" },
+    { "id": 8, "name": "Sai", "slide": 1, "ultis": ["Teknik Ninja: Gambar Replika Monster - Gerombolan"], "short1v1": "Sai", "shortTeam": "SAI" },
+    { "id": 9, "name": "Kakashi Hatake (Kedua Mata Sharingan)", "slide": 1, "ultis": ["Raikiri: Kilat", "Susanoo: Kamui Raikiri", "Kamui"], "short1v1": "Kakashi (DMS)", "shortTeam": "K2S" },
+    { "id": 10, "name": "Kakashi Hatake (Perang Dunia Ninja)", "slide": 1, "ultis": ["Kamui", "Gempa Petir Ganda Raikiri"], "short1v1": "Kakashi (Perang)", "shortTeam": "KPD" },
+    { "id": 11, "name": "Kakashi Hatake", "slide": 1, "ultis": ["Kamui", "Gempa Petir Ganda Raikiri"], "short1v1": "Kakashi", "shortTeam": "KKS" },
+    { "id": 12, "name": "Might Guy (Perang Dunia Ninja)", "slide": 1, "ultis": ["Merak Pagi", "Harimau Siang", "Guy Malam"], "short1v1": "Guy (Perang)", "shortTeam": "GPD" },
+    { "id": 13, "name": "Might Guy", "slide": 1, "ultis": ["Merak Pagi", "Harimau Siang"], "short1v1": "Guy", "shortTeam": "GUY" },
+    { "id": 14, "name": "Yamato", "slide": 1, "ultis": ["Gen Hokage Pertama"], "short1v1": "Yamato", "shortTeam": "YMT" },
+    { "id": 15, "name": "Shikamaru Nara", "slide": 1, "ultis": ["Teknik Pengumpul Bayangan"], "short1v1": "Shikamaru", "shortTeam": "SKM" },
+    { "id": 16, "name": "Chouji Akimichi", "slide": 1, "ultis": ["Tamparan Super"], "short1v1": "Chouji", "shortTeam": "CHJ" },
+    { "id": 17, "name": "Ino Yamanaka", "slide": 1, "ultis": ["Taman Bunga Tarian Kelopak"], "short1v1": "Ino", "shortTeam": "INO" },
+    { "id": 18, "name": "Neji Hyuga", "slide": 1, "ultis": ["8 Trigraf 64 Tapak"], "short1v1": "Neji", "shortTeam": "NEJ" },
+    { "id": 19, "name": "Rock Lee", "slide": 1, "ultis": ["Angin Panas Konoha"], "short1v1": "Rock Lee", "shortTeam": "LEE" },
+    { "id": 20, "name": "Tenten", "slide": 1, "ultis": ["Kendali Senjata: Bola Besi Raksasa"], "short1v1": "Tenten", "shortTeam": "TTN" },
+    { "id": 21, "name": "Kiba Inuzuka", "slide": 1, "ultis": ["Absolut: Taring ke Taring"], "short1v1": "Kiba", "shortTeam": "KBA" },
+    { "id": 22, "name": "Shino Aburame", "slide": 1, "ultis": ["Teknik Rahasia: Rawa Serangga"], "short1v1": "Shino", "shortTeam": "SHN" },
+    { "id": 23, "name": "Hinata Hyuga", "slide": 1, "ultis": ["Tinju Singa Kembar Halus"], "short1v1": "Hinata", "shortTeam": "HNT" },
+    { "id": 24, "name": "Asuma Sarutobi", "slide": 1, "ultis": ["Bilah Chakra: Lurus"], "short1v1": "Asuma", "shortTeam": "ASM" },
+    { "id": 25, "name": "Konohamaru Sarutobi", "slide": 2, "ultis": ["Teknik Harem Hebat"], "short1v1": "Konohamaru", "shortTeam": "KNH" },
+    { "id": 26, "name": "Shisui Uchiha", "slide": 2, "ultis": ["Kotoamatsukami: Sinar"], "short1v1": "Shisui", "shortTeam": "SSU" },
+    { "id": 27, "name": "Iruka Umino", "slide": 2, "ultis": ["Auman Cinta"], "short1v1": "Iruka", "shortTeam": "IRK" },
+    { "id": 28, "name": "Kushina Uzumaki", "slide": 2, "ultis": ["Habanero Merah Darah"], "short1v1": "Kushina", "shortTeam": "KSN" },
+    { "id": 29, "name": "Jiraiya", "slide": 2, "ultis": ["Rasengan Pahlawan"], "short1v1": "Jiraiya", "shortTeam": "JRY" },
+    { "id": 30, "name": "Hashirama Senju (Edo Tensei)", "slide": 2, "ultis": ["Teknik Petapa: Elemen Kayu - Seribu Tangan Sejati"], "short1v1": "Hashirama (Edo)", "shortTeam": "HSE" },
+    { "id": 31, "name": "Hashirama Senju", "slide": 2, "ultis": ["Teknik Rahasia Elemen Kayu: Pencipta Hutan Belantara"], "short1v1": "Hashirama", "shortTeam": "HSR" },
+    { "id": 32, "name": "Tobirama Senju", "slide": 2, "ultis": ["Elemen Air: Terjangan Naga Air", "Kertas Bom Tandem Lipat  Ganda"], "short1v1": "Tobirama", "shortTeam": "TBR" },
+    { "id": 33, "name": "Hiruzen Sarutobi", "slide": 2, "ultis": ["Teknik Penyegelan: Segel Malaikat Maut"], "short1v1": "Hiruzen", "shortTeam": "HRZ" },
+    { "id": 34, "name": "Minato Namikaze (Edo Tensei)", "slide": 2, "ultis": ["Dewa Petir Terbang: Langkah Kilat Badai Ruang Waktu, Jurus Nol"], "short1v1": "Minato (Edo)", "shortTeam": "MNE" },
+    { "id": 35, "name": "Minato Namikaze", "slide": 2, "ultis": ["Kilat Kuning", "Dewa Petir Terbang: Langkah Dua"], "short1v1": "Minato", "shortTeam": "MNT" },
+    { "id": 36, "name": "Tsunade", "slide": 2, "ultis": ["Tanah Murni Kayangan"], "short1v1": "Tsunade", "shortTeam": "TSN" },
+    { "id": 37, "name": "Danzou Shimura", "slide": 2, "ultis": ["Izanagi"], "short1v1": "Danzou", "shortTeam": "DNZ" },
+    { "id": 38, "name": "Kakashi Hatake (Masa Kecil)", "slide": 2, "ultis": ["Pedang Cahaya Putih"], "short1v1": "Kakashi (Kecil)", "shortTeam": "KKC" },
+    { "id": 39, "name": "Obito Uchiha (Masa Kecil)", "slide": 2, "ultis": ["Elemen Api: Teknik Api Phoenix"], "short1v1": "Obito (Kecil)", "shortTeam": "OBC" },
+    { "id": 40, "name": "Rin Nohara", "slide": 2, "ultis": ["Amukan Ekor Tiga"], "short1v1": "Rin", "shortTeam": "RIN" },
+    { "id": 41, "name": "Naruto Uzumaki (The Last)", "slide": 2, "ultis": ["Kombo 5.000 Naruto Uzumaki"], "short1v1": "Naruto (The Last)", "shortTeam": "NTL" },
+    { "id": 42, "name": "Sasuke Uchiha (The Last)", "slide": 2, "ultis": ["Chidori: Penghancur Bintang"], "short1v1": "Sasuke (The Last)", "shortTeam": "STL" },
+    { "id": 43, "name": "Hanabi Hyuga", "slide": 2, "ultis": ["Aliran Hanabi: 8 Trigraf 64 Tapak"], "short1v1": "Hanabi", "shortTeam": "HNB" },
+    { "id": 44, "name": "Hanabi Hyuga (Shippuden)", "slide": 2, "ultis": ["Aliran Hanabi: 8 Trigraf 64 Tapak"], "short1v1": "Hanabi (Shippuden)", "shortTeam": "HNS" },
+    { "id": 45, "name": "Robot Naruto", "slide": 2, "ultis": ["Meriam Siluman Berekor"], "short1v1": "Robot Naruto", "shortTeam": "RBN" },
+    { "id": 46, "name": "Kurenai", "slide": 2, "ultis": ["Ilusi Iblis: Ikatan Pohon Kemarian - Tebaran Kelopak"], "short1v1": "Kurenai", "shortTeam": "KRN" },
+    { "id": 47, "name": "Sasuke Uchiha (Rinne Sharingan)", "slide": 3, "ultis": ["Takemikazuchi", "Elemen Kobaran: Susanoo Kagutsuchi"], "short1v1": "Sasuke (Rinnegan)", "shortTeam": "SRN" },
+    { "id": 48, "name": "Sasuke Uchiha (Mangekyou Sharingan Abadi)", "slide": 3, "ultis": ["Pedang Kagutsuchi", "Elemen Kobaran: Susanoo Kagutsuchi"], "short1v1": "Sasuke (EMS)", "shortTeam": "SEA" },
+    { "id": 49, "name": "Sasuke Uchiha (Pertemuan Lima Kage)", "slide": 3, "ultis": ["Susanoo"], "short1v1": "Sasuke (5 Kage)", "shortTeam": "S5K" },
+    { "id": 50, "name": "Sasuke Uchiha (Taka)", "slide": 3, "ultis": ["Amaterasu"], "short1v1": "Sasuke (Taka)", "shortTeam": "STK" },
+    { "id": 51, "name": "Sasuke Uchiha", "slide": 3, "ultis": ["Kirin", "Tombak Chidori"], "short1v1": "Sasuke", "shortTeam": "SSK" },
+    { "id": 52, "name": "Orochimaru", "slide": 3, "ultis": ["Teknik Pawang Ular Besar"], "short1v1": "Orochimaru", "shortTeam": "ORC" },
+    { "id": 53, "name": "Kabuto Yakushi (Mode Petapa)", "slide": 3, "ultis": ["Teknik Petapa: Reinkarnasi Anorganik"], "short1v1": "Kabuto (Petapa)", "shortTeam": "KBP" },
+    { "id": 54, "name": "Kabuto Yakushi (Jubah Ular)", "slide": 3, "ultis": ["Pemanggilan: Edo Tensei"], "short1v1": "Kabuto (Ular)", "shortTeam": "KBU" },
+    { "id": 55, "name": "Kabuto Yakushi", "slide": 3, "ultis": ["Teknik Terlarang: Teknik Jiwa Mati"], "short1v1": "Kabuto", "shortTeam": "KBT" },
+    { "id": 56, "name": "Suigetsu Hozuki", "slide": 3, "ultis": ["Jeram: Teknik Transformasi Air"], "short1v1": "Suigetsu", "shortTeam": "SGT" },
+    { "id": 57, "name": "Juugo", "slide": 3, "ultis": ["Tinju Piston: Jurus Nol"], "short1v1": "Juugo", "shortTeam": "JUG" },
+    { "id": 58, "name": "Karin", "slide": 3, "ultis": ["Tamparan Ekstrem"], "short1v1": "Karin", "shortTeam": "KRN" },
+    { "id": 59, "name": "Kimimaro", "slide": 3, "ultis": ["Tarian Tunas Pakis"], "short1v1": "Kimimaro", "shortTeam": "KMM" },
+    { "id": 60, "name": "Jiroubou", "slide": 3, "ultis": ["Tinju Arahat"], "short1v1": "Jiroubou", "shortTeam": "JRB" },
+    { "id": 61, "name": "Kidoumaru", "slide": 3, "ultis": ["Panah Laba-Laba: Koyak"], "short1v1": "Kidoumaru", "shortTeam": "KDM" },
+    { "id": 62, "name": "Sakon/Ukon", "slide": 3, "ultis": ["Rentetan Tinju: Rakshasa"], "short1v1": "Sakon/Ukon", "shortTeam": "SKN" },
+    { "id": 63, "name": "Tayuya", "slide": 3, "ultis": ["Seruling Setan: Rantai Suara Ilusi"], "short1v1": "Tayuya", "shortTeam": "TYY" },
+    { "id": 64, "name": "Gaara (Perang Dunia Ninja)", "slide": 4, "ultis": ["Makam Gurun", "Peti Segel Pasir", "Serangan Tombak Penjara Pasir"], "short1v1": "Gaara (Perang)", "shortTeam": "GPD" },
+    { "id": 65, "name": "Gaara (Pertemuan Lima Kage)", "slide": 4, "ultis": ["Peti Segel Pasir", "Serangan Tombak Penjara Pasir", "Makam Gurun"], "short1v1": "Gaara (5 Kage)", "shortTeam": "G5K" },
+    { "id": 66, "name": "Gaara", "slide": 4, "ultis": ["Peti Segel Pasir", "Serangan Tombak Penjara Pasir", "Makam Gurun"], "short1v1": "Gaara", "shortTeam": "GRA" },
+    { "id": 67, "name": "Kankurou", "slide": 4, "ultis": ["Teknik Hitam Rahasia: 3 Tragedi", "Teknik Hitam Rahasia: Pentas Kalajengking Api"], "short1v1": "Kankurou", "shortTeam": "KNK" },
+    { "id": 68, "name": "Temari", "slide": 4, "ultis": ["Bantingan Topan"], "short1v1": "Temari", "shortTeam": "TMR" },
+    { "id": 69, "name": "Raikage: A", "slide": 4, "ultis": ["Bom Liger", "Lightning Straight"], "short1v1": "Raikage A", "shortTeam": "RKA" },
+    { "id": 70, "name": "Killer Bee (Samehada)", "slide": 4, "ultis": ["Lariat"], "short1v1": "Killer Bee (Samehada)", "shortTeam": "KBS" },
+    { "id": 71, "name": "Killer Bee", "slide": 4, "ultis": ["Lariat"], "short1v1": "Killer Bee", "shortTeam": "KBE" },
+    { "id": 72, "name": "Darui", "slide": 4, "ultis": ["Elemen Badai: Hitam Berburu"], "short1v1": "Darui", "shortTeam": "DRI" },
+    { "id": 73, "name": "Oonoki", "slide": 4, "ultis": ["Elemen Debu: Teknik Belah Dunia Purba"], "short1v1": "Oonoki", "shortTeam": "ONK" },
+    { "id": 74, "name": "Mei Terumi", "slide": 4, "ultis": ["Elemen Korosi: Asam Pelarut"], "short1v1": "Mei", "shortTeam": "MEI" },
+    { "id": 75, "name": "Mifune", "slide": 4, "ultis": ["Tebas Wujud"], "short1v1": "Mifune", "shortTeam": "MFN" },
+    { "id": 76, "name": "Yugito Nii", "slide": 4, "ultis": ["Mangkuk Api Kucing"], "short1v1": "Yugito", "shortTeam": "YGT" },
+    { "id": 77, "name": "Yagura", "slide": 4, "ultis": ["Hempasan Laut Badai"], "short1v1": "Yagura", "shortTeam": "YGR" },
+    { "id": 78, "name": "Roushi", "slide": 4, "ultis": ["Letusan Sungai Berapi"], "short1v1": "Roushi", "shortTeam": "RSH" },
+    { "id": 79, "name": "Han", "slide": 4, "ultis": ["Melompat Lima Gunung"], "short1v1": "Han", "shortTeam": "HAN" },
+    { "id": 80, "name": "Utakata", "slide": 4, "ultis": ["Muatan Gelembung"], "short1v1": "Utakata", "shortTeam": "UTK" },
+    { "id": 81, "name": "Fuu", "slide": 4, "ultis": ["Ledakan Sisik"], "short1v1": "Fuu", "shortTeam": "FUU" },
+    { "id": 82, "name": "Kazekage 4: Rasa", "slide": 4, "ultis": ["Elemen Magnet: Pemakaman Pasir Emas"], "short1v1": "Rasa (Kazekage 4)", "shortTeam": "KZ4" },
+    { "id": 83, "name": "Raikage 3", "slide": 4, "ultis": ["Tikaman Neraka Satu Jari: Ekstrem"], "short1v1": "Raikage 3", "shortTeam": "RK3" },
+    { "id": 84, "name": "Tsuchikage 2", "slide": 4, "ultis": ["Elemen Debu: Teknik Pemisah Belah Dunia Purba"], "short1v1": "Tsuchikage 2", "shortTeam": "TC2" },
+    { "id": 85, "name": "Mizukage 2", "slide": 4, "ultis": ["Teknik Pistol Air"], "short1v1": "Mizukage 2", "shortTeam": "MZ2" },
+    { "id": 86, "name": "Hanzou", "slide": 4, "ultis": ["Teknik Ninja: Kabut Sabit"], "short1v1": "Hanzou", "shortTeam": "HNZ" },
+    { "id": 87, "name": "Nenek Chiyo", "slide": 4, "ultis": ["3 Harta Isap Lebur"], "short1v1": "Nenek Chiyo", "shortTeam": "CHY" },
+    { "id": 88, "name": "Madara Uchiha (Enam Jalan)", "slide": 5, "ultis": ["Meteor Cakrawala"], "short1v1": "Madara (Enam Jalan)", "shortTeam": "M6J" },
+    { "id": 89, "name": "Madara Uchiha (Edo Tensei: Lepas)", "slide": 5, "ultis": ["Bintang Pengguncang Langit", "Susanoo Sempurna"], "short1v1": "Madara (Edo)", "shortTeam": "MDE" },
+    { "id": 90, "name": "Madara Uchiha", "slide": 5, "ultis": ["Bintang Pengguncang Langit"], "short1v1": "Madara", "shortTeam": "MDR" },
+    { "id": 91, "name": "Kaguya Otsutsuki", "slide": 5, "ultis": ["Bola Maut Pencari Makna"], "short1v1": "Kaguya", "shortTeam": "KGY" },
+    { "id": 92, "name": "Indra Otsutsuki", "slide": 5, "ultis": ["Tujuh Petir Dewa"], "short1v1": "Indra", "shortTeam": "IND" },
+    { "id": 93, "name": "Asura Otsutsuki", "slide": 5, "ultis": ["Seribu Tangan Sejati: Tapak Spiral"], "short1v1": "Asura", "shortTeam": "ASR" },
+    { "id": 94, "name": "Obito Uchiha (Jinchuuriki Ekor Sepuluh)", "slide": 5, "ultis": ["Pedang Dewa: Pedang Nunoboko"], "short1v1": "Obito (Jinchuuriki)", "shortTeam": "OBJ" },
+    { "id": 95, "name": "Obito Uchiha", "slide": 5, "ultis": ["Pemanggilan: Ekor Sepuluh"], "short1v1": "Obito", "shortTeam": "OBT" },
+    { "id": 96, "name": "Tobi (Perang Dunia Ninja)", "slide": 5, "ultis": ["Pemanggilan: Patung Iblis Asing"], "short1v1": "Tobi (Perang)", "shortTeam": "TPD" },
+    { "id": 97, "name": "Tobi", "slide": 5, "ultis": ["Teknik Ladang Ranjau"], "short1v1": "Tobi", "shortTeam": "TOB" },
+    { "id": 98, "name": "Pria Bertopeng", "slide": 5, "ultis": ["Pemanggilan: Ekor Sembilan"], "short1v1": "Pria Bertopeng", "shortTeam": "PBM" },
+    { "id": 99, "name": "Obito Uchiha (Pelarian)", "slide": 5, "ultis": ["Elemen Kayu: Neraka Berontak"], "short1v1": "Obito (Pelarian)", "shortTeam": "OBP" },
+    { "id": 100, "name": "Pain", "slide": 5, "ultis": ["Enam Jalan Samsara"], "short1v1": "Pain", "shortTeam": "PAN" },
+    { "id": 101, "name": "Nagato", "slide": 5, "ultis": ["Chibaku Tensei"], "short1v1": "Nagato", "shortTeam": "NGT" },
+    { "id": 102, "name": "Konan", "slide": 5, "ultis": ["Tarian Kertas: Hukuman"], "short1v1": "Konan", "shortTeam": "KNN" },
+    { "id": 103, "name": "Itachi Uchiha", "slide": 5, "ultis": ["Pedang Totsuka", "Tsukoyomi", "Yasaka no Magatama"], "short1v1": "Itachi", "shortTeam": "ITC" },
+    { "id": 104, "name": "Kisame Hoshigaki", "slide": 5, "ultis": ["Elemen Air: Terjangan Ombak", "Elemen Air: Teknik Peluru Hiu Besar"], "short1v1": "Kisame", "shortTeam": "KSM" },
+    { "id": 105, "name": "Kakuzu", "slide": 5, "ultis": ["Dendam Bumi: Tembakan Terakhir"], "short1v1": "Kakuzu", "shortTeam": "KKZ" },
+    { "id": 106, "name": "Hidan", "slide": 5, "ultis": ["Teknik Kutukan: Kuasa Darah Maut"], "short1v1": "Hidan", "shortTeam": "HDN" },
+    { "id": 107, "name": "Deidara", "slide": 5, "ultis": ["C3"], "short1v1": "Deidara", "shortTeam": "DDR" },
+    { "id": 108, "name": "Sasori", "slide": 5, "ultis": ["Dunia Pasir Besi"], "short1v1": "Sasori", "shortTeam": "SSR" },
+    { "id": 109, "name": "Hagoromo Otsutsuki", "slide": 5, "ultis": ["Cahaya Petapa Halilintar"], "short1v1": "Hagoromo", "shortTeam": "HGR" },
+    { "id": 110, "name": "Naruto Uzumaki (Masa Kecil)", "slide": 6, "ultis": ["Kombo 2.000 Naruto Uzumaki"], "short1v1": "Naruto (Kecil)", "shortTeam": "NKC" },
+    { "id": 111, "name": "Sasuke Uchiha (Masa Kecil - Pakaian Akhir)", "slide": 6, "ultis": ["Chidori"], "short1v1": "Sasuke (Kecil Akhir)", "shortTeam": "SKA" },
+    { "id": 112, "name": "Sasuke Uchiha (Masa Kecil)", "slide": 6, "ultis": ["Chidori"], "short1v1": "Sasuke (Kecil)", "shortTeam": "SKC" },
+    { "id": 113, "name": "Sakura Haruno (Masa Kecil)", "slide": 6, "ultis": ["Sakura Agung"], "short1v1": "Sakura (Kecil)", "shortTeam": "SKK" },
+    { "id": 114, "name": "Shikamaru Nara (Masa Kecil)", "slide": 6, "ultis": ["Teknik Ninja: Jurus Bayangan Cekik"], "short1v1": "Shikamaru (Kecil)", "shortTeam": "SMC" },
+    { "id": 115, "name": "Chouji Akimichi (Masa Kecil)", "slide": 6, "ultis": ["Teknik Super Besar"], "short1v1": "Chouji (Kecil)", "shortTeam": "CJC" },
+    { "id": 116, "name": "Ino Yamanaka (Masa Kecil)", "slide": 6, "ultis": ["Teknik Ninja: Seribu Taburan Bunga"], "short1v1": "Ino (Kecil)", "shortTeam": "INC" },
+    { "id": 117, "name": "Neji Hyuga (Masa Kecil)", "slide": 6, "ultis": ["8 Trigraf 64 Tapak"], "short1v1": "Neji (Kecil)", "shortTeam": "NJC" },
+    { "id": 118, "name": "Rock Lee (Masa Kecil)", "slide": 6, "ultis": ["Tangkai Teratai"], "short1v1": "Rock Lee (Kecil)", "shortTeam": "LKC" },
+    { "id": 119, "name": "Tenten (Masa Kecil)", "slide": 6, "ultis": ["Kendali Senjata: Seribu Amukan Pedang"], "short1v1": "Tenten (Kecil)", "shortTeam": "TTC" },
+    { "id": 120, "name": "Kiba Inuzuka (Masa Kecil)", "slide": 6, "ultis": ["Taring Serigala"], "short1v1": "Kiba (Kecil)", "shortTeam": "KBC" },
+    { "id": 121, "name": "Shino Aburame (Masa Kecil)", "slide": 6, "ultis": ["Serangga Parasit: Lonceng"], "short1v1": "Shino (Kecil)", "shortTeam": "SHC" },
+    { "id": 122, "name": "Hinata Hyuga (Masa Kecil)", "slide": 6, "ultis": ["8 Trigraf Pelindung 64 Tapak"], "short1v1": "Hinata (Kecil)", "shortTeam": "HNC" },
+    { "id": 123, "name": "Gaara (Masa Kecil)", "slide": 6, "ultis": ["Makam Agung Arus Pasir"], "short1v1": "Gaara (Kecil)", "shortTeam": "GKC" },
+    { "id": 124, "name": "Kankurou (Masa Kecil)", "slide": 6, "ultis": ["Teknik Hitam Rahasia: Mekanisme Sekali Basmi"], "short1v1": "Kankurou (Kecil)", "shortTeam": "KKC" },
+    { "id": 125, "name": "Temari (Masa Kecil)", "slide": 6, "ultis": ["Pemanggilan: Tarian Penggal Cepat"], "short1v1": "Temari (Kecil)", "shortTeam": "TMC" },
+    { "id": 126, "name": "Zabuza Momochi", "slide": 6, "ultis": ["Membunuh Tanpa Suara"], "short1v1": "Zabuza", "shortTeam": "ZBZ" },
+    { "id": 127, "name": "Haku", "slide": 6, "ultis": ["Teknik Rahasia: Cermin Kristal Es"], "short1v1": "Haku", "shortTeam": "HAK" },
+    { "id": 128, "name": "Boruto Uzumaki \"Karma\"", "slide": 7, "ultis": ["\"Karma\" Rasengan"], "short1v1": "Boruto (Karma)", "shortTeam": "BKM" },
+    { "id": 129, "name": "Boruto Uzumaki (Ujian Chuunin)", "slide": 7, "ultis": ["Spiral Boruto Storm"], "short1v1": "Boruto (Chuunin)", "shortTeam": "BCN" },
+    { "id": 130, "name": "Boruto Uzumaki (Alat Ilmiah Ninja)", "slide": 7, "ultis": ["Overwind Ride"], "short1v1": "Boruto (Alat Ilmiah)", "shortTeam": "BAI" },
+    { "id": 131, "name": "Boruto Uzumaki", "slide": 7, "ultis": ["Boruto Strike"], "short1v1": "Boruto", "shortTeam": "BRT" },
+    { "id": 132, "name": "Sarada Uchiha (Chidori)", "slide": 7, "ultis": ["Penghancur Langit Hujan Sore", "Tarian Bunga Chidori"], "short1v1": "Sarada (Chidori)", "shortTeam": "SRC" },
+    { "id": 133, "name": "Sarada Uchiha", "slide": 7, "ultis": ["Formasi Shuriken Uchiha: Petir Musim Semi"], "short1v1": "Sarada", "shortTeam": "SRD" },
+    { "id": 134, "name": "Mitsuki", "slide": 7, "ultis": ["Teknik Petapa: Petir Ular Agung - Ular Putih", "Ular Liar"], "short1v1": "Mitsuki", "shortTeam": "MTK" },
+    { "id": 135, "name": "Kawaki", "slide": 7, "ultis": ["\"Karma\" Ombak Pemakaman Besar"], "short1v1": "Kawaki", "shortTeam": "KWK" },
+    { "id": 136, "name": "Naruto Uzumaki (Mode Barion)", "slide": 7, "ultis": ["Rasengan Barion: Hujaman Langit"], "short1v1": "Naruto (Barion)", "shortTeam": "NBR" },
+    { "id": 137, "name": "Naruto Uzumaki (Boruto)", "slide": 7, "ultis": ["Sejati: Rasen Shuriken Siluman Berekor"], "short1v1": "Naruto (Boruto)", "shortTeam": "NBT" },
+    { "id": 138, "name": "Sasuke Uchiha (Bayangan Pendukung)", "slide": 7, "ultis": ["Chibaku Tensei: Kirin Kembar"], "short1v1": "Sasuke (Bayangan)", "shortTeam": "SBP" },
+    { "id": 139, "name": "Sasuke Uchiha (Boruto)", "slide": 7, "ultis": ["Chibaku Tensei: Langit Runtuh"], "short1v1": "Sasuke (Boruto)", "shortTeam": "SBT" },
+    { "id": 140, "name": "Sakura Haruno (Boruto)", "slide": 7, "ultis": ["Mekar Penuh: Tumbukan Bunga Sakura", "Teknik Seratus Penyembuhan"], "short1v1": "Sakura (Boruto)", "shortTeam": "SKB" },
+    { "id": 141, "name": "Hinata Hyuga (Boruto)", "slide": 7, "ultis": ["Tinju Singa Kembar Halus"], "short1v1": "Hinata (Boruto)", "shortTeam": "HNB" },
+    { "id": 142, "name": "Shikamaru Nara (Boruto)", "slide": 7, "ultis": ["Teknik Pengumpul Bayangan"], "short1v1": "Shikamaru (Boruto)", "shortTeam": "SMB" },
+    { "id": 143, "name": "Chouji Akimichi (Boruto)", "slide": 7, "ultis": ["Tamparan Super"], "short1v1": "Chouji (Boruto)", "shortTeam": "CJB" },
+    { "id": 144, "name": "Ino Yamanaka (Boruto)", "slide": 7, "ultis": ["Taman Bunga Tarian Kelopak"], "short1v1": "Ino (Boruto)", "shortTeam": "INB" },
+    { "id": 145, "name": "Sai Yamanaka (Boruto)", "slide": 7, "ultis": ["Teknik Ninja: Gambar Replika Monster - Gerombolan"], "short1v1": "Sai (Boruto)", "shortTeam": "SAB" },
+    { "id": 146, "name": "Rock Lee (Boruto)", "slide": 7, "ultis": ["Angin Panas Konoha"], "short1v1": "Rock Lee (Boruto)", "shortTeam": "LBT" },
+    { "id": 147, "name": "Tenten (Boruto)", "slide": 7, "ultis": ["Kendali Senjata: Bola Besi Raksasa"], "short1v1": "Tenten (Boruto)", "shortTeam": "TTB" },
+    { "id": 148, "name": "Kiba Inuzuka (Boruto)", "slide": 7, "ultis": ["Taring Serigala"], "short1v1": "Kiba (Boruto)", "shortTeam": "KBB" },
+    { "id": 149, "name": "Shino Aburame (Boruto)", "slide": 7, "ultis": ["Teknik Rahasia: Rawa Serangga"], "short1v1": "Shino (Boruto)", "shortTeam": "SHB" },
+    { "id": 150, "name": "Kawaki (Evolusi \"Karma\")", "slide": 7, "ultis": ["Peluru Pelarungan Kekaisaran"], "short1v1": "Kawaki (Karma)", "shortTeam": "KWE" },
+    { "id": 151, "name": "Boruto Uzumaki (Evolusi \"Karma\")", "slide": 7, "ultis": ["Rasengan Bola Raksasa: Penghancur Langit"], "short1v1": "Boruto (Karma 2)", "shortTeam": "BKE" },
+    { "id": 152, "name": "Gaara (Boruto)", "slide": 8, "ultis": ["Makam Gurun", "Peti Segel Pasir", "Serangan Tombak Penjara Pasir"], "short1v1": "Gaara (Boruto)", "shortTeam": "GBT" },
+    { "id": 153, "name": "Kankurou (Boruto)", "slide": 8, "ultis": ["Teknik Hitam Rahasia: 3 Tragedi", "Teknik Hitam Rahasia: Pentas Kalajengking Api"], "short1v1": "Kankurou (Boruto)", "shortTeam": "KNB" },
+    { "id": 154, "name": "Temari Nara (Boruto)", "slide": 8, "ultis": ["Bantingan Topan"], "short1v1": "Temari (Boruto)", "shortTeam": "TMB" },
+    { "id": 155, "name": "Darui (Boruto)", "slide": 8, "ultis": ["Elemen Badai: Hitam Berburu"], "short1v1": "Darui (Boruto)", "shortTeam": "DRB" },
+    { "id": 156, "name": "Momoshiki Otsutsuki", "slide": 8, "ultis": ["3 Dewa Setan"], "short1v1": "Momoshiki", "shortTeam": "MMS" },
+    { "id": 157, "name": "Kinshiki Otsutsuki", "slide": 8, "ultis": ["Amukan Marah"], "short1v1": "Kinshiki", "shortTeam": "KNS" },
+    { "id": 158, "name": "Jigen", "slide": 8, "ultis": ["Sukunahikona: Kotak Kubah Jatuh"], "short1v1": "Jigen", "shortTeam": "JGN" },
+    { "id": 159, "name": "Koji Kashin", "slide": 8, "ultis": ["Teknik Petapa: Kipas Lima"], "short1v1": "Koji Kashin", "shortTeam": "KOJ" },
+    { "id": 160, "name": "Delta", "slide": 8, "ultis": ["Aerobatic Strike"], "short1v1": "Delta", "shortTeam": "DLT" },
+    { "id": 161, "name": "Boro", "slide": 8, "ultis": ["Ledakan Mesiu Bom Besar"], "short1v1": "Boro", "shortTeam": "BOR" },
+    { "id": 162, "name": "Isshiki Otsutsuki", "slide": 8, "ultis": ["Daikokuten Sukunahikona Ambruk Ganda"], "short1v1": "Isshiki", "shortTeam": "ISK" },
+    { "id": 163, "name": "Nanashi Uchiha", "slide": 8, "ultis": ["8.000 Tombak: Api Ganas Yang Memukau"], "short1v1": "Nanashi", "shortTeam": "NNS" }
+  ];
+
+  // URUTAN KARAKTER BERDASARKAN ABJAD (A - Z)
+  const ALPHABETICAL_CHARS = [...NARUTO_CHARACTERS].sort((a, b) => a.name.localeCompare(b.name, 'id', { sensitivity: 'base' }));
+
+  function normCharName(str) {
+    if (!str) return '';
+    return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/ō/g, 'o').replace(/ū/g, 'u').replace(/ou/g, 'o').replace(/uu/g, 'u')
+      .replace(/[^a-z0-9]/g, '');
+  }
+
+  const NARUTO_NORM_MAP = new Map();
+  NARUTO_CHARACTERS.forEach(c => NARUTO_NORM_MAP.set(normCharName(c.name), c));
+
+  function findNarutoChar(name) {
+    if (!name) return null;
+    const clean = name.trim();
+    const direct = NARUTO_CHARACTERS.find(c => c.name.toLowerCase() === clean.toLowerCase());
+    if (direct) return direct;
+    return NARUTO_NORM_MAP.get(normCharName(clean)) || null;
+  }
+
+  function getPlayerDefaultUlti(charName) {
+    if (!charName) return '-';
+    const parts = charName.split('/').map(s => s.trim());
+    const ultis = [];
+    parts.forEach(p => {
+      const c = findNarutoChar(p);
+      if (c && c.ultis && c.ultis.length > 0) ultis.push(c.ultis[0]);
+    });
+    return ultis.length > 0 ? ultis.join(' / ') : '-';
+  }
+
+  function formatChar(charStr, mode = '1v1') {
+    if (!charStr || charStr === '-' || charStr === 'TBA') return charStr || '-';
+    const parts = charStr.split('/').map(s => s.trim()).filter(Boolean);
+    if (parts.length === 0) return charStr;
+    if (mode === '1v1' && parts.length === 1) {
+      const c = findNarutoChar(parts[0]);
+      return c ? c.short1v1 : parts[0];
+    }
+    return parts.map(p => {
+      const c = findNarutoChar(p);
+      return c ? c.shortTeam : p.substring(0, 3).toUpperCase();
+    }).join(' / ');
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+</script>

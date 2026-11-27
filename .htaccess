@@ -24,4 +24,5 @@ RewriteRule ^overlay\.html$ overlay.php [L,QSA]
 # Friendly URLs
 RewriteRule ^admin/?$ admin.php [L,QSA]
 RewriteRule ^overlay/?$ overlay.php [L,QSA]
+RewriteRule ^vip/?$ vip.php [L,QSA]
 </IfModule>

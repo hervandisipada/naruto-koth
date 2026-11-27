@@ -230,18 +230,29 @@ $currentRoomKey = $roomKey ?? (function_exists('resolveRoomKey') ? resolveRoomKe
   <div class="koth-sidebar-body">
     <div class="koth-sidebar-group-title">NAVIGASI UTAMA</div>
 
-    <!-- 1. HOME -->
-    <a href="index.php" class="koth-sidebar-link <?= ($sidebarActive === 'home') ? 'active' : '' ?>">
+    <!-- 1. PENDAFTARAN FREE -->
+    <a href="index.php" class="koth-sidebar-link <?= ($sidebarActive === 'home' || $sidebarActive === 'free') ? 'active' : '' ?>">
       <div class="koth-sidebar-link-left">
-        <span class="koth-sidebar-link-icon">🏠</span>
-        <span>Home (Pendaftaran)</span>
+        <span class="koth-sidebar-link-icon">🍃</span>
+        <span>Daftar Free Request</span>
       </div>
-      <?php if ($sidebarActive === 'home'): ?>
+      <?php if ($sidebarActive === 'home' || $sidebarActive === 'free'): ?>
         <span class="koth-sidebar-active-tag">AKTIF</span>
       <?php endif; ?>
     </a>
 
-    <!-- 2. OVERLAY -->
+    <!-- 2. PENDAFTARAN VIP & SROBOT -->
+    <a href="vip.php" class="koth-sidebar-link <?= ($sidebarActive === 'vip') ? 'active' : '' ?>">
+      <div class="koth-sidebar-link-left">
+        <span class="koth-sidebar-link-icon">⭐</span>
+        <span>Daftar VIP &amp; SROBOT</span>
+      </div>
+      <?php if ($sidebarActive === 'vip'): ?>
+        <span class="koth-sidebar-active-tag">AKTIF</span>
+      <?php endif; ?>
+    </a>
+
+    <!-- 3. OVERLAY -->
     <a href="overlay.php" target="_blank" class="koth-sidebar-link <?= ($sidebarActive === 'overlay') ? 'active' : '' ?>" title="Buka Live Overlay untuk OBS / TikTok Live Studio">
       <div class="koth-sidebar-link-left">
         <span class="koth-sidebar-link-icon">📺</span>
@@ -250,7 +261,7 @@ $currentRoomKey = $roomKey ?? (function_exists('resolveRoomKey') ? resolveRoomKe
       <span style="font-size: 0.8rem; opacity: 0.7;">↗</span>
     </a>
 
-    <!-- 3. ADMIN -->
+    <!-- 4. ADMIN -->
     <a href="admin.php" class="koth-sidebar-link <?= ($sidebarActive === 'admin') ? 'active' : '' ?>">
       <div class="koth-sidebar-link-left">
         <span class="koth-sidebar-link-icon">🔒</span>

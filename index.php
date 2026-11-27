@@ -187,10 +187,50 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       flex-shrink: 0;
     }
 
+    .ticker-marquee-wrap {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+
     .ticker-content {
       color: #ffffff;
       font-weight: 700;
       font-size: 0.90rem;
+      white-space: nowrap;
+      display: inline-block;
+      will-change: transform;
+    }
+
+    /* MARQUEE UTILITIES UNTUK TEKS PANJANG (ARENA & QUEUE) */
+    .marquee-container {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .marquee-content {
+      display: inline-block !important;
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      will-change: transform;
+    }
+
+    .marquee-active {
+      animation: marqueeH 12s linear infinite;
+    }
+
+    @keyframes marqueeH {
+      0%    { transform: translateX(0); }
+      25%   { transform: translateX(0); }
+      75%   { transform: translateX(var(--marquee-dist, -50px)); }
+      99.9% { transform: translateX(var(--marquee-dist, -50px)); }
+      100%  { transform: translateX(0); }
     }
 
     /* ARENA LIVE DISPLAY (MATCH-BOX PERSIS STYLE OVERLAY) */
@@ -1228,7 +1268,9 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     <!-- TICKER NOTE MARQUEE (SELARAS OVERLAY) -->
     <div class="overlay-ticker" id="ticker-wrap" style="display: none;">
       <span class="ticker-label">NOTE:</span>
-      <span class="ticker-content" id="ticker-text">-</span>
+      <div class="ticker-marquee-wrap" id="ticker-marquee-wrap">
+        <span class="ticker-content" id="ticker-text">-</span>
+      </div>
     </div>
 
     <!-- ARENA LIVE DISPLAY (PERSIS STYLE OVERLAY) -->
@@ -1248,10 +1290,16 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           <div class="p-info-p1">
             <div class="p-header-line">
               <span class="p-role-tag" id="arena-p1-tier">P1</span>
-              <div id="arena-p1-name" class="p-name">Menunggu...</div>
+              <div class="marquee-container" style="flex: 1; min-width: 0;">
+                <div id="arena-p1-name" class="p-name marquee-content">Menunggu...</div>
+              </div>
             </div>
-            <div id="arena-p1-char" class="p-char">-</div>
-            <div id="arena-p1-ulti" class="p-ulti" style="display:none;"></div>
+            <div class="marquee-container" style="min-width: 0;">
+              <div id="arena-p1-char" class="p-char marquee-content">-</div>
+            </div>
+            <div class="marquee-container" style="min-width: 0;">
+              <div id="arena-p1-ulti" class="p-ulti marquee-content" style="display:none;"></div>
+            </div>
           </div>
           <div class="p-right">
             <div class="p-ws">
@@ -1275,11 +1323,17 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           </div>
           <div class="p-info-p2">
             <div class="p-header-line-p2">
-              <div id="arena-p2-name" class="p-name">Menunggu...</div>
+              <div class="marquee-container right-align" data-align="right" style="flex: 1; min-width: 0; text-align: right;">
+                <div id="arena-p2-name" class="p-name marquee-content">Menunggu...</div>
+              </div>
               <span class="p-role-tag" id="arena-p2-tier">P2</span>
             </div>
-            <div id="arena-p2-char" class="p-char">-</div>
-            <div id="arena-p2-ulti" class="p-ulti" style="display:none;"></div>
+            <div class="marquee-container right-align" data-align="right" style="min-width: 0; text-align: right;">
+              <div id="arena-p2-char" class="p-char marquee-content">-</div>
+            </div>
+            <div class="marquee-container right-align" data-align="right" style="min-width: 0; text-align: right;">
+              <div id="arena-p2-ulti" class="p-ulti marquee-content" style="display:none;"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -2297,18 +2351,22 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         html += `
           <div class="queue-item-card ${isMe ? 'is-me' : ''}">
             <div class="queue-rank-badge ${rankMedalCls}">#${idx + 1}</div>
-            <div class="queue-info-wrap">
-              <div class="queue-name-row">
-                <span class="queue-name-text">${escapeHtml(p.name)}</span>
-                <span class="p-role-tag ${roleCls}">${roleLabel}</span>
-                <span class="q-mode-badge">${modeBadge}</span>
-                ${isMe ? '<span style="font-size:0.65rem; font-weight:900; color:#ffffff; background:#22c55e; padding:1px 6px; border-radius:3px;">KAMU</span>' : ''}
+            <div class="queue-info-wrap" style="flex: 1; min-width: 0; overflow: hidden;">
+              <div class="queue-name-row" style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
+                <div class="q-name-marquee-container marquee-container" style="flex: 1; min-width: 0;">
+                  <span class="queue-name-text q-name-marquee-content marquee-content">${escapeHtml(p.name)}</span>
+                </div>
+                <span class="p-role-tag ${roleCls}" style="flex-shrink: 0;">${roleLabel}</span>
+                <span class="q-mode-badge" style="flex-shrink: 0;">${modeBadge}</span>
+                ${isMe ? '<span style="flex-shrink: 0; font-size:0.65rem; font-weight:900; color:#ffffff; background:#22c55e; padding:1px 6px; border-radius:3px;">KAMU</span>' : ''}
               </div>
-              <div class="queue-char-row">
-                <b style="color:#ffffff;">${escapeHtml(formatted)}</b>${escapeHtml(ultiTxt)}
+              <div class="queue-char-row q-char-marquee-container marquee-container" style="min-width: 0;">
+                <div class="q-char-marquee-content marquee-content">
+                  <b style="color:#ffffff;">${escapeHtml(formatted)}</b>${escapeHtml(ultiTxt)}
+                </div>
               </div>
             </div>
-            <div class="q-match-badge">
+            <div class="q-match-badge" style="flex-shrink: 0;">
               ${p.matchesLeft || 1}M
             </div>
           </div>
@@ -2318,10 +2376,122 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       container.innerHTML = html;
     }
 
+    // ==========================================
+    // MARQUEE AUTO-SCROLL (ARENA & QUEUE)
+    // ==========================================
+    function applyMarquee(wrap, container, speed = 25, pauseStart = 2500, pauseEnd = 2000) {
+      if (!wrap || !container) return;
+
+      const currentText = wrap.innerText || wrap.textContent || '';
+      if (wrap._marqueeAnim && wrap._marqueeText === currentText) {
+        return;
+      }
+      wrap._marqueeText = currentText;
+
+      if (wrap._marqueeAnim) {
+        try { wrap._marqueeAnim.cancel(); } catch (e) { }
+        wrap._marqueeAnim = null;
+      }
+      wrap.style.transform = 'none';
+
+      // Penanganan khusus elemen right-aligned (P2 di Arena)
+      const isRight = container.classList.contains('right-align') || container.dataset.align === 'right';
+      if (isRight) {
+        container.style.textAlign = 'left';
+      }
+
+      const diff = wrap.scrollWidth - container.clientWidth;
+      if (diff <= 3) {
+        if (isRight) container.style.textAlign = 'right';
+        return;
+      }
+
+      if (isRight) container.style.textAlign = 'left';
+
+      const dist = -(diff + 16);
+      const walkDuration = Math.max(2500, (diff / speed) * 1000);
+      const totalDuration = pauseStart + walkDuration + pauseEnd;
+
+      const p1 = pauseStart / totalDuration;
+      const p2 = (pauseStart + walkDuration) / totalDuration;
+
+      try {
+        wrap._marqueeAnim = wrap.animate([
+          { transform: 'translateX(0px)', offset: 0 },
+          { transform: 'translateX(0px)', offset: p1 },
+          { transform: `translateX(${dist}px)`, offset: p2 },
+          { transform: `translateX(${dist}px)`, offset: 0.999 },
+          { transform: 'translateX(0px)', offset: 1.0 }
+        ], {
+          duration: totalDuration,
+          iterations: Infinity,
+          easing: 'linear'
+        });
+      } catch (err) {
+        wrap.style.setProperty('--marquee-dist', `${dist}px`);
+        wrap.classList.add('marquee-active');
+      }
+    }
+
+    function triggerMarquees() {
+      requestAnimationFrame(() => {
+        // 1. Ticker Announcement
+        const tickerWrap = document.getElementById('ticker-marquee-wrap') || document.getElementById('ticker-wrap');
+        const tickerText = document.getElementById('ticker-text');
+        if (tickerWrap && tickerText) {
+          const parentWrap = document.getElementById('ticker-wrap');
+          if (parentWrap && parentWrap.style.display !== 'none') {
+            applyMarquee(tickerText, tickerWrap, 25, 2500, 2000);
+          }
+        }
+
+        // 2. Arena Match Box Marquees
+        document.querySelectorAll('#arena-match-box .marquee-container').forEach(container => {
+          const wrap = container.querySelector('.marquee-content');
+          if (wrap) {
+            const txt = (wrap.innerText || '').trim();
+            if (txt && txt !== '-' && txt !== 'Menunggu...') {
+              applyMarquee(wrap, container, 25, 2500, 2000);
+            } else {
+              if (wrap._marqueeAnim) {
+                try { wrap._marqueeAnim.cancel(); } catch (e) { }
+                wrap._marqueeAnim = null;
+              }
+              wrap.style.transform = 'none';
+              if (container.classList.contains('right-align') || container.dataset.align === 'right') {
+                container.style.textAlign = 'right';
+              }
+            }
+          }
+        });
+
+        // 3. Queue List Card Marquees
+        document.querySelectorAll('.queue-item-card').forEach(card => {
+          const nameContainer = card.querySelector('.q-name-marquee-container');
+          const nameWrap = card.querySelector('.q-name-marquee-content');
+          if (nameContainer && nameWrap) {
+            applyMarquee(nameWrap, nameContainer, 25, 2500, 2000);
+          }
+
+          const charContainer = card.querySelector('.q-char-marquee-container');
+          const charWrap = card.querySelector('.q-char-marquee-content');
+          if (charContainer && charWrap) {
+            applyMarquee(charWrap, charContainer, 25, 2500, 2000);
+          }
+        });
+      });
+    }
+
+    window.addEventListener('resize', () => triggerMarquees());
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') triggerMarquees();
+    });
+
     function renderAll() {
       renderArenaMini();
       renderTierButtons();
       renderQueueList();
+      triggerMarquees();
     }
 
     // ==========================================

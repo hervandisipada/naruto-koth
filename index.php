@@ -1957,16 +1957,6 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         }
       }
     }
-else {
-      // TIM
-      if (bannerTitle) bannerTitle.innerText = '👑 MODE AKTIF LIVE: TIM (3 KARAKTER)';
-      if (bannerDesc) bannerDesc.innerText = 'Format 3 Karakter (Leader + Support 1 + Support 2) + Pilihan Ultimate Jutsu';
-      if (bannerPill) bannerPill.innerText = 'TIM';
-      if (slot2) slot2.style.display = 'block';
-      if (slot3) slot3.style.display = 'block';
-      if (slotLabel1) slotLabel1.innerText = 'Karakter 1 (Leader):';
-    }
-    }
 
     function getArenaRoles(st) {
       const s = st || state;
@@ -2989,6 +2979,8 @@ ${freeCheck.reason}`);
           kothSyncChannel.postMessage({ type: 'KOTH_STATE_UPDATE', state: state, ts: state._ts, clientId: LOCAL_CLIENT_ID });
         } catch (e) { }
       }
+
+      renderAll();
 
       if (cloudMqttClient && cloudMqttClient.connected) {
         try {

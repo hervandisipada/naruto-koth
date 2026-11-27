@@ -233,164 +233,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       100%  { transform: translateX(0); }
     }
 
-    /* ARENA LIVE DISPLAY (MATCH-BOX PERSIS STYLE OVERLAY) */
-    .arena-card {
-      background: var(--bg-panel);
-      border-radius: 8px;
-      padding: 8px 12px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .arena-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      padding-bottom: 6px;
-    }
-
-    .live-title-row {
-      font-size: 0.85rem;
-      font-weight: 900;
-      letter-spacing: 0.8px;
-      color: var(--c-white);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 8px #22c55e;
-    }
-
-    .live-mode-badge {
-      font-size: 0.72rem;
-      font-weight: 900;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: var(--c-white);
-      color: var(--bg-main);
-      letter-spacing: 0.5px;
-    }
-
-    /* MATCH ARENA - PERSIS OVERLAY MATCH-BOX */
-    .match-box {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      background: rgba(0, 0, 0, 0.25);
-      border-radius: 8px;
-      padding: 5px;
-      border: 1px solid var(--border-subtle);
-    }
-
-    .player-slot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 10px;
-      border-radius: 6px;
-      transition: background 0.15s ease;
-      background: rgba(255, 255, 255, 0.03);
-      border-left: 3px solid var(--c-slate);
-      min-height: 44px;
-    }
-
-    .p-info-p1 {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-width: 0;
-      flex: 1;
-      gap: 1px;
-    }
-
-    .p-info-p2 {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-end;
-      text-align: right;
-      min-width: 0;
-      flex: 1;
-      gap: 1px;
-    }
-
-    .p-header-line {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .p-header-line-p2 {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .player-slot.fast,
-    .player-slot.vvip,
-    .player-slot.srobot,
-    .player-slot.p1.fast,
-    .player-slot.p1.srobot {
-      background: rgba(168, 85, 247, 0.12);
-      border-left: 3px solid #a855f7;
-      box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
-    }
-
-    .player-slot.vip,
-    .player-slot.p1.vip {
-      background: rgba(255, 215, 0, 0.05);
-      border-left: 3px solid #FFD700;
-    }
-
-    .player-slot.free,
-    .player-slot.p1.free {
-      background: rgba(255, 255, 255, 0.02);
-      border-left: 3px solid rgba(146, 154, 171, 0.35);
-    }
-
-    /* P2 MIRRORED BORDER & LAYOUT */
-    #arena-p2-slot,
-    .player-slot.p2 {
-      border-left: none;
-      border-right: 3px solid var(--c-slate);
-    }
-
-    #arena-p2-slot.fast,
-    #arena-p2-slot.vvip,
-    #arena-p2-slot.srobot,
-    .player-slot.p2.fast,
-    .player-slot.p2.srobot {
-      border-left: none;
-      border-right: 3px solid #a855f7;
-      box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
-    }
-
-    #arena-p2-slot.vip,
-    .player-slot.p2.vip {
-      border-left: none;
-      border-right: 3px solid #FFD700;
-    }
-
-    #arena-p2-slot.free,
-    .player-slot.p2.free {
-      border-left: none;
-      border-right: 3px solid rgba(146, 154, 171, 0.35);
-    }
-
-    /* ROLE BADGE = TIER BADGE IN ARENA */
+    /* ROLE BADGE = TIER BADGE */
     .p-role-tag {
       font-size: 0.70rem;
       font-weight: 800;
@@ -434,115 +277,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       font-weight: 700;
     }
 
-    /* LARGE PLAYER NAME */
-    .p-name {
-      font-weight: 800;
-      font-size: 1.15rem;
-      color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.15;
-    }
-
-    /* LARGE CHARACTER NAME */
-    .p-ulti {
-      font-size: 0.70rem;
-      color: #facc15;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-      line-height: 1.1;
-      max-width: 100%;
-    }
-
-    .p-char {
-      font-size: 0.82rem;
-      color: rgba(255, 255, 255, 0.85);
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.1;
-    }
-
-    .p-right {
-      text-align: right;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 1px;
-      flex-shrink: 0;
-      margin-left: 8px;
-    }
-
-    .p-left-p2 {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1px;
-      flex-shrink: 0;
-      margin-right: 8px;
-    }
-
-    /* PROMINENT WIN STREAK */
-    .p-ws {
-      font-weight: 800;
-      font-size: 1.05rem;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      line-height: 1.15;
-    }
-
-    .bonus-badge {
-      font-size: 0.68rem;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      color: #ffffff;
-      padding: 0 4px;
-      border-radius: 3px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-    }
-
-    .p-ticket {
-      font-size: 0.82rem;
-      color: rgba(255, 255, 255, 0.85);
-      font-weight: 600;
-      line-height: 1.1;
-    }
-
-    .p-ticket b {
-      color: #ffffff;
-      font-size: 0.88rem;
-      font-weight: 800;
-    }
-
-    .vs-tag {
-      text-align: center;
-      font-size: 0.65rem;
-      font-weight: 900;
-      color: rgba(255, 255, 255, 0.7);
-      letter-spacing: 1.5px;
-      margin: 0;
-      line-height: 1;
-    }
-
-    /* MAIN 2-COLUMN LAYOUT */
-    .columns-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 12px;
-    }
-
-    @media (max-width: 768px) {
-      .columns-grid {
-        grid-template-columns: 1fr;
-      }
+    /* MAIN REGISTRATION CONTAINER */
+    .columns-grid, .registration-main {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      display: block;
     }
 
     /* CARD CONTAINER */
@@ -1269,76 +1009,10 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       </div>
     </div>
 
-    <!-- ARENA LIVE DISPLAY (PERSIS STYLE OVERLAY) -->
-    <section class="arena-card" id="arena-card">
-      <div class="arena-card-header">
-        <div class="live-title-row">
-          <span class="live-dot"></span>
-          <span class="live-text">LIVE ARENA MATCH</span>
-        </div>
-        <div class="live-mode-badge" id="arena-mode-badge">1vs1</div>
-      </div>
+    <!-- REGISTRATION MAIN CONTAINER -->
+    <main class="registration-main">
 
-      <!-- Match Arena (Persis Overlay match-box) -->
-      <div class="match-box" id="arena-match-box">
-        <!-- Player 1 Slot -->
-        <div class="player-slot p1" id="arena-p1-slot">
-          <div class="p-info-p1">
-            <div class="p-header-line">
-              <span class="p-role-tag" id="arena-p1-tier">P1</span>
-              <div class="marquee-container" style="flex: 1; min-width: 0;">
-                <div id="arena-p1-name" class="p-name marquee-content">Menunggu...</div>
-              </div>
-            </div>
-            <div class="marquee-container" style="min-width: 0;">
-              <div id="arena-p1-char" class="p-char marquee-content">-</div>
-            </div>
-            <div class="marquee-container" style="min-width: 0;">
-              <div id="arena-p1-ulti" class="p-ulti marquee-content" style="display:none;"></div>
-            </div>
-          </div>
-          <div class="p-right">
-            <div class="p-ws">
-              WS: <span id="arena-p1-ws">0</span>
-              <span id="arena-p1-bonus" class="bonus-badge" style="display:none;">+1 MATCH</span>
-            </div>
-            <div class="p-ticket">Match: <b id="arena-p1-tickets">0</b></div>
-          </div>
-        </div>
-
-        <div class="vs-tag">VS</div>
-
-        <!-- Player 2 Slot (Mirrored: WS/Tiket on Left, Tier/Nama/Char on Right) -->
-        <div class="player-slot p2" id="arena-p2-slot">
-          <div class="p-left-p2">
-            <div class="p-ws">
-              WS: <span id="arena-p2-ws">0</span>
-              <span id="arena-p2-bonus" class="bonus-badge" style="display:none;">+1 MATCH</span>
-            </div>
-            <div class="p-ticket">Match: <b id="arena-p2-tickets">0</b></div>
-          </div>
-          <div class="p-info-p2">
-            <div class="p-header-line-p2">
-              <div class="marquee-container right-align" data-align="right" style="flex: 1; min-width: 0; text-align: right;">
-                <div id="arena-p2-name" class="p-name marquee-content">Menunggu...</div>
-              </div>
-              <span class="p-role-tag" id="arena-p2-tier">P2</span>
-            </div>
-            <div class="marquee-container right-align" data-align="right" style="min-width: 0; text-align: right;">
-              <div id="arena-p2-char" class="p-char marquee-content">-</div>
-            </div>
-            <div class="marquee-container right-align" data-align="right" style="min-width: 0; text-align: right;">
-              <div id="arena-p2-ulti" class="p-ulti marquee-content" style="display:none;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MAIN 2-COLUMN LAYOUT -->
-    <main class="columns-grid">
-
-      <!-- COLUMN 1: FORMULIR PENDAFTARAN -->
+      <!-- FORMULIR PENDAFTARAN -->
       <section class="card-panel">
         <div class="card-panel-title">
           <span>📝 PENDAFTARAN MATCH</span>
@@ -1518,25 +1192,6 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             </button>
           </div>
         </form>
-      </section>
-
-      <!-- COLUMN 2: DAFTAR ANTRIAN LIVE (SELARAS OVERLAY) -->
-      <section class="card-panel">
-        <div class="card-panel-title">
-          <span>📋 DAFTAR ANTRIAN LIVE</span>
-          <span id="queue-count-tag" class="p-role-tag free">0 Pemain</span>
-        </div>
-
-        <div class="queue-summary-line">
-          <span id="queue-stats-text">SB: 0 | VIP: 0 | FREE: 0</span>
-          <span>⚡ PRIORITAS OTOMATIS</span>
-        </div>
-
-        <div class="queue-list-wrap" id="queue-items-container">
-          <div class="empty-queue-box">
-            🍃 Antrian masih kosong.<br>Jadilah yang pertama mendaftar!
-          </div>
-        </div>
       </section>
 
     </main>
@@ -2116,147 +1771,6 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
     function renderArenaMini() {
       applyActiveModeUI();
-      const mode = state.masterMode || '1v1';
-
-      // Slot 1 (P1)
-      const slot1 = document.getElementById('arena-p1-slot');
-      const p1Tier = document.getElementById('arena-p1-tier');
-      const p1Name = document.getElementById('arena-p1-name');
-      const p1Char = document.getElementById('arena-p1-char');
-      const p1Ulti = document.getElementById('arena-p1-ulti');
-      const p1Ws = document.getElementById('arena-p1-ws');
-      const p1Tickets = document.getElementById('arena-p1-tickets');
-      const p1Bonus = document.getElementById('arena-p1-bonus');
-
-      if (state.p1 && state.p1.name && state.p1.name !== '-') {
-        const rawT1 = getTierLabel(state.p1.type);
-        const clsT1 = getTierCls(state.p1.type);
-        if (slot1) slot1.className = 'player-slot p1 ' + clsT1;
-        if (p1Tier) {
-          p1Tier.className = 'p-role-tag ' + clsT1;
-          p1Tier.innerText = rawT1;
-          p1Tier.style.display = 'inline-flex';
-        }
-        if (p1Name) p1Name.innerText = state.p1.name;
-        if (p1Char) {
-          const fChar1 = formatChar(state.p1.char, mode);
-          p1Char.innerText = fChar1;
-          p1Char.title = state.p1.char || fChar1;
-          if (fChar1.length > 25) {
-            p1Char.style.fontSize = '0.70rem';
-          } else if (fChar1.length > 18) {
-            p1Char.style.fontSize = '0.75rem';
-          } else {
-            p1Char.style.fontSize = '';
-          }
-        }
-        if (p1Ulti) {
-          const u = state.p1.ulti || getPlayerDefaultUlti(state.p1.char);
-          if (u && u !== '-' && u !== 'TBA') {
-            p1Ulti.style.display = 'block';
-            p1Ulti.innerText = `⚡ ${u}`;
-            p1Ulti.title = `Ultimate: ${u}`;
-          } else {
-            p1Ulti.style.display = 'none';
-          }
-        }
-        if (p1Ws) p1Ws.innerText = state.p1.ws || 0;
-        if (p1Tickets) p1Tickets.innerText = state.p1.matchesLeft || 0;
-        if (p1Bonus) {
-          if (state.p1.bonusAnimUntil && Date.now() < state.p1.bonusAnimUntil) {
-            p1Bonus.innerText = '+1 MATCH';
-            p1Bonus.style.display = 'inline-block';
-          } else {
-            p1Bonus.style.display = 'none';
-          }
-        }
-      } else {
-        if (slot1) slot1.className = 'player-slot p1';
-        if (p1Tier) {
-          p1Tier.className = 'p-role-tag';
-          p1Tier.innerText = 'P1';
-          p1Tier.style.display = 'inline-flex';
-        }
-        if (p1Name) p1Name.innerText = 'Menunggu...';
-        if (p1Char) {
-          p1Char.innerText = '-';
-          p1Char.style.fontSize = '';
-        }
-        if (p1Ulti) p1Ulti.style.display = 'none';
-        if (p1Ws) p1Ws.innerText = '0';
-        if (p1Tickets) p1Tickets.innerText = '-';
-        if (p1Bonus) p1Bonus.style.display = 'none';
-      }
-
-      // Slot 2 (P2 - Mirrored)
-      const slot2 = document.getElementById('arena-p2-slot');
-      const p2Tier = document.getElementById('arena-p2-tier');
-      const p2Name = document.getElementById('arena-p2-name');
-      const p2Char = document.getElementById('arena-p2-char');
-      const p2Ulti = document.getElementById('arena-p2-ulti');
-      const p2Ws = document.getElementById('arena-p2-ws');
-      const p2Tickets = document.getElementById('arena-p2-tickets');
-      const p2Bonus = document.getElementById('arena-p2-bonus');
-
-      if (state.p2 && state.p2.name && state.p2.name !== '-') {
-        const rawT2 = getTierLabel(state.p2.type);
-        const clsT2 = getTierCls(state.p2.type);
-        if (slot2) slot2.className = 'player-slot p2 ' + clsT2;
-        if (p2Tier) {
-          p2Tier.className = 'p-role-tag ' + clsT2;
-          p2Tier.innerText = rawT2;
-          p2Tier.style.display = 'inline-flex';
-        }
-        if (p2Name) p2Name.innerText = state.p2.name;
-        if (p2Char) {
-          const fChar2 = formatChar(state.p2.char, mode);
-          p2Char.innerText = fChar2;
-          p2Char.title = state.p2.char || fChar2;
-          if (fChar2.length > 25) {
-            p2Char.style.fontSize = '0.70rem';
-          } else if (fChar2.length > 18) {
-            p2Char.style.fontSize = '0.75rem';
-          } else {
-            p2Char.style.fontSize = '';
-          }
-        }
-        if (p2Ulti) {
-          const u = state.p2.ulti || getPlayerDefaultUlti(state.p2.char);
-          if (u && u !== '-' && u !== 'TBA') {
-            p2Ulti.style.display = 'block';
-            p2Ulti.innerText = `⚡ ${u}`;
-            p2Ulti.title = `Ultimate: ${u}`;
-          } else {
-            p2Ulti.style.display = 'none';
-          }
-        }
-        if (p2Ws) p2Ws.innerText = state.p2.ws || 0;
-        if (p2Tickets) p2Tickets.innerText = state.p2.matchesLeft || 0;
-        if (p2Bonus) {
-          if (state.p2.bonusAnimUntil && Date.now() < state.p2.bonusAnimUntil) {
-            p2Bonus.innerText = '+1 MATCH';
-            p2Bonus.style.display = 'inline-block';
-          } else {
-            p2Bonus.style.display = 'none';
-          }
-        }
-      } else {
-        if (slot2) slot2.className = 'player-slot p2';
-        if (p2Tier) {
-          p2Tier.className = 'p-role-tag';
-          p2Tier.innerText = 'P2';
-          p2Tier.style.display = 'inline-flex';
-        }
-        if (p2Name) p2Name.innerText = 'Menunggu...';
-        if (p2Char) {
-          p2Char.innerText = '-';
-          p2Char.style.fontSize = '';
-        }
-        if (p2Ulti) p2Ulti.style.display = 'none';
-        if (p2Ws) p2Ws.innerText = '0';
-        if (p2Tickets) p2Tickets.innerText = '-';
-        if (p2Bonus) p2Bonus.style.display = 'none';
-      }
 
       // Ticker announcement
       const tickerWrap = document.getElementById('ticker-wrap');
@@ -2298,86 +1812,11 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     }
 
     function renderQueueList() {
-      const container = document.getElementById('queue-items-container');
-      const countTag = document.getElementById('queue-count-tag');
-      const statsText = document.getElementById('queue-stats-text');
-      if (!container) return;
-
-      const queue = Array.isArray(state.queue) ? state.queue : [];
-      let countSb = 0, countVip = 0, countFree = 0;
-
-      queue.forEach(p => {
-        const t = (p.type || '').toUpperCase();
-        if (t === 'SROBOT' || t === 'SB') countSb++;
-        else if (t === 'VIP') countVip++;
-        else countFree++;
-      });
-
-      if (countTag) countTag.innerText = `${queue.length} Pemain`;
-      if (statsText) statsText.innerText = `SB: ${countSb} | VIP: ${countVip} | FREE: ${countFree}`;
-
-      if (queue.length === 0) {
-        container.innerHTML = `
-          <div class="empty-queue-box">
-            🍃 Antrian masih kosong.<br>Jadilah yang pertama mendaftar!
-          </div>
-        `;
-        return;
-      }
-
-      let html = '';
-      queue.forEach((p, idx) => {
-        const isMe = (p.id === currentRegisteredId);
-        const t = (p.type || 'FREE').toUpperCase();
-        let roleCls = 'free';
-        let roleLabel = 'FREE';
-        if (t === 'SROBOT' || t === 'SB' || t === 'FAST' || t === 'VVIP') {
-          roleCls = 'srobot';
-          roleLabel = 'SB';
-        } else if (t === 'VIP') {
-          roleCls = 'vip';
-          roleLabel = 'VIP';
-        }
-
-        const modeBadge = p.ticketMode === 'TIM' ? 'TIM' : (p.ticketMode === 'DUO' ? 'DUO' : '1v1');
-        const formatted = formatChar(p.char, p.ticketMode || '1v1');
-        const ultiTxt = p.ulti ? ` • ⚡ ${p.ulti}` : '';
-
-        let rankMedalCls = '';
-        if (idx === 0) rankMedalCls = 'rank-1';
-        else if (idx === 1) rankMedalCls = 'rank-2';
-        else if (idx === 2) rankMedalCls = 'rank-3';
-
-        html += `
-          <div class="queue-item-card ${isMe ? 'is-me' : ''}">
-            <div class="queue-rank-badge ${rankMedalCls}">#${idx + 1}</div>
-            <div class="queue-info-wrap" style="flex: 1; min-width: 0; overflow: hidden;">
-              <div class="queue-name-row" style="display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
-                <div class="q-name-marquee-container marquee-container" style="flex: 1; min-width: 0;">
-                  <span class="queue-name-text q-name-marquee-content marquee-content">${escapeHtml(p.name)}</span>
-                </div>
-                <span class="p-role-tag ${roleCls}" style="flex-shrink: 0;">${roleLabel}</span>
-                <span class="q-mode-badge" style="flex-shrink: 0;">${modeBadge}</span>
-                ${isMe ? '<span style="flex-shrink: 0; font-size:0.65rem; font-weight:900; color:#ffffff; background:#22c55e; padding:1px 6px; border-radius:3px;">KAMU</span>' : ''}
-              </div>
-              <div class="queue-char-row q-char-marquee-container marquee-container" style="min-width: 0;">
-                <div class="q-char-marquee-content marquee-content">
-                  <b style="color:#ffffff;">${escapeHtml(formatted)}</b>${escapeHtml(ultiTxt)}
-                </div>
-              </div>
-            </div>
-            <div class="q-match-badge" style="flex-shrink: 0;">
-              ${p.matchesLeft || 1}M
-            </div>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
+      // Daftar antrian ditiadakan di halaman pendaftaran
     }
 
     // ==========================================
-    // MARQUEE AUTO-SCROLL (ARENA & QUEUE)
+    // MARQUEE AUTO-SCROLL (ANNOUNCEMENT TICKER)
     // ==========================================
     function applyMarquee(wrap, container, speed = 28, pauseStart = 1500, pauseEnd = 1500) {
       if (!wrap || !container) return;
@@ -2394,19 +1833,10 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       }
       wrap.style.transform = 'none';
 
-      // Penanganan khusus elemen right-aligned (P2 di Arena)
-      const isRight = container.classList.contains('right-align') || container.dataset.align === 'right';
-      if (isRight) {
-        container.style.textAlign = 'left';
-      }
-
       const diff = wrap.scrollWidth - container.clientWidth;
       if (diff <= 3) {
-        if (isRight) container.style.textAlign = 'right';
         return;
       }
-
-      if (isRight) container.style.textAlign = 'left';
 
       const dist = -(diff + 16);
       const walkDuration = Math.max(2000, (diff / speed) * 1000);
@@ -2435,7 +1865,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
     function triggerMarquees() {
       requestAnimationFrame(() => {
-        // 1. Ticker Announcement
+        // Ticker Announcement
         const tickerWrap = document.getElementById('ticker-marquee-wrap') || document.getElementById('ticker-wrap');
         const tickerText = document.getElementById('ticker-text');
         if (tickerWrap && tickerText) {
@@ -2444,96 +1874,11 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             applyMarquee(tickerText, tickerWrap, 28, 1500, 1500);
           }
         }
-
-        // 2. Arena Match Box Marquees
-        document.querySelectorAll('#arena-match-box .marquee-container').forEach(container => {
-          const wrap = container.querySelector('.marquee-content');
-          if (wrap) {
-            const txt = (wrap.innerText || '').trim();
-            if (txt && txt !== '-' && txt !== 'Menunggu...') {
-              applyMarquee(wrap, container, 28, 1500, 1500);
-            } else {
-              if (wrap._marqueeAnim) {
-                try { wrap._marqueeAnim.cancel(); } catch (e) { }
-                wrap._marqueeAnim = null;
-              }
-              wrap.style.transform = 'none';
-              if (container.classList.contains('right-align') || container.dataset.align === 'right') {
-                container.style.textAlign = 'right';
-              }
-            }
-          }
-        });
-
-        // 3. Queue List Card Marquees
-        document.querySelectorAll('.queue-item-card').forEach(card => {
-          const nameContainer = card.querySelector('.q-name-marquee-container');
-          const nameWrap = card.querySelector('.q-name-marquee-content');
-          if (nameContainer && nameWrap) {
-            applyMarquee(nameWrap, nameContainer, 28, 1500, 1500);
-          }
-
-          const charContainer = card.querySelector('.q-char-marquee-container');
-          const charWrap = card.querySelector('.q-char-marquee-content');
-          if (charContainer && charWrap) {
-            applyMarquee(charWrap, charContainer, 28, 1500, 1500);
-          }
-        });
       });
     }
 
-    // ==========================================
-    // AUTO-SCROLL VERTIKAL DAFTAR ANTREAN (SEPERTI DI OVERLAY)
-    // Scroll ke bawah pelan -> Berhenti 3 dtk -> Langsung JUMP kembali ke paling atas
-    // ==========================================
-    let autoScrollTimer = null;
-    let isUserInteracting = false;
-
     function startSmartAutoScroll() {
-      const container = document.getElementById('queue-items-container') || document.querySelector('.queue-list-wrap');
-      if (!container) return;
-
-      if (autoScrollTimer) return;
-
-      let stateMode = 'paused_at_top'; // 'paused_at_top', 'scrolling', 'paused_at_bottom'
-      let pauseTicks = 60; // 3 detik awal di posisi atas (60 * 50ms = 3000ms)
-      let currentScrollY = container.scrollTop || 0;
-
-      autoScrollTimer = setInterval(() => {
-        if (isUserInteracting) return;
-        const maxScroll = container.scrollHeight - container.clientHeight;
-        if (maxScroll <= 4) return;
-
-        if (pauseTicks > 0) {
-          pauseTicks--;
-          if (pauseTicks === 0) {
-            if (stateMode === 'paused_at_top') {
-              stateMode = 'scrolling';
-            } else if (stateMode === 'paused_at_bottom') {
-              currentScrollY = 0;
-              container.scrollTop = 0;
-              stateMode = 'paused_at_top';
-              pauseTicks = 60; // Tahan 3 detik di paling atas
-            }
-          }
-          return;
-        }
-
-        if (stateMode === 'scrolling') {
-          currentScrollY += 1;
-          container.scrollTop = Math.round(currentScrollY);
-
-          if (container.scrollTop >= maxScroll - 1 || currentScrollY >= maxScroll) {
-            stateMode = 'paused_at_bottom';
-            pauseTicks = 60; // Tahan 3 detik di bawah
-          }
-        }
-      }, 50);
-
-      container.onmouseenter = () => { isUserInteracting = true; };
-      container.onmouseleave = () => { isUserInteracting = false; currentScrollY = container.scrollTop; };
-      container.ontouchstart = () => { isUserInteracting = true; };
-      container.ontouchend = () => { setTimeout(() => { isUserInteracting = false; currentScrollY = container.scrollTop; }, 2000); };
+      // Ditiadakan di halaman pendaftaran
     }
 
     window.addEventListener('resize', () => {
@@ -2548,9 +1893,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     function renderAll() {
       renderArenaMini();
       renderTierButtons();
-      renderQueueList();
       triggerMarquees();
-      startSmartAutoScroll();
     }
 
     // ==========================================

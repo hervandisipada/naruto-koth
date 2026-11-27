@@ -1766,6 +1766,203 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       outline: none;
       box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
     }
+
+    /* =================================================== */
+    /* ADMIN STEPPED REGISTRATION MODAL (ALUR PENDAFTARAN) */
+    /* =================================================== */
+    .admin-reg-steps {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+    .admin-reg-step-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+    .admin-reg-step-item.active {
+      background: rgba(234, 179, 8, 0.18);
+      color: #facc15;
+      font-weight: 800;
+    }
+    .admin-reg-step-item.done {
+      color: #4ade80;
+    }
+    .admin-reg-step-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+    }
+    .admin-reg-step-item.active .admin-reg-step-num {
+      background: #facc15;
+      color: #000;
+      font-weight: 900;
+    }
+    .admin-reg-step-item.done .admin-reg-step-num {
+      background: #4ade80;
+      color: #000;
+      font-weight: 900;
+    }
+    .admin-tier-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .admin-tier-btn:hover {
+      border-color: rgba(255, 255, 255, 0.35);
+      color: #fff;
+    }
+    .admin-tier-btn.active.tier-free {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: #22c55e;
+      color: #4ade80;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+    }
+    .admin-tier-btn.active.tier-vip {
+      background: rgba(234, 179, 8, 0.2);
+      border-color: #eab308;
+      color: #fde047;
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.25);
+    }
+    .admin-tier-btn.active.tier-srobot {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: #a855f7;
+      color: #d8b4fe;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.25);
+    }
+    .admin-char-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 4px 2px;
+    }
+    .admin-char-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 4px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .admin-char-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    .admin-char-card.selected {
+      background: rgba(234, 179, 8, 0.2);
+      border-color: #facc15;
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.35);
+    }
+    .admin-char-card.disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .admin-char-card.disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .admin-char-card.banned {
+      border-color: rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.08);
+      filter: grayscale(60%);
+    }
+    .admin-char-card.banned:hover {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.16);
+    }
+    .admin-char-card.vip-only {
+      border-color: rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .admin-char-card.vip-only:hover {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.16);
+    }
+    .admin-ulti-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .admin-ulti-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .admin-ulti-card.selected {
+      background: rgba(234, 179, 8, 0.18);
+      border-color: #facc15;
+      box-shadow: 0 0 8px rgba(250, 204, 21, 0.25);
+    }
+    .btn-match-count {
+      flex: 1;
+      min-width: 60px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 8px 6px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .btn-match-count:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .btn-match-count.active {
+      background: #facc15;
+      color: #000000;
+      border-color: #facc15;
+      font-weight: 900;
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+    }
   </style>
 </head>
 
@@ -2222,10 +2419,26 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
         <!-- TOMBOL TAMBAH PEMAIN BARU DI BAWAH ARENA -->
         <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-color);">
-          <button type="button" class="btn btn-primary btn-block" onclick="openAddPlayerModal()"
-            style="font-size: 0.98rem; font-weight: 800; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 6px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4); cursor: pointer;">
-            ➕ TAMBAH PEMAIN BARU
-          </button>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.5px;">➕ Pendaftaran Pemain (Sistem Modal):</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <button type="button" class="btn btn-success" onclick="openAdminRegModal('FREE')"
+              style="font-size: 0.84rem; font-weight: 800; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+              <span style="font-size: 1.1rem;">🟢</span>
+              <span>DAFTAR FREE</span>
+            </button>
+            <button type="button" class="btn btn-warning" onclick="openAdminRegModal('VIP')"
+              style="font-size: 0.84rem; font-weight: 800; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 8px; cursor: pointer; color: #000; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);">
+              <span style="font-size: 1.1rem;">🟡</span>
+              <span>DAFTAR VIP</span>
+            </button>
+            <button type="button" class="btn btn-purple" onclick="openAdminRegModal('SROBOT')"
+              style="font-size: 0.84rem; font-weight: 800; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);">
+              <span style="font-size: 1.1rem;">🟣</span>
+              <span>DAFTAR SROBOT</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -2551,159 +2764,220 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     </div>
   </div>
 
-  <!-- MODAL TAMBAH PEMAIN -->
-  <div id="modal-add-player" class="modal-overlay" onclick="handleModalAddPlayerBackdrop(event)">
+  <!-- MODAL PENDAFTARAN PEMAIN BARU (MULTI-STEP SESUAI ALUR VIEWER) -->
+  <div id="modal-add-player" class="modal-overlay" onclick="handleAdminRegBackdrop(event)">
     <div class="modal-box"
-      style="max-width: 480px; max-height: 90vh; overflow-y: auto; border: 2px solid var(--border-strong); box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
-      <div
-        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-        <h3
-          style="margin: 0; color: var(--accent-gold); font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 6px;">
-          <span>➕ Tambah Pemain Baru</span>
-        </h3>
-        <button type="button" class="btn btn-sm btn-danger" onclick="closeAddPlayerModal()"
+      style="max-width: 580px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border: 2px solid var(--border-strong); box-shadow: 0 16px 40px rgba(0,0,0,0.7); border-radius: 12px;">
+      
+      <!-- Modal Header -->
+      <div style="padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h3 id="admin-reg-modal-title" style="margin: 0; color: var(--accent-gold); font-size: 1.15rem; font-weight: 800;">
+            ➕ Pendaftaran Pemain
+          </h3>
+          <span id="admin-reg-tier-pill" style="font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e;">
+            FREE
+          </span>
+        </div>
+        <button type="button" class="btn btn-sm btn-danger" onclick="closeAdminRegModal()"
           style="padding: 2px 8px; font-weight: 900; font-size: 1rem; border-radius: 4px;">✕</button>
       </div>
 
-      <form id="add-player-form" onsubmit="handleAddPlayer(event)">
-        <div class="form-group">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <label style="margin: 0;">Username * (Pilih Terdaftar / Ketik Baru)</label>
-            <span id="registered-user-count"
-              style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;"></span>
+      <!-- Step Breadcrumb Bar -->
+      <div style="padding: 10px 18px 0; background: rgba(0,0,0,0.15);">
+        <div id="admin-reg-step-bar" class="admin-reg-steps">
+          <!-- Dynamic steps based on tier (3 steps for FREE, 5 steps for VIP/SROBOT) -->
+        </div>
+      </div>
+
+      <!-- Modal Body (Step Contents) -->
+      <div style="padding: 14px 18px; overflow-y: auto; flex: 1;">
+        
+        <!-- STEP 1: NAMA, TIER, TIKET -->
+        <div id="admin-reg-step-1" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Tier Selector -->
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-light); margin-bottom: 4px;">Pilih Jalur / Tier Pendaftaran:</label>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="admin-tier-btn active tier-free" id="btn-atier-free" onclick="selectAdminRegTier('FREE')">
+                <span style="font-size: 1rem;">🟢</span>
+                <span>FREE REQUEST</span>
+                <span style="font-size: 0.68rem; opacity: 0.8;">(3 Langkah)</span>
+              </button>
+              <button type="button" class="admin-tier-btn tier-vip" id="btn-atier-vip" onclick="selectAdminRegTier('VIP')">
+                <span style="font-size: 1rem;">🟡</span>
+                <span>VIP</span>
+                <span style="font-size: 0.68rem; opacity: 0.8;">(5 Langkah)</span>
+              </button>
+              <button type="button" class="admin-tier-btn tier-srobot" id="btn-atier-srobot" onclick="selectAdminRegTier('SROBOT')">
+                <span style="font-size: 1rem;">🟣</span>
+                <span>SROBOT</span>
+                <span style="font-size: 0.68rem; opacity: 0.8;">(5 Langkah)</span>
+              </button>
+            </div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <select id="select-registered-user" class="form-control"
-              style="background: var(--panel-subtle); cursor: pointer;"
-              onchange="handleSelectRegisteredUser(this.value)">
+
+          <!-- Pilihan Jenis Tiket -->
+          <div class="form-group" style="background: rgba(0,0,0,0.25); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <label style="display: block; margin-bottom: 6px; font-size: 0.80rem; font-weight: 800; color: var(--accent-gold);">
+              🎟️ Jenis Tiket Match:
+            </label>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" id="btn-aticket-1v1" class="btn btn-sm btn-primary"
+                style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem;" onclick="setAdminRegTicketMode('1v1')">
+                ⚡ Tiket 1vs1
+              </button>
+              <button type="button" id="btn-aticket-tim" class="btn btn-sm btn-blue"
+                style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem; opacity: 0.7;" onclick="setAdminRegTicketMode('TIM')">
+                👑 Tiket DUO / TIM
+              </button>
+            </div>
+          </div>
+
+          <!-- Input Username (Dropdown / Ketik) -->
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin: 0;">Nama TikTok / Username Pemain *</label>
+              <span id="admin-reg-user-count" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;"></span>
+            </div>
+            <select id="admin-reg-select-user" class="form-control" style="background: var(--panel-subtle); cursor: pointer; margin-bottom: 6px;" onchange="handleAdminRegSelectUser(this.value)">
               <option value="">▼ PILIH DARI USER TERDAFTAR (A-Z)...</option>
             </select>
-            <input type="text" id="input-username" class="form-control"
-              placeholder="Atau ketik username pemain di sini..." list="registered-users-datalist" autocomplete="off"
-              required oninput="updatePlayerFormValidation()" onchange="updatePlayerFormValidation()">
-            <div id="username-duplicate-warning"
-              style="display:none; padding: 8px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; line-height: 1.4;">
+            <input type="text" id="admin-reg-name-input" class="form-control" placeholder="Atau ketik nama TikTok pemain..." autocomplete="off" oninput="checkAdminRegNameDup()" onchange="checkAdminRegNameDup()">
+            <div id="admin-reg-name-warning" style="display:none; margin-top: 6px; padding: 6px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; line-height: 1.4;">
             </div>
-            <datalist id="registered-users-datalist"></datalist>
-          </div>
-        </div>
-        <div class="form-group">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <label style="margin: 0;">Karakter: <span id="add-player-mode-badge"
-                style="font-size: 0.78rem; font-weight: 800; color: var(--accent-gold);">(Mode: 1v1)</span></label>
-          </div>
-
-          <!-- SLOT 1 (Leader / Utama) -->
-          <div id="group-char-1" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;">
-            <div id="label-char-1"
-              style="font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); display: none;">Karakter 1 (Utama
-              / Leader):</div>
-            <div class="char-picker-container">
-              <input type="text" id="input-char-1" class="form-control"
-                placeholder="Ketik atau klik untuk cari karakter (163 char)..." autocomplete="off"
-                onfocus="openCharPicker(this, 1, 'add')" oninput="handleCharInput(this, 1, 'add')">
-              <div id="picker-popup-add-1" class="char-picker-popup" style="display:none;"></div>
-            </div>
-            <!-- Ulti Selector Slot 1 -->
-            <div id="group-ulti-1"
-              style="display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.25); padding:4px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.08); margin-top:2px;">
-              <span style="font-size:0.75rem; font-weight:700; color:var(--accent-gold); white-space:nowrap;">⚡
-                Ulti:</span>
-              <select id="select-ulti-1" class="form-control" style="font-size:0.78rem; padding:3px 6px; flex:1;"
-                onchange="updateTeamCharValue()" disabled>
-                <option value="">(Pilih karakter dulu)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- SLOT 2 (Support 1 - Duo/Trio) -->
-          <div id="group-char-2" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa;">Karakter 2 (Support 1):</div>
-            <div class="char-picker-container">
-              <input type="text" id="input-char-2" class="form-control" placeholder="Ketik atau klik Karakter 2..."
-                autocomplete="off" onfocus="openCharPicker(this, 2, 'add')" oninput="handleCharInput(this, 2, 'add')">
-              <div id="picker-popup-add-2" class="char-picker-popup" style="display:none;"></div>
-            </div>
-            <!-- Ulti Selector Slot 2 -->
-            <div id="group-ulti-2"
-              style="display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.25); padding:4px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.08); margin-top:2px;">
-              <span style="font-size:0.75rem; font-weight:700; color:#60a5fa; white-space:nowrap;">⚡ Ulti:</span>
-              <select id="select-ulti-2" class="form-control" style="font-size:0.78rem; padding:3px 6px; flex:1;"
-                onchange="updateTeamCharValue()" disabled>
-                <option value="">(Pilih karakter dulu)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- SLOT 3 (Support 2 - Trio) -->
-          <div id="group-char-3" style="display: none; flex-direction: column; gap: 4px; margin-bottom: 6px;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #c084fc;">Karakter 3 (Support 2 - Opsional):</div>
-            <div class="char-picker-container">
-              <input type="text" id="input-char-3" class="form-control" placeholder="Ketik atau klik Karakter 3..."
-                autocomplete="off" onfocus="openCharPicker(this, 3, 'add')" oninput="handleCharInput(this, 3, 'add')">
-              <div id="picker-popup-add-3" class="char-picker-popup" style="display:none;"></div>
-            </div>
-            <!-- Ulti Selector Slot 3 -->
-            <div id="group-ulti-3"
-              style="display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.25); padding:4px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.08); margin-top:2px;">
-              <span style="font-size:0.75rem; font-weight:700; color:#c084fc; white-space:nowrap;">⚡ Ulti:</span>
-              <select id="select-ulti-3" class="form-control" style="font-size:0.78rem; padding:3px 6px; flex:1;"
-                onchange="updateTeamCharValue()" disabled>
-                <option value="">(Pilih karakter dulu)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Hidden input kompatibilitas & Preview Tim -->
-          <input type="hidden" id="input-char" value="">
-          <input type="hidden" id="input-ulti" value="">
-          <div id="preview-team-char"
-            style="display: none; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.25); border: 1px dashed var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
-            Format Tim: <b id="preview-team-char-text" style="color: var(--text-light);">-</b>
           </div>
         </div>
 
-        <!-- PILIHAN DUA MACAM TIKET MATCH (1v1 vs DUO & TIM) -->
-        <div class="form-group"
-          style="background: var(--panel-subtle); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 8px;">
-          <label
-            style="display: block; margin-bottom: 6px; font-size: 0.82rem; font-weight: 800; color: var(--accent-gold);">🎟️
-            Jenis Tiket Match:</label>
-          <div style="display: flex; gap: 8px;">
-            <button type="button" id="btn-ticket-1v1" class="btn btn-sm btn-primary"
-              style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem;" onclick="setPlayerTicketMode('1v1')">
-              ⚡ Tiket 1vs1
-            </button>
-            <button type="button" id="btn-ticket-tim" class="btn btn-sm btn-blue"
-              style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem; opacity: 0.7;"
-              onclick="setPlayerTicketMode('TIM')">
-              👑 Tiket TIM
-            </button>
+        <!-- STEP 2: PILIH KARAKTER A-Z -->
+        <div id="admin-reg-step-2" style="display: none; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin: 0;">Pilih Karakter (A-Z Master Roster):</label>
+            <span id="admin-reg-char-badge" style="font-size: 0.75rem; font-weight: 800; color: #facc15; background: rgba(234, 179, 8, 0.15); padding: 2px 8px; border-radius: 4px;">Belum dipilih</span>
           </div>
-          <input type="hidden" id="input-ticket-mode" value="1v1">
+
+          <!-- Search Input Karakter atau Ulti -->
+          <input type="text" id="admin-reg-char-search" class="form-control" placeholder="🔍 Cari nama karakter atau ulti (misal: Sasuke, kilat, malam...)" autocomplete="off" oninput="renderAdminRegCharGrid()">
+
+          <!-- Alphabet Filter Bar -->
+          <div class="alphabet-filter-bar" id="admin-reg-alpha-bar" style="display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px;">
+            <!-- Buttons ALL, A, B, C... Z -->
+          </div>
+
+          <!-- Character Cards Grid -->
+          <div class="char-grid-container admin-char-grid" id="admin-reg-char-grid" style="max-height: 250px; overflow-y: auto;">
+            <!-- Rendered cards -->
+          </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group" style="flex: 1;">
-            <label>Jumlah Match *</label>
-            <input type="number" id="input-matches" class="form-control" value="1" min="1" required>
+        <!-- STEP 3: PILIH ULTI -->
+        <div id="admin-reg-step-3" style="display: none; flex-direction: column; gap: 12px;">
+          <!-- Multi ulti box -->
+          <div id="admin-reg-multi-ulti-box" style="display: none;">
+            <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin-bottom: 8px;">
+              ⚡ Karakter ini memiliki lebih dari 1 jurus Ulti. Pilih salah satu:
+            </div>
+            <div class="ulti-options-grid" id="admin-reg-ulti-options">
+              <!-- Ulti card items -->
+            </div>
           </div>
-          <div class="form-group" style="flex: 1;">
-            <label>Tier *</label>
-            <select id="input-type" class="form-control">
-              <option value="SROBOT">SROBOT (SB - Prioritas Tertinggi)</option>
-              <option value="VIP">VIP (Prioritas Menengah)</option>
-              <option value="FREE" selected>FREE (Normal)</option>
-            </select>
+
+          <!-- Single ulti box -->
+          <div id="admin-reg-single-ulti-box" style="display: none; background: rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Jurus Ultimate Terkunci:</div>
+            <div id="admin-reg-single-ulti-name" style="font-size: 1rem; font-weight: 900; color: var(--accent-gold);"></div>
+          </div>
+
+          <!-- Ringkasan jika tier FREE (karena FREE selesai di langkah 3) -->
+          <div id="admin-reg-free-summary-box" style="display: none; background: rgba(34, 197, 94, 0.08); border: 1.5px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: #4ade80; margin-bottom: 8px;">📋 Ringkasan Pendaftaran Free Request:</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.8rem;">
+              <div><span style="color:var(--text-muted)">Nama TT:</span> <b id="admin-sum-free-name" style="color:#fff;">-</b></div>
+              <div><span style="color:var(--text-muted)">Tier:</span> <b style="color:#4ade80;">FREE (1 Match)</b></div>
+              <div style="grid-column: 1 / -1;"><span style="color:var(--text-muted)">Karakter:</span> <b id="admin-sum-free-char" style="color:var(--accent-gold);">-</b></div>
+              <div style="grid-column: 1 / -1;"><span style="color:var(--text-muted)">Ulti:</span> <b id="admin-sum-free-ulti" style="color:#fde047;">-</b></div>
+            </div>
           </div>
         </div>
-        <div style="display: flex; gap: 8px; margin-top: 6px;">
-          <button type="submit" id="btn-add-queue" class="btn btn-primary"
-            style="flex: 1; padding: 10px; font-weight: 700;">+ Match Queue</button>
-          <button type="button" id="btn-add-saved" class="btn btn-blue"
-            style="flex: 1; padding: 10px; font-weight: 700;" onclick="handleAddPlayerDirectSave()">+ Tabungan</button>
+
+        <!-- STEP 4: JUMLAH MATCH (KHUSUS VIP / SROBOT) -->
+        <div id="admin-reg-step-4" style="display: none; flex-direction: column; gap: 12px;">
+          <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-light);">
+            Pilih Jumlah Match Tiket VIP/SROBOT:
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-sm btn-match-count active" onclick="setAdminRegMatchCount(1)" id="btn-amatch-1">1 Match</button>
+            <button type="button" class="btn btn-sm btn-match-count" onclick="setAdminRegMatchCount(3)" id="btn-amatch-3">3 Match</button>
+            <button type="button" class="btn btn-sm btn-match-count" onclick="setAdminRegMatchCount(5)" id="btn-amatch-5">5 Match</button>
+            <button type="button" class="btn btn-sm btn-match-count" onclick="setAdminRegMatchCount(10)" id="btn-amatch-10">10 Match</button>
+          </div>
+          <div class="counter-control-wrap" style="display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(0,0,0,0.35); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <button type="button" class="btn-counter" onclick="changeAdminRegMatchCount(-1)" style="width:36px; height:36px; font-size:1.2rem; cursor:pointer;">-</button>
+            <div id="admin-reg-match-display" style="font-size: 1.4rem; font-weight: 900; color: #fde047; min-width: 60px; text-align: center;">1</div>
+            <button type="button" class="btn-counter" onclick="changeAdminRegMatchCount(1)" style="width:36px; height:36px; font-size:1.2rem; cursor:pointer;">+</button>
+          </div>
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: center;">
+            <div>
+              <div style="font-size:0.7rem; color:var(--text-muted)">Estimasi Koin TikTok</div>
+              <div id="admin-calc-coins" style="font-size:1.1rem; font-weight:900; color:#facc15;">5 Koin</div>
+            </div>
+            <div>
+              <div style="font-size:0.7rem; color:var(--text-muted)">Estimasi SociaBuzz</div>
+              <div id="admin-calc-rp" style="font-size:1.1rem; font-weight:900; color:#4ade80;">Rp 1.000</div>
+            </div>
+          </div>
         </div>
-      </form>
+
+        <!-- STEP 5: INFO PEMBAYARAN & KONFIRMASI (KHUSUS VIP / SROBOT) -->
+        <div id="admin-reg-step-5" style="display: none; flex-direction: column; gap: 12px;">
+          <div class="price-display-card" style="background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(168, 85, 247, 0.12)); border: 1.5px solid #eab308; border-radius: 10px; padding: 12px; text-align: center;">
+            <div style="font-size: 0.78rem; font-weight: 800; color: #fde047; text-transform: uppercase;">💳 Info Pembayaran & Donasi:</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+              <div style="background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 6px;">
+                <div style="font-size:0.7rem; color:var(--text-muted);">🎁 TikTok Gift:</div>
+                <div id="admin-final-coins" style="font-size:1.15rem; font-weight:900; color:#facc15;">5 Koin</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 6px;">
+                <div style="font-size:0.7rem; color:var(--text-muted);">💳 SociaBuzz:</div>
+                <div id="admin-final-rp" style="font-size:1.15rem; font-weight:900; color:#4ade80;">Rp 1.000</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 8px;">📋 Ringkasan Pendaftaran Berbayar:</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.8rem;">
+              <div><span style="color:var(--text-muted)">Nama TT:</span> <b id="admin-sum-paid-name" style="color:#fff;">-</b></div>
+              <div><span style="color:var(--text-muted)">Tier:</span> <b id="admin-sum-paid-tier" style="color:#fde047;">VIP</b></div>
+              <div><span style="color:var(--text-muted)">Tiket:</span> <b id="admin-sum-paid-ticket" style="color:#fff;">1v1</b></div>
+              <div><span style="color:var(--text-muted)">Match:</span> <b id="admin-sum-paid-match" style="color:#4ade80;">1 Match</b></div>
+              <div style="grid-column: 1 / -1;"><span style="color:var(--text-muted)">Karakter:</span> <b id="admin-sum-paid-char" style="color:var(--accent-gold);">-</b></div>
+              <div style="grid-column: 1 / -1;"><span style="color:var(--text-muted)">Ulti:</span> <b id="admin-sum-paid-ulti" style="color:#fde047;">-</b></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer (Navigation & Submit Buttons) -->
+      <div style="padding: 12px 18px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.25); display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+        <button type="button" id="btn-admin-reg-prev" class="btn btn-sm btn-blue" onclick="prevAdminRegStep()" style="display: none; padding: 8px 14px; font-weight: 800;">
+          ← Kembali
+        </button>
+        <div style="flex: 1;"></div>
+        <button type="button" id="btn-admin-reg-next" class="btn btn-sm btn-primary" onclick="nextAdminRegStep()" style="padding: 8px 16px; font-weight: 800;">
+          Lanjut ke Karakter ➔
+        </button>
+        
+        <!-- Submit Buttons (Visible on Final Step: Step 3 for FREE, Step 5 for VIP/SROBOT) -->
+        <button type="button" id="btn-admin-reg-queue" class="btn btn-sm btn-primary" onclick="submitAdminRegistration('queue')" style="display: none; padding: 8px 14px; font-weight: 800; background: #22c55e; border-color: #16a34a;">
+          ➕ Masuk Antrean
+        </button>
+        <button type="button" id="btn-admin-reg-saved" class="btn btn-sm btn-blue" onclick="submitAdminRegistration('saved')" style="display: none; padding: 8px 14px; font-weight: 800;">
+          💾 Simpan Tabungan
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -4624,17 +4898,19 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       });
     }
 
-    // Handle Tambah Pemain
+    // Handle Tambah Pemain (Dialihkan ke Sistem Pendaftaran Baru)
     function handleAddPlayer(e) {
       if (e) e.preventDefault();
-      saveNewPlayer('queue');
+      submitAdminRegistration('queue');
     }
 
     function handleAddPlayerDirectSave() {
-      saveNewPlayer('saved');
+      submitAdminRegistration('saved');
     }
 
     function saveNewPlayer(target) {
+      submitAdminRegistration(target);
+    }
       updateTeamCharValue();
       const name = document.getElementById('input-username').value.trim();
       const rawChar = document.getElementById('input-char').value.trim();
@@ -5124,29 +5400,573 @@ Penambahan ditolak untuk mencegah double user.`);
       alert(`✅ Sukses mengonversi tiket [ ${p.name} ]!`);
     }
 
-    // Modal Tambah Pemain Baru
-    function openAddPlayerModal() {
+    // ==========================================
+    // SISTEM MODAL PENDAFTARAN ADMIN (MULTI-STEP)
+    // ==========================================
+    let adminRegTier = 'FREE'; // 'FREE' | 'VIP' | 'SROBOT'
+    let adminRegStep = 1;
+    let adminRegSelectedChar = null;
+    let adminRegSelectedUlti = '';
+    let adminRegMatchCount = 1;
+    let adminRegAlphaFilter = 'ALL';
+    let adminRegTicketMode = '1v1';
+
+    function openAdminRegModal(tier = 'FREE') {
       const modal = document.getElementById('modal-add-player');
       if (!modal) return;
-      setTeamCharMode((state.masterMode || '1v1').toLowerCase());
-      setPlayerTicketMode((state.masterMode === '1v1' || !state.masterMode) ? '1v1' : 'TIM');
-      renderRegisteredUsersDropdown();
-      updatePlayerFormValidation();
+
+      adminRegTier = tier.toUpperCase();
+      adminRegStep = 1;
+      adminRegSelectedChar = null;
+      adminRegSelectedUlti = '';
+      adminRegMatchCount = 1;
+      adminRegAlphaFilter = 'ALL';
+      adminRegTicketMode = (state.masterMode === '1v1' || !state.masterMode) ? '1v1' : 'TIM';
+
+      // Reset form fields
+      const nameInput = document.getElementById('admin-reg-name-input');
+      if (nameInput) nameInput.value = '';
+      const warn = document.getElementById('admin-reg-name-warning');
+      if (warn) { warn.style.display = 'none'; warn.innerText = ''; }
+      const charSearch = document.getElementById('admin-reg-char-search');
+      if (charSearch) charSearch.value = '';
+      const charBadge = document.getElementById('admin-reg-char-badge');
+      if (charBadge) charBadge.innerText = 'Belum dipilih';
+
+      renderAdminRegUserDropdown();
+      selectAdminRegTier(adminRegTier, false);
+      setAdminRegTicketMode(adminRegTicketMode);
+      setAdminRegMatchCount(1);
+      renderAdminRegAlphaBar();
+
       modal.classList.add('active');
+      goToAdminRegStep(1);
+
       setTimeout(() => {
-        const inputName = document.getElementById('input-username');
-        if (inputName) inputName.focus();
+        if (nameInput) nameInput.focus();
       }, 100);
     }
 
-    function closeAddPlayerModal() {
+    // Alias kompatibilitas
+    function openAddPlayerModal() {
+      openAdminRegModal('FREE');
+    }
+
+    function closeAdminRegModal() {
       const modal = document.getElementById('modal-add-player');
       if (modal) modal.classList.remove('active');
     }
 
-    function handleModalAddPlayerBackdrop(event) {
-      if (event.target && event.target.id === 'modal-add-player') {
-        closeAddPlayerModal();
+    function closeAddPlayerModal() {
+      closeAdminRegModal();
+    }
+
+    function handleAdminRegBackdrop(e) {
+      if (e.target && e.target.id === 'modal-add-player') {
+        closeAdminRegModal();
+      }
+    }
+
+    function handleModalAddPlayerBackdrop(e) {
+      handleAdminRegBackdrop(e);
+    }
+
+    function selectAdminRegTier(tier, resetStep = true) {
+      adminRegTier = tier.toUpperCase();
+
+      ['free', 'vip', 'srobot'].forEach(t => {
+        const btn = document.getElementById(`btn-atier-${t}`);
+        if (btn) {
+          if (t === adminRegTier.toLowerCase()) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+
+      const pill = document.getElementById('admin-reg-tier-pill');
+      if (pill) {
+        pill.innerText = adminRegTier;
+        if (adminRegTier === 'FREE') {
+          pill.style.cssText = 'font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e;';
+        } else if (adminRegTier === 'VIP') {
+          pill.style.cssText = 'font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; background: rgba(234, 179, 8, 0.2); color: #fde047; border: 1px solid #eab308;';
+        } else {
+          pill.style.cssText = 'font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border: 1px solid #a855f7;';
+        }
+      }
+
+      renderAdminRegSteps();
+      if (resetStep) {
+        goToAdminRegStep(adminRegStep);
+      }
+    }
+
+    function setAdminRegTicketMode(mode) {
+      adminRegTicketMode = mode;
+      const b1 = document.getElementById('btn-aticket-1v1');
+      const b2 = document.getElementById('btn-aticket-tim');
+      if (mode === '1v1') {
+        if (b1) { b1.style.opacity = '1'; b1.className = 'btn btn-sm btn-primary'; }
+        if (b2) { b2.style.opacity = '0.6'; b2.className = 'btn btn-sm btn-blue'; }
+      } else {
+        if (b1) { b1.style.opacity = '0.6'; b1.className = 'btn btn-sm btn-blue'; }
+        if (b2) { b2.style.opacity = '1'; b2.className = 'btn btn-sm btn-primary'; }
+      }
+    }
+
+    function renderAdminRegSteps() {
+      const container = document.getElementById('admin-reg-step-bar');
+      if (!container) return;
+
+      const isFree = (adminRegTier === 'FREE');
+      const steps = isFree
+        ? [
+            { num: 1, label: 'Nama & Tier' },
+            { num: 2, label: 'Karakter' },
+            { num: 3, label: 'Ulti & Konfirmasi' }
+          ]
+        : [
+            { num: 1, label: 'Nama & Tier' },
+            { num: 2, label: 'Karakter' },
+            { num: 3, label: 'Ulti' },
+            { num: 4, label: 'Jumlah Match' },
+            { num: 5, label: 'Info Pembayaran' }
+          ];
+
+      container.innerHTML = steps.map(s => {
+        let cls = 'admin-reg-step-item';
+        if (s.num === adminRegStep) cls += ' active';
+        else if (s.num < adminRegStep) cls += ' done';
+        return `
+          <div class="${cls}">
+            <span class="admin-reg-step-num">${s.num < adminRegStep ? '✓' : s.num}</span>
+            <span>${s.label}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function goToAdminRegStep(step) {
+      const isFree = (adminRegTier === 'FREE');
+      const maxSteps = isFree ? 3 : 5;
+      if (step < 1) step = 1;
+      if (step > maxSteps) step = maxSteps;
+      adminRegStep = step;
+
+      renderAdminRegSteps();
+
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById(`admin-reg-step-${i}`);
+        if (el) {
+          el.style.display = (i === step) ? 'flex' : 'none';
+        }
+      }
+
+      const btnPrev = document.getElementById('btn-admin-reg-prev');
+      const btnNext = document.getElementById('btn-admin-reg-next');
+      const btnQueue = document.getElementById('btn-admin-reg-queue');
+      const btnSaved = document.getElementById('btn-admin-reg-saved');
+
+      if (btnPrev) btnPrev.style.display = (step > 1) ? 'inline-block' : 'none';
+
+      const isFinalStep = (step === maxSteps);
+      if (isFinalStep) {
+        if (btnNext) btnNext.style.display = 'none';
+        if (btnQueue) btnQueue.style.display = 'inline-block';
+        if (btnSaved) btnSaved.style.display = 'inline-block';
+      } else {
+        if (btnNext) {
+          btnNext.style.display = 'inline-block';
+          if (step === 1) btnNext.innerText = 'Lanjut ke Karakter ➔';
+          else if (step === 2) btnNext.innerText = 'Lanjut ke Ulti ➔';
+          else if (step === 3) btnNext.innerText = 'Lanjut ke Jumlah Match ➔';
+          else if (step === 4) btnNext.innerText = 'Lanjut ke Pembayaran ➔';
+        }
+        if (btnQueue) btnQueue.style.display = 'none';
+        if (btnSaved) btnSaved.style.display = 'none';
+      }
+
+      if (step === 2) {
+        renderAdminRegCharGrid();
+      } else if (step === 3) {
+        setupAdminRegStep3();
+      } else if (step === 4) {
+        updateAdminRegPrice();
+      } else if (step === 5) {
+        setupAdminRegStep5();
+      }
+    }
+
+    function nextAdminRegStep() {
+      if (adminRegStep === 1) {
+        const name = (document.getElementById('admin-reg-name-input').value || '').trim();
+        if (!name) {
+          alert('Nama TikTok / Username pemain tidak boleh kosong!');
+          return;
+        }
+        goToAdminRegStep(2);
+      } else if (adminRegStep === 2) {
+        if (!adminRegSelectedChar) {
+          alert('Karakter belum dipilih! Silakan klik salah satu karakter di daftar roster.');
+          return;
+        }
+        goToAdminRegStep(3);
+      } else if (adminRegStep === 3) {
+        goToAdminRegStep(4);
+      } else if (adminRegStep === 4) {
+        goToAdminRegStep(5);
+      }
+    }
+
+    function prevAdminRegStep() {
+      goToAdminRegStep(adminRegStep - 1);
+    }
+
+    function renderAdminRegAlphaBar() {
+      const container = document.getElementById('admin-reg-alpha-bar');
+      if (!container) return;
+      const letters = ['ALL', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')];
+      container.innerHTML = letters.map(l => `
+        <button type="button" class="btn-alpha ${adminRegAlphaFilter === l ? 'active' : ''}" onclick="filterAdminRegAlpha('${l}')">
+          ${l}
+        </button>
+      `).join('');
+    }
+
+    function filterAdminRegAlpha(letter) {
+      adminRegAlphaFilter = letter;
+      renderAdminRegAlphaBar();
+      renderAdminRegCharGrid();
+    }
+
+    function renderAdminRegCharGrid() {
+      const container = document.getElementById('admin-reg-char-grid');
+      if (!container) return;
+      const q = (document.getElementById('admin-reg-char-search').value || '').trim().toLowerCase();
+
+      let list = ALPHABETICAL_CHARS.slice();
+      if (adminRegAlphaFilter !== 'ALL') {
+        list = list.filter(c => c.name.toUpperCase().startsWith(adminRegAlphaFilter));
+      }
+      if (q) {
+        list = list.filter(c => {
+          const matchName = c.name.toLowerCase().includes(q) || (typeof normCharName === 'function' && normCharName(c.name).includes(normCharName(q)));
+          const matchShort = c.short1v1 && c.short1v1.toLowerCase().includes(q);
+          const matchTeam = c.shortTeam && c.shortTeam.toLowerCase().includes(q);
+          const matchedUlti = Array.isArray(c.ultis) ? c.ultis.find(u => u.toLowerCase().includes(q) || (typeof normCharName === 'function' && normCharName(u).includes(normCharName(q)))) : null;
+          c._matchedUlti = matchedUlti || null;
+          return matchName || matchShort || matchTeam || Boolean(matchedUlti);
+        });
+      } else {
+        list.forEach(c => c._matchedUlti = null);
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1 / -1; padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Tidak ada karakter atau jurus ulti yang cocok dengan "${escapeHtml(q)}".</div>`;
+        return;
+      }
+
+      const isFreeTier = (adminRegTier === 'FREE');
+
+      container.innerHTML = list.map(c => {
+        const isSel = adminRegSelectedChar && adminRegSelectedChar.id === c.id;
+        const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
+        const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
+        const matchTagHtml = c._matchedUlti ? `
+          <div style="font-size:0.68rem; font-weight:800; color:#facc15; background:rgba(234, 179, 8, 0.15); border:1px solid rgba(234, 179, 8, 0.35); padding:2px 6px; border-radius:4px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Ulti Cocok: ${escapeHtml(c._matchedUlti)}">
+            ⚡ ${escapeHtml(c._matchedUlti)}
+          </div>
+        ` : '';
+
+        const banned = typeof isCharBanned === 'function' && isCharBanned(c);
+        const isVipEx = !banned && (typeof isCharVipExclusive === 'function' && isCharVipExclusive(c));
+
+        let cardClass = 'admin-char-card';
+        let clickAttr = `onclick="selectAdminRegChar(${c.id}, '${safeUltiArg}')"`;
+        let statusBadgeHtml = '';
+
+        if (banned) {
+          cardClass += ' disabled banned';
+          clickAttr = `onclick="showBannedAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-banned">🚫 BANNED</span>`;
+        } else if (isFreeTier && isVipEx) {
+          cardClass += ' disabled vip-only';
+          clickAttr = `onclick="showVipOnlyAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-vip">🔒 KHUSUS VIP</span>`;
+        } else {
+          if (isVipEx) {
+            statusBadgeHtml = `<span class="badge-status-vip-unlocked">⭐ VIP EXCLUSIVE</span>`;
+          }
+          if (isSel) {
+            cardClass += ' selected';
+          }
+        }
+
+        const metaRight = isSel
+          ? `<span style="color:#4ade80; font-weight:800;">✅ Terpilih</span>`
+          : statusBadgeHtml;
+
+        return `
+          <div class="${cardClass}" ${clickAttr}>
+            <div style="font-size:0.80rem; font-weight:800; color:#f8fafc; line-height:1.25; word-break:break-word;">${escapeHtml(c.name)}</div>
+            ${matchTagHtml}
+            <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.65rem; color:#94a3b8; margin-top:4px;">
+              <span class="char-ulti-badge">⚡ ${ultiCount} Ulti</span>
+              ${metaRight}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectAdminRegChar(id, preselectedUlti = '') {
+      const c = NARUTO_CHARACTERS.find(x => x.id === id);
+      if (!c) return;
+      if (typeof isCharBanned === 'function' && isCharBanned(c)) {
+        showBannedAlert(c.name);
+        return;
+      }
+      if (adminRegTier === 'FREE' && typeof isCharVipExclusive === 'function' && isCharVipExclusive(c)) {
+        showVipOnlyAlert(c.name);
+        return;
+      }
+
+      adminRegSelectedChar = c;
+      if (preselectedUlti) {
+        adminRegSelectedUlti = preselectedUlti;
+      } else if (c.ultis && c.ultis.length > 0) {
+        adminRegSelectedUlti = c.ultis[0];
+      }
+
+      const badge = document.getElementById('admin-reg-char-badge');
+      if (badge) badge.innerText = `✓ ${c.name}`;
+      renderAdminRegCharGrid();
+    }
+
+    function setupAdminRegStep3() {
+      if (!adminRegSelectedChar) return;
+
+      const multiBox = document.getElementById('admin-reg-multi-ulti-box');
+      const singleBox = document.getElementById('admin-reg-single-ulti-box');
+      const ultiOptions = document.getElementById('admin-reg-ulti-options');
+      const freeSumBox = document.getElementById('admin-reg-free-summary-box');
+
+      const ultis = adminRegSelectedChar.ultis || [];
+      if (ultis.length > 1) {
+        multiBox.style.display = 'block';
+        singleBox.style.display = 'none';
+
+        if (!adminRegSelectedUlti || !ultis.includes(adminRegSelectedUlti)) {
+          adminRegSelectedUlti = ultis[0];
+        }
+
+        ultiOptions.innerHTML = ultis.map(u => {
+          const isSel = (adminRegSelectedUlti === u);
+          return `
+            <div class="admin-ulti-card ${isSel ? 'selected' : ''}" onclick="selectAdminRegUlti('${escapeHtml(u).replace(/'/g, "\\'")}')">
+              <div style="font-size:0.88rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
+                <span>⚡</span>
+                <span>${escapeHtml(u)}</span>
+              </div>
+              <div style="font-size:0.75rem; font-weight:800; color:${isSel ? '#facc15' : '#94a3b8'};">
+                ${isSel ? '✅ Dipilih' : 'Pilih'}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        multiBox.style.display = 'none';
+        singleBox.style.display = 'block';
+        const singleName = document.getElementById('admin-reg-single-ulti-name');
+        adminRegSelectedUlti = ultis[0] || '-';
+        if (singleName) singleName.innerText = `⚡ ${adminRegSelectedUlti}`;
+      }
+
+      if (adminRegTier === 'FREE') {
+        if (freeSumBox) freeSumBox.style.display = 'block';
+        const nameVal = (document.getElementById('admin-reg-name-input').value || '').trim();
+        document.getElementById('admin-sum-free-name').innerText = nameVal;
+        document.getElementById('admin-sum-free-char').innerText = adminRegSelectedChar.name;
+        document.getElementById('admin-sum-free-ulti').innerText = adminRegSelectedUlti;
+      } else {
+        if (freeSumBox) freeSumBox.style.display = 'none';
+      }
+    }
+
+    function selectAdminRegUlti(ultiName) {
+      adminRegSelectedUlti = ultiName;
+      setupAdminRegStep3();
+    }
+
+    function setAdminRegMatchCount(cnt) {
+      adminRegMatchCount = Math.max(1, parseInt(cnt) || 1);
+      [1, 3, 5, 10].forEach(n => {
+        const btn = document.getElementById(`btn-amatch-${n}`);
+        if (btn) {
+          if (n === adminRegMatchCount) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+      const disp = document.getElementById('admin-reg-match-display');
+      if (disp) disp.innerText = adminRegMatchCount;
+      updateAdminRegPrice();
+    }
+
+    function changeAdminRegMatchCount(delta) {
+      setAdminRegMatchCount(adminRegMatchCount + delta);
+    }
+
+    function calculatePaidPrice(tier, mode, count) {
+      const coinPerMatch = (tier === 'SROBOT') ? 30 : 5;
+      const rpPerMatch = (tier === 'SROBOT') ? 5000 : 1000;
+      const totalCoins = coinPerMatch * count;
+      const totalRp = rpPerMatch * count;
+      const totalRpFormatted = totalRp.toLocaleString('id-ID');
+      return { totalCoins, totalRp, totalRpFormatted, coinPerMatch, rpPerMatch };
+    }
+
+    function updateAdminRegPrice() {
+      const activeMode = adminRegTicketMode || state.masterMode || '1v1';
+      const pr = calculatePaidPrice(adminRegTier, activeMode, adminRegMatchCount);
+      const calcCoins = document.getElementById('admin-calc-coins');
+      const calcRp = document.getElementById('admin-calc-rp');
+      if (calcCoins) calcCoins.innerText = `${pr.totalCoins} Koin`;
+      if (calcRp) calcRp.innerText = `Rp ${pr.totalRpFormatted}`;
+
+      const finalCoins = document.getElementById('admin-final-coins');
+      const finalRp = document.getElementById('admin-final-rp');
+      if (finalCoins) finalCoins.innerText = `${pr.totalCoins} Koin`;
+      if (finalRp) finalRp.innerText = `Rp ${pr.totalRpFormatted}`;
+    }
+
+    function setupAdminRegStep5() {
+      updateAdminRegPrice();
+      const nameVal = (document.getElementById('admin-reg-name-input').value || '').trim();
+      document.getElementById('admin-sum-paid-name').innerText = nameVal;
+      document.getElementById('admin-sum-paid-tier').innerText = adminRegTier;
+      document.getElementById('admin-sum-paid-tier').style.color = (adminRegTier === 'SROBOT') ? '#d8b4fe' : '#fde047';
+      document.getElementById('admin-sum-paid-ticket').innerText = (adminRegTicketMode === '1v1') ? '1vs1' : 'DUO/TIM';
+      document.getElementById('admin-sum-paid-match').innerText = `${adminRegMatchCount} Match`;
+      document.getElementById('admin-sum-paid-char').innerText = adminRegSelectedChar ? adminRegSelectedChar.name : '-';
+      document.getElementById('admin-sum-paid-ulti').innerText = adminRegSelectedUlti || '-';
+    }
+
+    function renderAdminRegUserDropdown() {
+      const select = document.getElementById('admin-reg-select-user');
+      const countEl = document.getElementById('admin-reg-user-count');
+      if (!select) return;
+
+      const users = Array.isArray(state.registeredUsers) ? state.registeredUsers.slice() : [];
+      if (countEl) countEl.innerText = `(${users.length} Terdaftar)`;
+
+      let opts = '<option value="">▼ PILIH DARI USER TERDAFTAR (A-Z)...</option>';
+      users.forEach(u => {
+        const name = (typeof u === 'string') ? u : (u && u.name) || '';
+        if (name) opts += `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
+      });
+      select.innerHTML = opts;
+    }
+
+    function handleAdminRegSelectUser(val) {
+      const nameInput = document.getElementById('admin-reg-name-input');
+      if (nameInput) {
+        nameInput.value = val || '';
+        checkAdminRegNameDup();
+      }
+    }
+
+    function checkAdminRegNameDup() {
+      const nameInput = document.getElementById('admin-reg-name-input');
+      const warn = document.getElementById('admin-reg-name-warning');
+      if (!nameInput || !warn) return;
+
+      const name = nameInput.value.trim();
+      if (!name) {
+        warn.style.display = 'none';
+        warn.innerText = '';
+        return;
+      }
+
+      const dup = checkDuplicatePlayer(name);
+      if (dup) {
+        warn.style.display = 'block';
+        warn.innerText = `⚠️ Perhatian: ${dup.message}. Tetap bisa didaftarkan jika dikehendaki Admin.`;
+      } else {
+        warn.style.display = 'none';
+        warn.innerText = '';
+      }
+    }
+
+    function submitAdminRegistration(target = 'queue') {
+      const name = (document.getElementById('admin-reg-name-input').value || '').trim();
+      if (!name) {
+        alert('Masukkan nama TikTok / username pemain!');
+        goToAdminRegStep(1);
+        return;
+      }
+      if (!adminRegSelectedChar) {
+        alert('Karakter belum dipilih!');
+        goToAdminRegStep(2);
+        return;
+      }
+
+      if (typeof isCharBanned === 'function' && isCharBanned(adminRegSelectedChar)) {
+        showBannedAlert(adminRegSelectedChar.name);
+        goToAdminRegStep(2);
+        return;
+      }
+
+      if (adminRegTier === 'FREE' && typeof isCharVipExclusive === 'function' && isCharVipExclusive(adminRegSelectedChar)) {
+        showVipOnlyAlert(adminRegSelectedChar.name);
+        goToAdminRegStep(2);
+        return;
+      }
+
+      const dup = checkDuplicatePlayer(name);
+      if (dup) {
+        const proceed = confirm(`⚠️ PERINGATAN DOUBLE USER!\n\n${dup.message}.\n\nApakah Admin yakin tetap ingin menambahkan pemain ini?`);
+        if (!proceed) return;
+      }
+
+      const fullChar = adminRegSelectedChar.name;
+      const fullUlti = adminRegSelectedUlti || getPlayerDefaultUlti(fullChar);
+      const matchesLeft = (adminRegTier === 'FREE') ? 1 : adminRegMatchCount;
+      const ticketText = (adminRegTicketMode === '1v1') ? '⚡ Tiket 1v1' : '⚔️ Tiket TIM';
+      const targetLabel = (target === 'saved') ? 'LIST TABUNGAN' : 'MATCH QUEUE';
+
+      const newPlayer = {
+        id: Date.now().toString(),
+        name,
+        char: fullChar,
+        ulti: fullUlti,
+        matchesLeft,
+        ws: 0,
+        type: adminRegTier,
+        ticketMode: adminRegTicketMode
+      };
+
+      if (target === 'saved') {
+        newPlayer.savedAt = Date.now();
+        if (!Array.isArray(state.saved)) state.saved = [];
+        state.saved.push(newPlayer);
+        sortSaved();
+      } else {
+        if (!Array.isArray(state.queue)) state.queue = [];
+        state.queue.push(newPlayer);
+        sortQueue();
+        checkAutoFillArena();
+      }
+
+      registerUserHistory(name);
+      saveState();
+      closeAdminRegModal();
+
+      if (typeof showToast === 'function') {
+        showToast(`✅ [${name}] (${adminRegTier}, ${matchesLeft} match) berhasil ditambahkan ke ${targetLabel}!`);
+      } else {
+        alert(`✅ [${name}] berhasil ditambahkan ke ${targetLabel}!`);
       }
     }
 

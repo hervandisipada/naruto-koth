@@ -1248,7 +1248,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           <div class="p-info-p1">
             <div class="p-header-line">
               <span class="p-role-tag" id="arena-p1-tier">P1</span>
-                            <div id="arena-p1-name" class="p-name">Menunggu...</div>
+              <div id="arena-p1-name" class="p-name">Menunggu...</div>
             </div>
             <div id="arena-p1-char" class="p-char">-</div>
             <div id="arena-p1-ulti" class="p-ulti" style="display:none;"></div>
@@ -1276,7 +1276,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           <div class="p-info-p2">
             <div class="p-header-line-p2">
               <div id="arena-p2-name" class="p-name">Menunggu...</div>
-                            <span class="p-role-tag" id="arena-p2-tier">P2</span>
+              <span class="p-role-tag" id="arena-p2-tier">P2</span>
             </div>
             <div id="arena-p2-char" class="p-char">-</div>
             <div id="arena-p2-ulti" class="p-ulti" style="display:none;"></div>
@@ -1598,12 +1598,14 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             <a href="https://www.tiktok.com/@herzg1209/live" target="_blank" rel="noopener noreferrer"
               style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; background: #000000; border: 1.5px solid #fe2c55; color: #ffffff; padding: 10px 14px; border-radius: 6px; font-weight: 900; font-size: 0.85rem;">
               <span>🎁 Buka TikTok Live @herzg1209</span>
-              <span id="badge-gift-tiktok" style="background: #fe2c55; color: #fff; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px;">Koin</span>
+              <span id="badge-gift-tiktok"
+                style="background: #fe2c55; color: #fff; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px;">Koin</span>
             </a>
-            <a href="https://sociabuzz.com/herzg/tribe" target="_blank" rel="noopener noreferrer"
+            <a href="https://sociabuzz.com/herz1209/tribe" target="_blank" rel="noopener noreferrer"
               style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; background: #052e16; border: 1.5px solid #22c55e; color: #86efac; padding: 10px 14px; border-radius: 6px; font-weight: 900; font-size: 0.85rem;">
               <span>💳 Bayar via SociaBuzz</span>
-              <span id="badge-gift-sociabuzz" style="background: #22c55e; color: #000; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; font-weight: 900;">Rp</span>
+              <span id="badge-gift-sociabuzz"
+                style="background: #22c55e; color: #000; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; font-weight: 900;">Rp</span>
             </a>
           </div>
           <div style="display: flex; gap: 8px; justify-content: space-between;">
@@ -1629,11 +1631,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
               Pendaftaran Berhasil Masuk Antrian!
             </div>
             <div style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.4;">
-              Terima kasih! Pendaftaran kamu telah masuk ke daftar tunggu persetujuan Admin. Tunggu konfirmasi Admin saat giliranmu bertanding!
+              Terima kasih! Pendaftaran kamu telah masuk ke daftar tunggu persetujuan Admin. Tunggu konfirmasi Admin
+              saat giliranmu bertanding!
             </div>
           </div>
-          <button type="button" class="btn-submit-reg" style="padding: 10px; width: 100%; font-weight: 900; cursor: pointer;"
-            onclick="closeSuccessModal()">
+          <button type="button" class="btn-submit-reg"
+            style="padding: 10px; width: 100%; font-weight: 900; cursor: pointer;" onclick="closeSuccessModal()">
             Siap, Pantau Antrian!
           </button>
         </div>
@@ -1719,8 +1722,8 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
               bertanding.
             </div>
           </div>
-          <button type="button" class="btn-submit-reg" style="padding: 10px; width: 100%; font-weight: 900; cursor: pointer;"
-            onclick="closeSuccessModal()">
+          <button type="button" class="btn-submit-reg"
+            style="padding: 10px; width: 100%; font-weight: 900; cursor: pointer;" onclick="closeSuccessModal()">
             Siap, Pantau Antrian!
           </button>
         </div>

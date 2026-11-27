@@ -1133,6 +1133,188 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       white-space: nowrap;
     }
 
+    /* Clean & Detailed Queue Item Card */
+    .queue-item-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background-color: var(--panel-bg);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--c-slate);
+      transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .queue-item-card:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+    .queue-item-card.fast,
+    .queue-item-card.vvip {
+      border-left-color: #a855f7;
+      background: linear-gradient(90deg, rgba(168, 85, 247, 0.09) 0%, var(--panel-subtle) 100%);
+    }
+    .queue-item-card.vip {
+      border-left-color: #eab308;
+      background: linear-gradient(90deg, rgba(234, 179, 8, 0.08) 0%, var(--panel-subtle) 100%);
+    }
+    .queue-item-card.free {
+      border-left-color: #64748b;
+      background-color: var(--panel-bg);
+    }
+    [data-theme="dark"] .queue-item-card.fast,
+    [data-theme="dark"] .queue-item-card.vvip {
+      border-left-color: #c084fc;
+      background: linear-gradient(90deg, rgba(168, 85, 247, 0.16) 0%, rgba(20, 20, 30, 0.6) 100%);
+    }
+    [data-theme="dark"] .queue-item-card.vip {
+      border-left-color: #FFD700;
+      background: linear-gradient(90deg, rgba(255, 215, 0, 0.08) 0%, rgba(20, 20, 30, 0.6) 100%);
+    }
+
+    .queue-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .queue-item-right {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .queue-rank-badge {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.92rem;
+      font-weight: 900;
+      color: var(--text-light);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      padding: 5px 8px;
+      min-width: 36px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .queue-player-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .queue-player-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .queue-player-name {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
+    }
+
+    .queue-player-details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .queue-char-text {
+      font-weight: 700;
+      color: #f1f5f9;
+      font-size: 0.84rem;
+    }
+
+    .queue-ulti-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #facc15;
+      background: rgba(234, 179, 8, 0.15);
+      border: 1px solid rgba(234, 179, 8, 0.35);
+      padding: 1px 7px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      max-width: 240px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .queue-match-pill {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 1px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-queue-dots {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--text-light);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .btn-queue-dots:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: scale(1.06);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .action-group-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .action-group-title {
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: #94a3b8;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
     .badge {
       font-size: 0.76rem;
       padding: 2px 6px;
@@ -3052,6 +3234,31 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL MENU AKSI PEMAIN (TITIK TIGA) -->
+  <div id="modal-player-actions" class="modal-overlay" onclick="handlePlayerActionBackdrop(event)">
+    <div class="modal-box"
+      style="max-width: 480px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; padding: 18px; border: 2px solid var(--border-strong); box-shadow: 0 16px 40px rgba(0,0,0,0.85); border-radius: 12px; color: var(--text-light); background: var(--panel-bg);">
+      
+      <!-- Modal Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; flex-shrink: 0;">
+        <h3 style="margin: 0; color: var(--accent-gold); font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+          <span>⚙️ Menu Aksi Pemain</span>
+        </h3>
+        <button type="button" class="btn btn-sm btn-danger" onclick="closePlayerActionModal()"
+          style="padding: 2px 8px; font-weight: 900; font-size: 1rem; border-radius: 4px;">✕</button>
+      </div>
+
+      <!-- Player Preview Summary Card -->
+      <div id="action-modal-player-card" style="flex-shrink: 0; margin-bottom: 12px;"></div>
+
+      <!-- Actions Container (Scrollable) -->
+      <div id="action-modal-buttons-container"
+        style="display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 4px; flex: 1;">
+      </div>
+
     </div>
   </div>
 
@@ -6868,6 +7075,278 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       }
     }
 
+    // ==========================================
+    // MODAL MENU AKSI PEMAIN (TITIK TIGA)
+    // ==========================================
+    let currentActionPlayerId = null;
+    let currentActionListType = 'queue';
+
+    function openPlayerActionModal(playerId, listType = 'queue') {
+      currentActionPlayerId = playerId;
+      currentActionListType = listType;
+
+      const list = (listType === 'queue') ? state.queue : state.saved;
+      const player = list.find(p => String(p.id) === String(playerId));
+      if (!player) return;
+
+      const modal = document.getElementById('modal-player-actions');
+      if (!modal) return;
+
+      const pTierLabel = getTierLabel(player.type);
+      const itemCls = getTierCls(player.type);
+      const tLabel = (player.ticketMode === 'TIM' || player.ticketMode === 'DUO') ? 'DUO/TIM' : '1v1';
+      const tBg = tLabel === '1v1' ? '#0284c7' : '#7c3aed';
+      const wsBadge = (player.ws && player.ws > 0)
+        ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); font-weight:800;">🔥 ${player.ws} WS</span>`
+        : '';
+      const ticketBadge = `<span class="badge" style="background:${tBg}; color:#fff; font-size:0.75rem; font-weight:800;">🎟️ ${tLabel}</span>`;
+      const tierBadge = `<span class="badge badge-${itemCls}" style="font-size:0.75rem; font-weight:900;">${pTierLabel}</span>`;
+
+      // Hitung posisi pemain dalam tier kelompoknya
+      let rankInTier = 1;
+      let totalInTier = 1;
+      const isSB = (pTierLabel === 'SB');
+      const tierGroup = list.filter(p => isSB ? (getTierLabel(p.type) === 'SB') : (getTierLabel(p.type) !== 'SB'));
+      totalInTier = Math.max(1, tierGroup.length);
+      const foundIdx = tierGroup.findIndex(p => String(p.id) === String(playerId));
+      rankInTier = (foundIdx >= 0) ? foundIdx + 1 : 1;
+
+      const ultiText = player.ulti || getPlayerDefaultUlti(player.char) || '-';
+
+      // 1. Render Card Preview Pemain
+      const cardContainer = document.getElementById('action-modal-player-card');
+      if (cardContainer) {
+        cardContainer.innerHTML = `
+          <div style="background:var(--panel-subtle); padding:10px 12px; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-family:'Consolas',monospace; font-size:1rem; font-weight:900; color:#facc15; background:rgba(234,179,8,0.18); border:1px solid rgba(234,179,8,0.35); padding:2px 8px; border-radius:6px;">
+                  #${rankInTier}
+                </span>
+                <b style="font-size:1.1rem; color:#f8fafc;">${escapeHtml(player.name)}</b>
+              </div>
+              <div style="display:flex; align-items:center; gap:5px;">
+                ${tierBadge}
+                ${ticketBadge}
+                ${wsBadge}
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:3px; font-size:0.83rem; color:#cbd5e1; background:rgba(0,0,0,0.25); padding:8px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.06);">
+              <div>🥋 <b>Karakter:</b> <span style="color:#fff; font-weight:700;">${escapeHtml(formatChar(player.char))}</span></div>
+              <div>⚡ <b>Jurus Ulti:</b> <span style="color:#facc15; font-weight:700;">${escapeHtml(ultiText)}</span></div>
+              <div>🎟️ <b>Sisa Match:</b> <span style="color:#38bdf8; font-weight:800;">${player.matchesLeft} Match</span></div>
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. Render Action Buttons
+      const btnContainer = document.getElementById('action-modal-buttons-container');
+      if (btnContainer) {
+        let arenaSection = '';
+        if (listType === 'queue') {
+          const p1Disabled = Boolean(state.p1);
+          const p2Disabled = Boolean(state.p2);
+
+          arenaSection = `
+            <div class="action-group-box">
+              <div class="action-group-title">🚀 NAIKKAN KE ARENA PERTANDINGAN</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button type="button" class="btn btn-sm btn-success" style="padding:10px; font-weight:800; font-size:0.85rem;" ${p1Disabled ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : `onclick="handleActionAssignArena('${player.id}', 'p1')"`}>
+                  ⬆️ ${p1Disabled ? `P1 Terisi (${escapeHtml(state.p1.name)})` : 'Naikkan ke P1'}
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" style="padding:10px; font-weight:800; font-size:0.85rem;" ${p2Disabled ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : `onclick="handleActionAssignArena('${player.id}', 'p2')"`}>
+                  ⬆️ ${p2Disabled ? `P2 Terisi (${escapeHtml(state.p2.name)})` : 'Naikkan ke P2'}
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          arenaSection = `
+            <div class="action-group-box">
+              <div class="action-group-title">📋 PINDAHKAN KE MATCH QUEUE</div>
+              <button type="button" class="btn btn-sm btn-success" style="width:100%; padding:10px; font-weight:800; font-size:0.88rem;" onclick="handleActionMoveSavedToQueue('${player.id}')">
+                ⬆️ Masukkan ke Match Queue
+              </button>
+            </div>
+          `;
+        }
+
+        // Posisi options
+        let posOptions = '';
+        for (let i = 1; i <= totalInTier; i++) {
+          posOptions += `<option value="${i}" ${i === rankInTier ? 'selected' : ''}>Posisi #${i}${i === rankInTier ? ' (Saat ini)' : ''}</option>`;
+        }
+
+        btnContainer.innerHTML = `
+          ${arenaSection}
+
+          <!-- Ganti Karakter, Nama & Match -->
+          <div class="action-group-box">
+            <div class="action-group-title">🥋 DATA KARAKTER & MATCH</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <button type="button" class="btn btn-sm btn-blue" style="padding:8px; font-weight:800; font-size:0.82rem;" onclick="handleActionEditChar('${player.id}', '${listType}')">
+                  🥋 Ganti Karakter & Ulti
+                </button>
+                <button type="button" class="btn btn-sm" style="background:#334155; color:#fff; padding:8px; font-weight:800; font-size:0.82rem;" onclick="handleActionEditPlayerName('${player.id}', '${listType}')">
+                  ✏️ Edit Nama Pemain
+                </button>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <button type="button" class="btn btn-sm" style="background:#1e3a8a; color:#93c5fd; padding:8px; font-weight:800; font-size:0.82rem;" onclick="handleActionEditMatches('${player.id}', '${listType}')">
+                  🎟️ Edit Match (${player.matchesLeft})
+                </button>
+                <button type="button" class="btn btn-sm btn-blue" style="padding:8px; font-weight:800; font-size:0.82rem;" onclick="handleActionConvertTickets('${player.id}', '${listType}')">
+                  🔄 Konversi Tiket
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ganti Role / Tier & Mode Tiket -->
+          <div class="action-group-box">
+            <div class="action-group-title">🏷️ GANTI ROLE / TIER & MODE TIKET</div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div>
+                <label style="font-size:0.75rem; color:#94a3b8; font-weight:700; margin-bottom:3px; display:block;">Pilih Role / Tier:</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+                  <button type="button" class="btn btn-sm" style="padding:6px 4px; font-size:0.78rem; font-weight:800; ${pTierLabel === 'SB' ? 'background:linear-gradient(135deg, #7e22ce, #9333ea); color:#fff; border:1px solid #d8b4fe;' : 'background:#1e293b; color:#94a3b8;'}" onclick="handleActionChangeTier('${player.id}', '${listType}', 'SROBOT')">
+                    ${pTierLabel === 'SB' ? '✓ ' : ''}SROBOT
+                  </button>
+                  <button type="button" class="btn btn-sm" style="padding:6px 4px; font-size:0.78rem; font-weight:800; ${pTierLabel === 'VIP' ? 'background:linear-gradient(135deg, #ca8a04, #eab308); color:#000; border:1px solid #fef08a;' : 'background:#1e293b; color:#94a3b8;'}" onclick="handleActionChangeTier('${player.id}', '${listType}', 'VIP')">
+                    ${pTierLabel === 'VIP' ? '✓ ' : ''}VIP
+                  </button>
+                  <button type="button" class="btn btn-sm" style="padding:6px 4px; font-size:0.78rem; font-weight:800; ${pTierLabel === 'FREE' ? 'background:#475569; color:#fff; border:1px solid #94a3b8;' : 'background:#1e293b; color:#94a3b8;'}" onclick="handleActionChangeTier('${player.id}', '${listType}', 'FREE')">
+                    ${pTierLabel === 'FREE' ? '✓ ' : ''}FREE
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label style="font-size:0.75rem; color:#94a3b8; font-weight:700; margin-bottom:3px; display:block;">Pilih Mode Tiket:</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                  <button type="button" class="btn btn-sm" style="padding:6px 4px; font-size:0.78rem; font-weight:800; ${tLabel === '1v1' ? 'background:#0284c7; color:#fff; border:1px solid #7dd3fc;' : 'background:#1e293b; color:#94a3b8;'}" onclick="handleActionChangeTicketMode('${player.id}', '${listType}', '1v1')">
+                    ${tLabel === '1v1' ? '✓ ' : ''}⚡ Tiket 1v1
+                  </button>
+                  <button type="button" class="btn btn-sm" style="padding:6px 4px; font-size:0.78rem; font-weight:800; ${tLabel === 'DUO/TIM' ? 'background:#7c3aed; color:#fff; border:1px solid #c4b5fd;' : 'background:#1e293b; color:#94a3b8;'}" onclick="handleActionChangeTicketMode('${player.id}', '${listType}', 'TIM')">
+                    ${tLabel === 'DUO/TIM' ? '✓ ' : ''}⚔️ Tiket DUO/TIM
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pindah Posisi Urutan -->
+          <div class="action-group-box">
+            <div class="action-group-title">🔢 URUTAN ANTREAN (DALAM TIER)</div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.8rem; color:#94a3b8; white-space:nowrap;">Pindah ke:</span>
+              <select class="form-control" style="flex:1; padding:6px 10px; font-size:0.85rem;" onchange="handleActionReorder('${player.id}', '${listType}', parseInt(this.value))">
+                ${posOptions}
+              </select>
+            </div>
+          </div>
+
+          <!-- Simpan ke Tabungan / Hapus -->
+          <div class="action-group-box" style="border-color:rgba(239, 68, 68, 0.25);">
+            <div class="action-group-title" style="color:#f87171;">⚠️ MANAJEMEN DATA</div>
+            <div style="display:grid; grid-template-columns:${listType === 'queue' ? '1fr 1fr' : '1fr'}; gap:8px;">
+              ${listType === 'queue' ? `
+                <button type="button" class="btn btn-sm btn-primary" style="padding:9px; font-weight:800; font-size:0.82rem;" onclick="handleActionMoveQueueToSave('${player.id}')">
+                  💾 Simpan ke Tabungan
+                </button>
+              ` : ''}
+              <button type="button" class="btn btn-sm btn-danger" style="padding:9px; font-weight:800; font-size:0.82rem;" onclick="handleActionDeletePlayer('${listType}', '${player.id}')">
+                🗑️ Hapus Pemain
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      modal.classList.add('active');
+    }
+
+    function closePlayerActionModal() {
+      const modal = document.getElementById('modal-player-actions');
+      if (modal) modal.classList.remove('active');
+      currentActionPlayerId = null;
+    }
+
+    function handlePlayerActionBackdrop(e) {
+      if (e.target && e.target.id === 'modal-player-actions') {
+        closePlayerActionModal();
+      }
+    }
+
+    function handleActionAssignArena(playerId, targetSlot) {
+      assignToArena(playerId, targetSlot);
+      closePlayerActionModal();
+    }
+
+    function handleActionMoveSavedToQueue(playerId) {
+      moveSavedToQueue(playerId);
+      closePlayerActionModal();
+    }
+
+    function handleActionEditChar(playerId, listType) {
+      const list = (listType === 'queue') ? state.queue : state.saved;
+      const p = list.find(x => String(x.id) === String(playerId));
+      closePlayerActionModal();
+      if (p) promptEditChar(p);
+    }
+
+    function handleActionEditPlayerName(playerId, listType) {
+      const list = (listType === 'queue') ? state.queue : state.saved;
+      const p = list.find(x => String(x.id) === String(playerId));
+      if (!p) return;
+      const newName = prompt(`Ubah Nama Pemain [ ${p.name} ]:`, p.name);
+      if (newName !== null && newName.trim() && newName.trim() !== p.name) {
+        p.name = newName.trim();
+        saveState();
+        openPlayerActionModal(playerId, listType);
+      }
+    }
+
+    function handleActionEditMatches(playerId, listType) {
+      promptEditPlayerTickets(playerId);
+      openPlayerActionModal(playerId, listType);
+    }
+
+    function handleActionConvertTickets(playerId, listType) {
+      closePlayerActionModal();
+      promptConvertPlayerTicket(playerId, listType);
+    }
+
+    function handleActionChangeTier(playerId, listType, newTier) {
+      changePlayerTier(playerId, listType, newTier);
+      openPlayerActionModal(playerId, listType);
+    }
+
+    function handleActionChangeTicketMode(playerId, listType, newMode) {
+      changePlayerTicketMode(playerId, listType, newMode);
+      openPlayerActionModal(playerId, listType);
+    }
+
+    function handleActionReorder(playerId, listType, newPos) {
+      reorderPlayerWithinTier(playerId, listType, newPos);
+      openPlayerActionModal(playerId, listType);
+    }
+
+    function handleActionMoveQueueToSave(playerId) {
+      moveQueueToSave(playerId);
+      closePlayerActionModal();
+    }
+
+    function handleActionDeletePlayer(listType, playerId) {
+      deletePlayer(listType, playerId);
+      closePlayerActionModal();
+    }
+
+    // ==========================================
+    // RENDER MATCH QUEUE (DETAIL NAMUN RAPI)
+    // ==========================================
     function renderQueue() {
       const container = document.getElementById('queue-list-container');
       const qCountEl = document.getElementById('queue-count');
@@ -6961,79 +7440,53 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           emptyDiv.innerText = '(Kosong)';
           tierSec.appendChild(emptyDiv);
         } else {
-          const totalInSec = sec.players.length;
-          sec.players.forEach(({ player: p, globalIdx, originalIdx }, rankInSec) => {
+          sec.players.forEach(({ player: p, globalIdx }, rankInSec) => {
             const posInSec = rankInSec + 1;
             const pTierLabel = getTierLabel(p.type);
             const itemCls = getTierCls(p.type);
 
-            let posOptions = '<option value="" disabled selected style="display:none;">Pilih Posisi</option>';
-            for (let i = 1; i <= totalInSec; i++) {
-              posOptions += `<option value="${i}">#${i}${i === posInSec ? ' (Saat ini)' : ''}</option>`;
-            }
-
-            const tierOptions = `
-              <option value="" disabled selected style="display:none;">Pilih Role</option>
-              <option value="SROBOT">SROBOT (SB)${pTierLabel === 'SB' ? ' (Saat ini)' : ''}</option>
-              <option value="VIP">VIP${pTierLabel === 'VIP' ? ' (Saat ini)' : ''}</option>
-              <option value="FREE">FREE${pTierLabel === 'FREE' ? ' (Saat ini)' : ''}</option>
-            `;
-
             const item = document.createElement('div');
-            item.className = `list-item ${itemCls}`;
+            item.className = `queue-item-card ${itemCls}`;
 
-            let arenaBtn = '';
-            if (!state.p1 && !state.p2) {
-              arenaBtn = `
-                <button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')" title="Naikkan ke P1">⬆ P1</button>
-                <button class="btn btn-sm btn-primary" onclick="assignToArena('${p.id}', 'p2')" title="Naikkan ke P2">⬆ P2</button>
-              `;
-            } else if (!state.p1 && state.p2) {
-              arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p1')" title="Naikkan ke P1">⬆ P1</button>`;
-            } else if (state.p1 && !state.p2) {
-              arenaBtn = `<button class="btn btn-sm btn-success" onclick="assignToArena('${p.id}', 'p2')" title="Naikkan ke P2">⬆ P2</button>`;
-            }
-
-            const wsBadge = (p.ws && p.ws > 0) ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); margin-left:4px; font-weight:800;">${p.ws} WS</span>` : '';
+            const wsBadge = (p.ws && p.ws > 0)
+              ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); font-weight:800;">🔥 ${p.ws} WS</span>`
+              : '';
             const tLabel = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'DUO/TIM' : '1v1';
             const tBg = tLabel === '1v1' ? '#0284c7' : '#7c3aed';
-            const ticketBadge = `<span class="badge" style="background:${tBg}; color:#fff; font-size:0.72rem; font-weight:800; margin-left:4px;" title="Jenis Tiket: ${tLabel}">${tLabel}</span>`;
-
-            const ticketOptions = `
-              <option value="" disabled selected style="display:none;">Pilih Tiket</option>
-              <option value="1v1">⚡ Tiket 1v1 (5c/30c)${tLabel === '1v1' ? ' (Saat ini)' : ''}</option>
-              <option value="TIM">⚔️ Tiket DUO/TIM (10c/60c)${tLabel === 'DUO/TIM' ? ' (Saat ini)' : ''}</option>
-            `;
+            const ticketBadge = `<span class="badge" style="background:${tBg}; color:#fff; font-size:0.72rem; font-weight:800;" title="Jenis Tiket: ${tLabel}">🎟️ ${tLabel}</span>`;
+            
+            const ultiText = p.ulti || getPlayerDefaultUlti(p.char) || '';
+            const ultiBadgeHtml = ultiText
+              ? `<span class="queue-ulti-pill" title="Jurus Ulti: ${escapeHtml(ultiText)}">⚡ ${escapeHtml(ultiText)}</span>`
+              : '';
 
             item.innerHTML = `
-              <div class="item-info">
-                <div class="item-name">#${globalIdx} ${escapeHtml(p.name)} <span class="badge badge-${itemCls}">${pTierLabel}</span>${ticketBadge}${wsBadge}</div>
-                <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b>${(p.ulti || getPlayerDefaultUlti(p.char)) ? ` <span style="color:var(--accent-gold); font-size:0.75rem; font-weight:600;">[⚡ ${escapeHtml(p.ulti || getPlayerDefaultUlti(p.char))}]</span>` : ''} | Match: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit match">${p.matchesLeft}</b></div>
+              <div class="queue-item-left">
+                <div class="queue-rank-badge" title="Urutan Tier ${sec.label}: #${posInSec} (Global #${globalIdx})">
+                  #${posInSec}
+                </div>
+                <div class="queue-player-info">
+                  <div class="queue-player-header">
+                    <span class="queue-player-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</span>
+                    <span class="badge badge-${itemCls}">${pTierLabel}</span>
+                    ${ticketBadge}
+                    ${wsBadge}
+                  </div>
+                  <div class="queue-player-details">
+                    <span class="queue-char-text">🥋 ${escapeHtml(formatChar(p.char))}</span>
+                    ${ultiBadgeHtml}
+                    <span class="queue-match-pill" title="Sisa Match: ${p.matchesLeft}">🎟️ ${p.matchesLeft} Match</span>
+                  </div>
+                </div>
               </div>
-              <div class="item-meta">
-                ${arenaBtn}
-                <div class="dropdown-icon-btn" title="Ubah Posisi Urutan (#${posInSec})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🔢 #${posInSec}</button>
-                  <select class="icon-select-overlay" onchange="reorderPlayerWithinTier('${p.id}', 'queue', parseInt(this.value))">
-                    ${posOptions}
-                  </select>
-                </div>
-                <div class="dropdown-icon-btn" title="Ganti Role (${pTierLabel})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🏷️ ${pTierLabel}</button>
-                  <select class="icon-select-overlay" onchange="changePlayerTier('${p.id}', 'queue', this.value)">
-                    ${tierOptions}
-                  </select>
-                </div>
-                <div class="dropdown-icon-btn" title="Ganti Jenis Tiket (${tLabel})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🎟️ ${tLabel}</button>
-                  <select class="icon-select-overlay" onchange="changePlayerTicketMode('${p.id}', 'queue', this.value)">
-                    ${ticketOptions}
-                  </select>
-                </div>
-                <button class="btn btn-sm btn-blue" onclick="promptConvertPlayerTicket('${p.id}', 'queue')" title="Konversi Tiket (2x 1v1 ⇄ 1x TIM)">🔄 KONVERSI</button>
-                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.queue[${originalIdx}])" title="Ubah Karakter">🥋 CHAR</button>
-                <button class="btn btn-sm btn-primary" onclick="moveQueueToSave('${p.id}')" title="Simpan ke List Tabungan">💾 TABUNG</button>
-                <button class="btn btn-sm btn-danger" onclick="deletePlayer('queue', '${p.id}')" title="Hapus Pemain">🗑️</button>
+              <div class="queue-item-right">
+                <button type="button" class="btn-queue-dots" onclick="openPlayerActionModal('${p.id}', 'queue')" title="Menu Aksi [ ${escapeHtml(p.name)} ]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="2.2"></circle>
+                    <circle cx="12" cy="12" r="2.2"></circle>
+                    <circle cx="12" cy="19" r="2.2"></circle>
+                  </svg>
+                </button>
               </div>
             `;
             tierSec.appendChild(item);
@@ -7044,6 +7497,9 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       });
     }
 
+    // ==========================================
+    // RENDER LIST TABUNGAN (DETAIL NAMUN RAPI)
+    // ==========================================
     function renderSaved() {
       const container = document.getElementById('saved-list-container');
       const sCountEl = document.getElementById('save-count');
@@ -7140,65 +7596,53 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           emptyDiv.innerText = '(Kosong)';
           tierSec.appendChild(emptyDiv);
         } else {
-          const totalInSec = sec.players.length;
-          sec.players.forEach(({ player: p, originalIdx }, rankInSec) => {
+          sec.players.forEach(({ player: p }, rankInSec) => {
             const posInSec = rankInSec + 1;
             const pTierLabel = getTierLabel(p.type);
             const itemCls = getTierCls(p.type);
 
-            let posOptions = '<option value="" disabled selected style="display:none;">Pilih Posisi</option>';
-            for (let i = 1; i <= totalInSec; i++) {
-              posOptions += `<option value="${i}">#${i}${i === posInSec ? ' (Saat ini)' : ''}</option>`;
-            }
-
-            const tierOptions = `
-              <option value="" disabled selected style="display:none;">Pilih Role</option>
-              <option value="SROBOT">SROBOT (SB)${pTierLabel === 'SB' ? ' (Saat ini)' : ''}</option>
-              <option value="VIP">VIP${pTierLabel === 'VIP' ? ' (Saat ini)' : ''}</option>
-              <option value="FREE">FREE${pTierLabel === 'FREE' ? ' (Saat ini)' : ''}</option>
-            `;
-
             const item = document.createElement('div');
-            item.className = `list-item ${itemCls}`;
-            const wsBadge = (p.ws && p.ws > 0) ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); margin-left:4px; font-weight:800;">${p.ws} WS</span>` : '';
+            item.className = `queue-item-card ${itemCls}`;
+            
+            const wsBadge = (p.ws && p.ws > 0)
+              ? `<span class="badge" style="background:var(--c-dark); color:var(--c-white); border:1px solid var(--c-slate); font-weight:800;">🔥 ${p.ws} WS</span>`
+              : '';
             const tLabel = (p.ticketMode === 'TIM' || p.ticketMode === 'DUO') ? 'DUO/TIM' : '1v1';
             const tBg = tLabel === '1v1' ? '#0284c7' : '#7c3aed';
-            const ticketBadge = `<span class="badge" style="background:${tBg}; color:#fff; font-size:0.72rem; font-weight:800; margin-left:4px;" title="Jenis Tiket: ${tLabel}">${tLabel}</span>`;
-
-            const ticketOptions = `
-              <option value="" disabled selected style="display:none;">Pilih Tiket</option>
-              <option value="1v1">⚡ Tiket 1v1 (5c/30c)${tLabel === '1v1' ? ' (Saat ini)' : ''}</option>
-              <option value="TIM">⚔️ Tiket DUO/TIM (10c/60c)${tLabel === 'DUO/TIM' ? ' (Saat ini)' : ''}</option>
-            `;
+            const ticketBadge = `<span class="badge" style="background:${tBg}; color:#fff; font-size:0.72rem; font-weight:800;" title="Jenis Tiket: ${tLabel}">🎟️ ${tLabel}</span>`;
+            
+            const ultiText = p.ulti || getPlayerDefaultUlti(p.char) || '';
+            const ultiBadgeHtml = ultiText
+              ? `<span class="queue-ulti-pill" title="Jurus Ulti: ${escapeHtml(ultiText)}">⚡ ${escapeHtml(ultiText)}</span>`
+              : '';
 
             item.innerHTML = `
-              <div class="item-info">
-                <div class="item-name">${escapeHtml(p.name)} <span class="badge badge-${itemCls}">${pTierLabel}</span>${ticketBadge}${wsBadge}</div>
-                <div class="item-char">Char: <b>${escapeHtml(formatChar(p.char))}</b>${(p.ulti || getPlayerDefaultUlti(p.char)) ? ` <span style="color:var(--accent-gold); font-size:0.75rem; font-weight:600;">[⚡ ${escapeHtml(p.ulti || getPlayerDefaultUlti(p.char))}]</span>` : ''} | Match: <b style="cursor:pointer;" onclick="promptEditPlayerTickets('${p.id}')" title="Klik untuk edit match">${p.matchesLeft}</b></div>
+              <div class="queue-item-left">
+                <div class="queue-rank-badge" title="Urutan di Tabungan: #${posInSec}">
+                  #${posInSec}
+                </div>
+                <div class="queue-player-info">
+                  <div class="queue-player-header">
+                    <span class="queue-player-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</span>
+                    <span class="badge badge-${itemCls}">${pTierLabel}</span>
+                    ${ticketBadge}
+                    ${wsBadge}
+                  </div>
+                  <div class="queue-player-details">
+                    <span class="queue-char-text">🥋 ${escapeHtml(formatChar(p.char))}</span>
+                    ${ultiBadgeHtml}
+                    <span class="queue-match-pill" title="Sisa Match: ${p.matchesLeft}">🎟️ ${p.matchesLeft} Match</span>
+                  </div>
+                </div>
               </div>
-              <div class="item-meta">
-                <button class="btn btn-sm btn-success" onclick="moveSavedToQueue('${p.id}')" title="Naikkan ke Match Queue">📋 QUEUE</button>
-                <div class="dropdown-icon-btn" title="Ubah Posisi Urutan (#${posInSec})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🔢 #${posInSec}</button>
-                  <select class="icon-select-overlay" onchange="reorderPlayerWithinTier('${p.id}', 'saved', parseInt(this.value))">
-                    ${posOptions}
-                  </select>
-                </div>
-                <div class="dropdown-icon-btn" title="Ganti Role (${pTierLabel})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🏷️ ${pTierLabel}</button>
-                  <select class="icon-select-overlay" onchange="changePlayerTier('${p.id}', 'saved', this.value)">
-                    ${tierOptions}
-                  </select>
-                </div>
-                <div class="dropdown-icon-btn" title="Ganti Jenis Tiket (${tLabel})">
-                  <button class="btn btn-sm btn-select-face" type="button" tabindex="-1">🎟️ ${tLabel}</button>
-                  <select class="icon-select-overlay" onchange="changePlayerTicketMode('${p.id}', 'saved', this.value)">
-                    ${ticketOptions}
-                  </select>
-                </div>
-                <button class="btn btn-sm btn-blue" onclick="promptConvertPlayerTicket('${p.id}', 'saved')" title="Konversi Tiket (2x 1v1 ⇄ 1x TIM)">🔄 KONVERSI</button>
-                <button class="btn btn-sm btn-blue" onclick="promptEditChar(state.saved[${originalIdx}])" title="Ubah Karakter">🥋 CHAR</button>
-                <button class="btn btn-sm btn-danger" onclick="deletePlayer('saved', '${p.id}')" title="Hapus Pemain">🗑️</button>
+              <div class="queue-item-right">
+                <button type="button" class="btn-queue-dots" onclick="openPlayerActionModal('${p.id}', 'saved')" title="Menu Aksi [ ${escapeHtml(p.name)} ]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="2.2"></circle>
+                    <circle cx="12" cy="12" r="2.2"></circle>
+                    <circle cx="12" cy="19" r="2.2"></circle>
+                  </svg>
+                </button>
               </div>
             `;
             tierSec.appendChild(item);
@@ -7475,6 +7919,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         closeAddPlayerModal();
         closeModal();
         closeConvertModal();
+        closePlayerActionModal();
       }
 
       const activeEl = document.activeElement;

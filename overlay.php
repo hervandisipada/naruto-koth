@@ -1,3 +1,21 @@
+<?php
+declare(strict_types=1);
+require_once __DIR__ . '/api/helpers.php';
+
+$roomKey = resolveRoomKey();
+$initialStateJson = '{}';
+try {
+    $pdo = getDbConnection();
+    $dbData = loadStateFromMySql($pdo, $roomKey);
+    $initialStateJson = json_encode($dbData['state'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+} catch (Throwable $e) {
+    $initialStateJson = json_encode(getDefaultState(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
+
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '/overlay.php';
+$appDir = rtrim(dirname($scriptName), '/\\');
+$appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -857,6 +875,14 @@
 </head>
 
 <body>
+<?php
+$sidebarActive = 'overlay';
+include __DIR__ . '/includes/sidebar.php';
+?>
+  <!-- Floating Menu Button for Overlay -->
+  <button type="button" class="koth-hamburger-btn overlay-menu-btn" onclick="kothToggleSidebar()" title="Buka Menu Navigasi" style="position: fixed; top: 8px; right: 8px; z-index: 99990; opacity: 0.25; background: rgba(0,0,0,0.6);" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.25'">
+    ☰
+  </button>
 
   <div class="mobile-frame">
     <!-- Announcement Ticker -->
@@ -946,16 +972,7 @@
   </div>
 
   <script>
-    let state = {
-      p1: null,
-      p2: null,
-      queue: [],
-      saved: [],
-      announcement: '',
-      topRecord: { name: '-', char: '-', ws: 0 },
-      overlayListMode: 'queue',
-      tierStatus: { FAST: 'OPEN', VIP: 'OPEN', FREE: 'OPEN' }
-    };
+    let state = <?= $initialStateJson ?>;
 
     // Helper deteksi peran King vs Penantang
     function getArenaRoles(st) {
@@ -1150,6 +1167,7 @@
       fixP(st.p1);
       fixP(st.p2);
       if (Array.isArray(st.queue)) st.queue.forEach(fixP);
+      if (!Array.isArray(st.pendingApprovals)) st.pendingApprovals = [];
       if (Array.isArray(st.saved)) {
         st.saved.forEach(p => {
           fixP(p);
@@ -1253,16 +1271,8 @@
       }
     }
 
-    // Timestamp state terbaru yang diterima
-    let _lastStateTs = 0;
-
-    // Terapkan state baru hanya jika lebih baru atau sama fresh-nya
     function applyState(incoming) {
       if (!incoming || typeof incoming !== 'object') return;
-      // Gunakan timestamp MQTT/SSE payload atau waktu sekarang
-      const incomingTs = incoming._ts || 0;
-      if (incomingTs && incomingTs < _lastStateTs) return; // abaikan state lama
-      _lastStateTs = incomingTs || Date.now();
       state = incoming;
       sanitizeState(state);
       // Tulis ke localStorage agar tab lain sync
@@ -1843,24 +1853,63 @@
       container.ontouchend = () => { setTimeout(() => { isUserInteracting = false; currentScrollY = container.scrollTop; }, 2000); };
     }
 
-    // Connect Local SSE (Hanya jika dijalankan di server Python lokal)
-    function connectSSE() {
-      const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
-      if (window.location.protocol.startsWith('http') && isLocal) {
-        const evtSource = new EventSource('/api/events');
-        evtSource.onmessage = function (e) {
-          try {
-            applyState(JSON.parse(e.data));
-          } catch (err) { }
-        };
-        evtSource.onerror = function () {
-          evtSource.close();
-          setTimeout(connectSSE, 3000);
-        };
+    // Cloud Realtime Sync (MQTT over WebSockets) + MySQL DB API + Local BroadcastChannel
+    const STREAM_KEY = <?= json_encode($roomKey) ?>;
+    const streamKey = STREAM_KEY;
+    const MQTT_TOPIC = `koth/naruto/${STREAM_KEY}`;
+    let _lastServerJson = '';
+
+    // Instant Realtime Local Sync (0ms BroadcastChannel across all browser tabs / OBS / TikTok Studio)
+    const kothSyncChannel = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('koth_broadcast_' + STREAM_KEY) : null;
+    if (kothSyncChannel) {
+      kothSyncChannel.onmessage = (event) => {
+        if (event.data && event.data.state) {
+          _lastServerJson = JSON.stringify(event.data.state);
+          applyState(event.data.state);
+        }
+      };
+    }
+
+    const APP_BASE_URL = <?= json_encode($appBaseUrl) ?>;
+
+    function getAppBaseUrl() {
+      if (typeof APP_BASE_URL === 'string' && APP_BASE_URL.startsWith('/')) {
+        return `${window.location.origin}${APP_BASE_URL}`;
       }
+      let p = window.location.pathname.replace(/\/(index|admin|overlay)(\.(html|php))?$/i, '/').replace(/\/admin\/?$/i, '/');
+      if (!p.endsWith('/')) p += '/';
+      return `${window.location.origin}${p}`;
+    }
+
+    function getStateApiUrl() {
+      return `${getAppBaseUrl()}api/state.php?room=${encodeURIComponent(STREAM_KEY)}`;
+    }
+
+    function fetchStateFromDb() {
+      if (!window.location.protocol.startsWith('http')) return;
+      fetch(getStateApiUrl(), { cache: 'no-store' })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (!data || typeof data !== 'object') return;
+          const raw = JSON.stringify(data);
+          if (raw === _lastServerJson) return;
+          _lastServerJson = raw;
+          applyState(data);
+        })
+        .catch(() => { });
     }
 
     function loadFromLocalStorage() {
+      if (window.location.protocol.startsWith('http')) {
+        // Pada HTTP / PHP, state awal sudah di-load dari database MySQL
+        try {
+          if (state && typeof state === 'object') {
+            localStorage.setItem('koth_naruto_state', JSON.stringify(state));
+          }
+        } catch (e) { }
+        renderOverlay();
+        return;
+      }
       try {
         const raw = localStorage.getItem('koth_naruto_state');
         if (raw) {
@@ -1868,16 +1917,11 @@
           if (parsed && typeof parsed === 'object') {
             state = parsed;
             sanitizeState(state);
-            renderOverlay();
           }
         }
       } catch (e) { }
+      renderOverlay();
     }
-
-    // Cloud Realtime Sync (MQTT over WebSockets)
-    const urlParams = new URLSearchParams(window.location.search);
-    const STREAM_KEY = urlParams.get('room') || urlParams.get('key') || 'hervandisipada';
-    const MQTT_TOPIC = `koth/naruto/${STREAM_KEY}`;
 
     function connectCloudMQTT() {
       if (typeof mqtt === 'undefined') return;
@@ -1894,29 +1938,35 @@
 
         client.on('message', (topic, payload) => {
           try {
-            const data = JSON.parse(payload.toString());
+            const raw = payload.toString();
+            const data = JSON.parse(raw);
+            _lastServerJson = raw;
             applyState(data);
           } catch (err) { }
         });
       } catch (err) { }
     }
 
-    // Initialize (Dual/Triple Realtime Sync tanpa timer polling yang menimpa state)
+    // Initialize: Render data awal -> Sinkronisasi LocalStorage / MySQL / BroadcastChannel / MQTT
+    sanitizeState(state);
+    renderOverlay();
     loadFromLocalStorage();
+    window.addEventListener('DOMContentLoaded', renderOverlay);
     window.addEventListener('storage', (e) => {
       if (e.key === 'koth_naruto_state' && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
           if (parsed && typeof parsed === 'object') {
-            state = parsed;
-            sanitizeState(state);
-            renderOverlay();
+            applyState(parsed);
           }
         } catch (err) { }
       }
     });
     connectCloudMQTT();
-    connectSSE();
+    fetchStateFromDb();
+    if (window.location.protocol.startsWith('http')) {
+      setInterval(fetchStateFromDb, 2000);
+    }
   </script>
 </body>
 

@@ -1,7 +1,7 @@
-DirectoryIndex index.html
+DirectoryIndex index.php index.html
 
-# Prevent browser caching for HTML files
-<FilesMatch "\.(html|htm)$">
+# Prevent browser caching for HTML and PHP files
+<FilesMatch "\.(html|htm|php)$">
   <IfModule mod_headers.c>
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
@@ -12,8 +12,16 @@ DirectoryIndex index.html
 # Enable Rewrite Engine
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /
 
-# Rewrite /admin or /admin/ to admin.html
-RewriteRule ^admin/?$ admin.html [L,QSA]
+# Block direct web access to database scripts
+RewriteRule ^database/ - [F,L]
+
+# Redirect / Rewrite legacy .html requests to native .php
+RewriteRule ^index\.html$ index.php [L,QSA]
+RewriteRule ^admin\.html$ admin.php [L,QSA]
+RewriteRule ^overlay\.html$ overlay.php [L,QSA]
+
+# Friendly URLs
+RewriteRule ^admin/?$ admin.php [L,QSA]
+RewriteRule ^overlay/?$ overlay.php [L,QSA]
 </IfModule>

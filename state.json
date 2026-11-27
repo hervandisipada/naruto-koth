@@ -1,35 +1,47 @@
 {
   "p1": {
-    "id": "1795443185757",
-    "name": "Mail?",
-    "char": "Rōshi",
+    "id": "1795616127222",
+    "name": "Vinz_for_me",
+    "char": "-",
     "matchesLeft": 0,
     "ws": 1,
     "type": "FREE",
-    "ticketMode": "1v1"
+    "ulti": "-"
   },
   "p2": null,
   "queue": [],
   "saved": [
     {
+      "id": "1795608571299",
+      "name": "7045",
+      "char": "-",
+      "matchesLeft": 1,
+      "ws": 0,
+      "type": "FREE",
+      "bonusBase": 0,
+      "bonusAnimUntil": 1795610052940,
+      "savedAt": 1795610865679,
+      "ulti": "-"
+    },
+    {
       "id": "1794316804874",
       "name": "Desyang",
-      "char": "Hanzo",
+      "char": "-",
       "matchesLeft": 10,
       "ws": 0,
       "type": "VIP",
       "savedAt": 1794316804874,
-      "ticketMode": "1v1"
+      "ulti": "-"
     },
     {
       "id": "1794315787831",
       "name": "Dexv",
-      "char": "Ino PDS",
+      "char": "-",
       "matchesLeft": 1,
       "ws": 0,
       "type": "VIP",
       "savedAt": 1794315787831,
-      "ticketMode": "1v1"
+      "ulti": "-"
     },
     {
       "id": "1794474281688",
@@ -39,7 +51,7 @@
       "ws": 0,
       "type": "VIP",
       "savedAt": 1794474281688,
-      "ticketMode": "1v1"
+      "ulti": "-"
     },
     {
       "id": "1794475963248",
@@ -49,7 +61,7 @@
       "ws": 0,
       "type": "VIP",
       "savedAt": 1794475963248,
-      "ticketMode": "1v1"
+      "ulti": "-"
     },
     {
       "id": "1794475083145",
@@ -61,17 +73,27 @@
       "bonusBase": 1,
       "bonusAnimUntil": 1794832251699,
       "savedAt": 1794832738965,
-      "ticketMode": "1v1"
+      "ulti": "-"
     },
     {
       "id": "1794310961321",
       "name": "Ndy",
-      "char": "SSK PDS",
+      "char": "-",
       "matchesLeft": 4,
       "ws": 0,
       "type": "VIP",
       "savedAt": 1794310961321,
-      "ticketMode": "1v1"
+      "ulti": "-"
+    },
+    {
+      "id": "1795615907371",
+      "name": "one.",
+      "char": "-",
+      "matchesLeft": 2,
+      "ws": 0,
+      "type": "VIP",
+      "savedAt": 1795616398201,
+      "ulti": "-"
     },
     {
       "id": "1795437345553",
@@ -81,21 +103,19 @@
       "ws": 0,
       "type": "VIP",
       "bonusBase": 0,
-      "bonusAnimUntil": 1795439801116,
-      "savedAt": 1795440124618,
-      "ticketMode": "1v1"
+      "bonusAnimUntil": 1795616660475,
+      "savedAt": 1795617101471,
+      "ulti": "-"
     },
     {
-      "id": "1795330219019",
+      "id": "1795611867534",
       "name": "y ini metz",
       "char": "-",
-      "matchesLeft": 1,
+      "matchesLeft": 7,
       "ws": 0,
       "type": "VIP",
-      "bonusBase": 0,
-      "bonusAnimUntil": 1795441264952,
-      "savedAt": 1795441996757,
-      "ticketMode": "1v1"
+      "savedAt": 1795616667334,
+      "ulti": "-"
     },
     {
       "id": "1794475325264",
@@ -107,217 +127,12 @@
       "bonusBase": 3,
       "bonusAnimUntil": 1794727917017,
       "savedAt": 1794729531721,
-      "ticketMode": "1v1"
-    },
-    {
-      "id": "1795329936391",
-      "name": "Yoppi",
-      "char": "-",
-      "matchesLeft": 1,
-      "ws": 0,
-      "type": "VIP",
-      "savedAt": 1795335218352,
-      "ticketMode": "1v1"
+      "ulti": "-"
     }
   ],
   "overlayListMode": "queue",
   "announcement": "SROBOT > VIP > FREE",
-  "customCharacters": [
-    "Kibacil",
-    "Ino PDS",
-    "SSK PDS",
-    "Hanzo",
-    "Kankuro",
-    "Hamura",
-    "Tencil",
-    "SSK RINNE",
-    "Shikamaru",
-    "Naruto SG",
-    "Kakashi",
-    "SSK BAYANG",
-    "SSK BRT",
-    "SSK KIRIN",
-    "NRT SG",
-    "BORUTO KARMA",
-    "SSK TAKA",
-    "Gaara BRT",
-    "Danzo",
-    "Ishiki",
-    "Darui BRT",
-    "Sasuke ABrt",
-    "Sasuke BRR",
-    "Sasuke BRT",
-    "Lee BRT",
-    "Kawaki Karma",
-    "Itachi WH",
-    "Guymalam",
-    "Lee",
-    "Lee PDS",
-    "Kiba BRT",
-    "Boruto",
-    "Ino cil",
-    "KKS KILAT",
-    "Madara",
-    "Sasuke",
-    "Kakashi Kilat",
-    "Yamato Anbu",
-    "Kazekage Ke4",
-    "Naruto hormat u2",
-    "Sasuke Bayang",
-    "Obito",
-    "Roshi",
-    "Raikage 3",
-    "Sasuke Kirin",
-    "Lee BRT Kuning",
-    "Sarada kilat",
-    "Shino PDS",
-    "Sai Jas",
-    "Itachi Anbu",
-    "Naruto",
-    "Kazekage Ke3",
-    "Obito PDS",
-    "Shino (Masa Kecil)",
-    "Tsucihkage Mumi",
-    "Gaara (Boruto) U2",
-    "Kakashi Susanoo",
-    "Sarada Academic",
-    "Tobirama U2",
-    "Guy Siang",
-    "Boruto (Alat Ninja)",
-    "Tobi No Mask",
-    "Gaara (Perang Ninja) U2",
-    "Minato Chunin",
-    "Kakashi Kilat NoMask",
-    "Sasuke PDS",
-    "Obito (Pelarian)",
-    "Gaara 5 Kage"
-  ],
-  "masterMode": "1v1",
-  "arena1v1": {
-    "p1": {
-      "id": "1795443185757",
-      "name": "Mail?",
-      "char": "Rōshi",
-      "matchesLeft": 0,
-      "ws": 1,
-      "type": "FREE",
-      "ticketMode": "1v1"
-    },
-    "p2": null
-  },
-  "arenaDuo": {
-    "p1": null,
-    "p2": null
-  },
-  "arenaTim": {
-    "p1": null,
-    "p2": null
-  },
-  "topWsOverlay": {
-    "1v1": true,
-    "DUO": true,
-    "TIM": true
-  },
-  "topRecords1v1": [
-    {
-      "rank": 1,
-      "name": "Kelvin",
-      "char": "Rock Lee (Shippuden)",
-      "ws": 14
-    },
-    {
-      "rank": 2,
-      "name": "itu dia dit",
-      "char": "Rock Lee (Shippuden)",
-      "ws": 14
-    },
-    {
-      "rank": 3,
-      "name": "Kelvin",
-      "char": "Hanzo",
-      "ws": 13
-    }
-  ],
-  "topRecordsSolo": [
-    {
-      "rank": 1,
-      "name": "Kelvin",
-      "char": "Rock Lee (Shippuden)",
-      "ws": 14
-    },
-    {
-      "rank": 2,
-      "name": "itu dia dit",
-      "char": "Rock Lee (Shippuden)",
-      "ws": 14
-    },
-    {
-      "rank": 3,
-      "name": "Kelvin",
-      "char": "Hanzo",
-      "ws": 13
-    }
-  ],
-  "topRecordsDuo": [
-    {
-      "rank": 1,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    },
-    {
-      "rank": 2,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    },
-    {
-      "rank": 3,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    }
-  ],
-  "topRecordsTim": [
-    {
-      "rank": 1,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    },
-    {
-      "rank": 2,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    },
-    {
-      "rank": 3,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    }
-  ],
-  "topRecordsTrio": [
-    {
-      "rank": 1,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    },
-    {
-      "rank": 2,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    },
-    {
-      "rank": 3,
-      "name": "-",
-      "char": "-",
-      "ws": 0
-    }
-  ],
+  "customCharacters": [],
   "topRecord": {
     "rank": 1,
     "name": "Kelvin",
@@ -354,6 +169,8 @@
     "-Shanz",
     "<<***",
     "16",
+    "7045",
+    "aaalghii",
     "Adit ty",
     "adit1140285",
     "aidil",
@@ -362,9 +179,16 @@
     "ANDY",
     "apcb",
     "arip",
+    "aye",
+    "bagaspanduuu",
+    "BAKAA",
+    "BAKAA!",
     "BINTANG",
     "bitaminC",
+    "Boboiboy collection",
     "bongs",
+    "Byy.",
+    "CaaJustfine",
     "CAPTEN M ALDO",
     "d for danesh",
     "dani",
@@ -380,20 +204,27 @@
     "HIHU",
     "Hnko",
     "Ini yg ori",
+    "iSeeu",
     "IshaaSyngg",
     "itu dia dit",
     "j",
     "Ji",
     "Jiksz",
     "juanlu",
+    "Kazehaya",
     "Kelvin",
+    "KENDARUAI",
+    "Kizoee",
     "Kuya",
     "Kykuy",
+    "Lanx",
     "Latif",
     "Mail?",
     "mantap bang",
     "mas_an",
+    "Masxixixi",
     "mbnuu",
+    "monsieee",
     "Nadinee",
     "Naro King",
     "Ndy",
@@ -401,6 +232,7 @@
     "Ole_balap",
     "Oli_balap",
     "One",
+    "one.",
     "oskadon",
     "pandy bosen ganteng",
     "Panpan",
@@ -409,14 +241,22 @@
     "rain",
     "Reha*",
     "rh",
+    "rh.",
     "RIPKI17",
+    "Saddam",
     "Sanes",
     "Shougo",
+    "Tak_berjiwa",
     "Tes",
     "Theonlyrap",
     "Tuan Diyz",
+    "unknown",
     "Valzz",
+    "Vinz_for_me",
+    "Vx Vanz",
     "Wahyu Chy",
+    "Wahyu22",
+    "Wahyu²²",
     "wisangeni",
     "y ini metz",
     "Yayaa",
@@ -424,5 +264,93 @@
     "YudaRfg",
     "Zzzz"
   ],
-  "vipConsecutiveCount": 0
+  "vipConsecutiveCount": 0,
+  "masterMode": "1v1",
+  "arena1v1": {
+    "p1": {
+      "id": "1795616127222",
+      "name": "Vinz_for_me",
+      "char": "-",
+      "matchesLeft": 0,
+      "ws": 1,
+      "type": "FREE",
+      "ulti": "-"
+    },
+    "p2": null
+  },
+  "arenaDuo": {
+    "p1": null,
+    "p2": null
+  },
+  "arenaTim": {
+    "p1": null,
+    "p2": null
+  },
+  "pendingApprovals": [],
+  "freeHistory": {},
+  "topWsOverlay": {
+    "1v1": true,
+    "DUO": true,
+    "TIM": true
+  },
+  "topRecords1v1": [
+    {
+      "rank": 1,
+      "name": "Kelvin",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 2,
+      "name": "itu dia dit",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 3,
+      "name": "Kelvin",
+      "char": "Hanzo",
+      "ws": 13
+    }
+  ],
+  "topRecordsDuo": [
+    {
+      "rank": 1,
+      "name": "Kelvin",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 2,
+      "name": "itu dia dit",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 3,
+      "name": "Kelvin",
+      "char": "Hanzo",
+      "ws": 13
+    }
+  ],
+  "topRecordsTim": [
+    {
+      "rank": 1,
+      "name": "Kelvin",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 2,
+      "name": "itu dia dit",
+      "char": "Rock Lee (Shippuden)",
+      "ws": 14
+    },
+    {
+      "rank": 3,
+      "name": "Kelvin",
+      "char": "Hanzo",
+      "ws": 13
+    }
+  ]
 }

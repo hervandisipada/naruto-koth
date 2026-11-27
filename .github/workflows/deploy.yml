@@ -36,6 +36,8 @@ jobs:
             deploy.py
             README.md
             state.json
+            database/**
+            api/config.local.php
 
       - name: 📤 Sync files to herz.kesug.com/htdocs/ via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -58,3 +60,5 @@ jobs:
             deploy.py
             README.md
             state.json
+            database/**
+            api/config.local.php

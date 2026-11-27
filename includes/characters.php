@@ -179,6 +179,50 @@ declare(strict_types=1);
   // URUTAN KARAKTER BERDASARKAN ABJAD (A - Z)
   const ALPHABETICAL_CHARS = [...NARUTO_CHARACTERS].sort((a, b) => a.name.localeCompare(b.name, 'id', { sensitivity: 'base' }));
 
+  // ==========================================
+  // ATURAN PEMBATASAN KARAKTER (BANNED & VIP)
+  // ==========================================
+  // 1. CHAR BANNED ALL TIER: Konohamaru (ID 25)
+  const BANNED_CHAR_IDS = [25];
+
+  // 2. CHAR KHUSUS VIP/SROBOT (Tidak bisa dipilih oleh user FREE):
+  // Hanzou (86), All Kiba (21, 120, 148), All Lee (19, 118, 146), Shisui (26),
+  // All Sai (8, 145), Hashirama Edo Tensei (30), Minato Edo (34), Ino Kecil (116),
+  // Kakashi Kilat/DMS (9), Sasuke Kirin (51), Guy Malam (12), Kabuto Enam Jalan/Petapa (53), Mitsuki (134)
+  const VIP_EXCLUSIVE_CHAR_IDS = [8, 9, 12, 19, 21, 26, 30, 34, 51, 53, 86, 116, 118, 120, 134, 145, 146, 148];
+
+  function isCharBanned(c) {
+    if (!c) return false;
+    if (typeof c === 'number') return BANNED_CHAR_IDS.includes(c);
+    const obj = (typeof c === 'object') ? c : findNarutoChar(c);
+    if (obj && obj.id && BANNED_CHAR_IDS.includes(obj.id)) return true;
+    const name = (typeof c === 'string' ? c : (c.name || '')).toLowerCase();
+    return name.includes('konohamaru');
+  }
+
+  function isCharVipExclusive(c) {
+    if (!c) return false;
+    if (typeof c === 'number') return VIP_EXCLUSIVE_CHAR_IDS.includes(c);
+    const obj = (typeof c === 'object') ? c : findNarutoChar(c);
+    if (obj && obj.id && VIP_EXCLUSIVE_CHAR_IDS.includes(obj.id)) return true;
+    const rawName = typeof c === 'string' ? c : (c.name || '');
+    const name = rawName.toLowerCase();
+    if (name.startsWith('hanzou')) return true;
+    if (name.includes('kiba')) return true;
+    if (name.includes('rock lee')) return true;
+    if (name.includes('shisui')) return true;
+    if (rawName === 'Sai' || name.startsWith('sai ')) return true;
+    if (name.includes('hashirama') && name.includes('edo')) return true;
+    if (name.includes('minato') && name.includes('edo')) return true;
+    if (name.includes('ino') && name.includes('kecil') && !name.includes('shino')) return true;
+    if (name.includes('kedua mata sharingan')) return true;
+    if (rawName === 'Sasuke Uchiha') return true;
+    if (name.startsWith('might guy') && name.includes('perang')) return true;
+    if (name.includes('kabuto') && name.includes('petapa')) return true;
+    if (rawName === 'Mitsuki') return true;
+    return false;
+  }
+
   function normCharName(str) {
     if (!str) return '';
     return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')

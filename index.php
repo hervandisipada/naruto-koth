@@ -496,6 +496,49 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       border-radius: 3px;
       font-weight: 800;
     }
+    .char-card-item.disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+    .char-card-item.disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .char-card-item.banned {
+      border-color: rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.08);
+      filter: grayscale(60%);
+    }
+    .char-card-item.banned:hover {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.16);
+    }
+    .char-card-item.vip-only {
+      border-color: rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .char-card-item.vip-only:hover {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.16);
+    }
+    .badge-status-banned {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .badge-status-vip {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
 
     /* ULTI CARDS */
     .ulti-options-grid {
@@ -1035,13 +1078,36 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           </div>
         ` : '';
 
+        const banned = typeof isCharBanned === 'function' && isCharBanned(c);
+        const vipOnly = !banned && (typeof isCharVipExclusive === 'function' && isCharVipExclusive(c));
+
+        let cardClass = 'char-card-item';
+        let clickAttr = `onclick="selectFreeChar(${c.id}, '${safeUltiArg}')"`;
+        let statusBadgeHtml = '';
+
+        if (banned) {
+          cardClass += ' disabled banned';
+          clickAttr = `onclick="showBannedAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-banned">🚫 BANNED</span>`;
+        } else if (vipOnly) {
+          cardClass += ' disabled vip-only';
+          clickAttr = `onclick="showVipOnlyAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-vip">🔒 KHUSUS VIP</span>`;
+        } else if (isSel) {
+          cardClass += ' selected';
+        }
+
+        const metaRight = isSel
+          ? `<span>✅ Terpilih</span>`
+          : statusBadgeHtml;
+
         return `
-          <div class="char-card-item ${isSel ? 'selected' : ''}" onclick="selectFreeChar(${c.id}, '${safeUltiArg}')">
+          <div class="${cardClass}" ${clickAttr}>
             <div class="char-card-name">${escapeHtml(c.name)}</div>
             ${matchTagHtml}
             <div class="char-card-meta">
               <span class="char-ulti-badge">⚡ ${ultiCount} Ulti</span>
-              <span>${isSel ? '✅ Terpilih' : ''}</span>
+              ${metaRight}
             </div>
           </div>
         `;
@@ -1051,6 +1117,14 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     function selectFreeChar(id, preselectedUlti = '') {
       const c = NARUTO_CHARACTERS.find(x => x.id === id);
       if (!c) return;
+      if (typeof isCharBanned === 'function' && isCharBanned(c)) {
+        showBannedAlert(c.name);
+        return;
+      }
+      if (typeof isCharVipExclusive === 'function' && isCharVipExclusive(c)) {
+        showVipOnlyAlert(c.name);
+        return;
+      }
       freeSelectedChar = c;
       if (preselectedUlti) {
         freeSelectedUlti = preselectedUlti;
@@ -1060,6 +1134,14 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       const badge = document.getElementById('free-selected-char-badge');
       if (badge) badge.innerText = `✓ ${c.name}`;
       renderFreeCharGrid();
+    }
+
+    function showBannedAlert(charName) {
+      alert(`🚫 KARAKTER DIBANNED!\n\nKarakter "${charName}" berstatus BANNED dan tidak dapat dipilih untuk semua tier (Free, VIP, maupun Srobot).`);
+    }
+
+    function showVipOnlyAlert(charName) {
+      alert(`🔒 KHUSUS VIP / SROBOT!\n\nKarakter "${charName}" khusus untuk peserta VIP & SROBOT dan tidak bisa dipilih pada jalur Free Request.\n\nSilakan mendaftar melalui jalur "DAFTAR VIP" atau "DAFTAR SROBOT" untuk memainkan karakter ini!`);
     }
 
     function setupFreeStep3() {
@@ -1119,6 +1201,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       }
       if (!freeSelectedChar) {
         alert('Karakter belum dipilih!');
+        goToFreeStep(2);
+        return;
+      }
+
+      if (typeof isCharBanned === 'function' && isCharBanned(freeSelectedChar)) {
+        showBannedAlert(freeSelectedChar.name);
+        goToFreeStep(2);
+        return;
+      }
+
+      if (typeof isCharVipExclusive === 'function' && isCharVipExclusive(freeSelectedChar)) {
+        showVipOnlyAlert(freeSelectedChar.name);
         goToFreeStep(2);
         return;
       }

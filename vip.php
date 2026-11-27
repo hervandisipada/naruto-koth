@@ -520,6 +520,41 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       border-radius: 3px;
       font-weight: 800;
     }
+    .char-card-item.disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+    .char-card-item.disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .char-card-item.banned {
+      border-color: rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.08);
+      filter: grayscale(60%);
+    }
+    .char-card-item.banned:hover {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.16);
+    }
+    .badge-status-banned {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .badge-status-vip-unlocked {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #facc15;
+      background: rgba(234, 179, 8, 0.2);
+      border: 1px solid rgba(234, 179, 8, 0.45);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
 
     /* ULTI CARDS */
     .ulti-options-grid {
@@ -1367,13 +1402,37 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
           </div>
         ` : '';
 
+        const banned = typeof isCharBanned === 'function' && isCharBanned(c);
+        const isVipEx = !banned && (typeof isCharVipExclusive === 'function' && isCharVipExclusive(c));
+
+        let cardClass = 'char-card-item';
+        let clickAttr = `onclick="selectPaidChar(${c.id}, '${safeUltiArg}')"`;
+        let statusBadgeHtml = '';
+
+        if (banned) {
+          cardClass += ' disabled banned';
+          clickAttr = `onclick="showBannedAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-banned">🚫 BANNED</span>`;
+        } else {
+          if (isVipEx) {
+            statusBadgeHtml = `<span class="badge-status-vip-unlocked">⭐ VIP EXCLUSIVE</span>`;
+          }
+          if (isSel) {
+            cardClass += ' selected';
+          }
+        }
+
+        const metaRight = isSel
+          ? `<span>✅ Terpilih</span>`
+          : statusBadgeHtml;
+
         return `
-          <div class="char-card-item ${isSel ? 'selected' : ''}" onclick="selectPaidChar(${c.id}, '${safeUltiArg}')">
+          <div class="${cardClass}" ${clickAttr}>
             <div class="char-card-name">${escapeHtml(c.name)}</div>
             ${matchTagHtml}
             <div class="char-card-meta">
               <span class="char-ulti-badge">⚡ ${ultiCount} Ulti</span>
-              <span>${isSel ? '✅ Terpilih' : ''}</span>
+              ${metaRight}
             </div>
           </div>
         `;
@@ -1383,6 +1442,10 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
     function selectPaidChar(id, preselectedUlti = '') {
       const c = NARUTO_CHARACTERS.find(x => x.id === id);
       if (!c) return;
+      if (typeof isCharBanned === 'function' && isCharBanned(c)) {
+        showBannedAlert(c.name);
+        return;
+      }
       paidSelectedChar = c;
       if (preselectedUlti) {
         paidSelectedUlti = preselectedUlti;
@@ -1392,6 +1455,10 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       const badge = document.getElementById('paid-selected-char-badge');
       if (badge) badge.innerText = `✓ ${c.name}`;
       renderPaidCharGrid();
+    }
+
+    function showBannedAlert(charName) {
+      alert(`🚫 KARAKTER DIBANNED!\n\nKarakter "${charName}" berstatus BANNED dan tidak dapat dipilih untuk semua tier (Free, VIP, maupun Srobot).`);
     }
 
     function setupPaidStep3() {
@@ -1468,6 +1535,12 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       }
       if (!paidSelectedChar) {
         alert('Karakter belum dipilih!');
+        goToPaidStep(2);
+        return;
+      }
+
+      if (typeof isCharBanned === 'function' && isCharBanned(paidSelectedChar)) {
+        showBannedAlert(paidSelectedChar.name);
         goToPaidStep(2);
         return;
       }

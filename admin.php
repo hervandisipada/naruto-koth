@@ -3521,6 +3521,14 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           ? `<span style="font-size:0.68rem; font-weight:800; color:#facc15; background:rgba(234,179,8,0.2); border:1px solid rgba(234,179,8,0.4); padding:1px 5px; border-radius:3px;">⚡ Cocok: ${escapeHtml(c._matchedUlti)}</span>`
           : '';
 
+        const bannedTag = (typeof isCharBanned === 'function' && isCharBanned(c))
+          ? `<span style="font-size:0.68rem; font-weight:800; color:#ef4444; background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.4); padding:1px 5px; border-radius:3px;">🚫 BANNED</span>`
+          : '';
+
+        const vipTag = (!bannedTag && typeof isCharVipExclusive === 'function' && isCharVipExclusive(c))
+          ? `<span style="font-size:0.68rem; font-weight:800; color:#f59e0b; background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.4); padding:1px 5px; border-radius:3px;">⭐ VIP ONLY</span>`
+          : '';
+
         const safeName = escapeHtml(c.name).replace(/'/g, "\'");
         const safeUlti = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\'") : '';
         itemsHtml += `
@@ -3528,6 +3536,8 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             <div class="char-item-title">${escapeHtml(c.name)}</div>
             <div class="char-item-tags">
               <span class="badge-slide">S${c.slide}</span>
+              ${bannedTag}
+              ${vipTag}
               ${ultiBadge}
               ${matchedUltiTag}
             </div>

@@ -160,6 +160,9 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             ${priceHtml}
           </div>
           <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-sm btn-secondary" onclick="openPendingNotifModalForPlayer('${p.id}')" title="Buka Modal Tinjauan / Konfirmasi" style="font-weight: 800; font-size: 0.78rem; padding: 6px 10px; background: #393E46; color:#EEEEEE; border-color:#929AAB;">
+              🔍 Tinjau
+            </button>
             <button type="button" class="btn btn-sm btn-secondary" onclick="openEditPendingModal('${p.id}')" title="Edit Detail Pendaftar" style="font-weight: 800; font-size: 0.78rem; padding: 6px 12px; background: #374151; color:#ffffff; border-color:#4b5563;">
               ✏️ Edit
             </button>
@@ -192,12 +195,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       showToast(`✅ ${player.name} (${player.type}) telah disetujui & masuk antrian live!`);
     }
 
-    function rejectPendingPlayer(id) {
+    function rejectPendingPlayer(id, skipConfirm = false) {
       if (!Array.isArray(state.pendingApprovals)) return;
       const idx = state.pendingApprovals.findIndex(p => p.id === id);
       if (idx === -1) return;
       const player = state.pendingApprovals[idx];
-      if (!confirm(`Tolak pendaftaran ${player.name} (${player.type})?`)) return;
+      if (!skipConfirm && !confirm(`Tolak pendaftaran ${player.name} (${player.type})?`)) return;
       state.pendingApprovals.splice(idx, 1);
       saveAndBroadcastState();
       renderAll();
@@ -220,6 +223,224 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       saveAndBroadcastState();
       renderAll();
       showToast('✅ Semua pendaftar berhasil disetujui ke antrian live!');
+    }
+
+    // =======================================================
+    // NOTIFIKASI REAL-TIME MODAL PENDAFTAR VIP & SROBOT BARU
+    // =======================================================
+    let isPendingNotifInitialized = false;
+    let knownPendingIds = new Set();
+    let pendingNotifQueue = [];
+    let currentNotifPlayer = null;
+
+    function playNotificationSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+
+        // Ding-dong chord (D5 - 587.33Hz -> A5 - 880Hz)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        gain1.gain.setValueAtTime(0.2, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.35);
+
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(880, now + 0.15);
+        gain2.gain.setValueAtTime(0.25, now + 0.15);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.15);
+        osc2.stop(now + 0.6);
+      } catch (e) { }
+    }
+
+    function checkNewPendingApprovals() {
+      if (!Array.isArray(state.pendingApprovals)) return;
+
+      // Pada inisialisasi awal saat halaman admin baru dimuat/refresh,
+      // rekam semua id pendaftar yang sudah ada agar tidak memicu popup massal.
+      if (!isPendingNotifInitialized) {
+        state.pendingApprovals.forEach(p => {
+          if (p && p.id) knownPendingIds.add(p.id);
+        });
+        isPendingNotifInitialized = true;
+        return;
+      }
+
+      // Deteksi pendaftar baru yang belum ada di knownPendingIds
+      const newPlayers = state.pendingApprovals.filter(p => p && p.id && !knownPendingIds.has(p.id));
+      if (newPlayers.length === 0) return;
+
+      newPlayers.forEach(p => {
+        knownPendingIds.add(p.id);
+        if (!pendingNotifQueue.some(item => item.id === p.id)) {
+          pendingNotifQueue.push(p);
+        }
+      });
+
+      if (pendingNotifQueue.length > 0) {
+        playNotificationSound();
+        showNextPendingNotif();
+      }
+    }
+
+    function showNextPendingNotif() {
+      const modal = document.getElementById('modal-new-pending-notif');
+      if (!modal) return;
+
+      // Filter queue: pastikan pemain masih ada di state.pendingApprovals
+      pendingNotifQueue = pendingNotifQueue.filter(p =>
+        Array.isArray(state.pendingApprovals) && state.pendingApprovals.some(item => item.id === p.id)
+      );
+
+      if (pendingNotifQueue.length === 0) {
+        modal.style.display = 'none';
+        currentNotifPlayer = null;
+        return;
+      }
+
+      currentNotifPlayer = pendingNotifQueue[0];
+      const p = currentNotifPlayer;
+      const tierCls = (p.type === 'SROBOT' || p.type === 'SB') ? 'fast' : (p.type === 'VIP' ? 'vip' : 'free');
+      const tierLabel = (p.type === 'SROBOT' || p.type === 'SB') ? 'SROBOT' : (p.type === 'VIP' ? 'VIP' : 'FREE');
+      const mode = p.ticketMode || '1v1';
+      const matches = p.matchesLeft || 1;
+
+      const nameEl = document.getElementById('notif-player-name');
+      const tierEl = document.getElementById('notif-player-tier');
+      const modeEl = document.getElementById('notif-player-mode');
+      const charEl = document.getElementById('notif-player-char');
+      const ultiEl = document.getElementById('notif-player-ulti');
+      const matchesEl = document.getElementById('notif-player-matches');
+      const priceEl = document.getElementById('notif-player-price');
+      const counterEl = document.getElementById('notif-pending-counter');
+      const cardBox = document.getElementById('notif-card-box');
+
+      if (nameEl) nameEl.innerText = p.name || '-';
+      if (tierEl) {
+        tierEl.className = 'q-badge ' + tierCls;
+        tierEl.innerText = tierLabel;
+      }
+      if (modeEl) modeEl.innerText = mode;
+      if (charEl) charEl.innerText = p.char || '-';
+      if (ultiEl) {
+        if (p.ulti && p.ulti !== '-') {
+          ultiEl.style.display = 'block';
+          ultiEl.innerText = `⚡ Jurus: ${p.ulti}`;
+        } else {
+          ultiEl.style.display = 'none';
+        }
+      }
+      if (matchesEl) matchesEl.innerText = `${matches} Match`;
+
+      if (counterEl) {
+        if (pendingNotifQueue.length > 1) {
+          counterEl.style.display = 'inline-block';
+          counterEl.innerText = `${pendingNotifQueue.length} Pendaftar Baru`;
+        } else {
+          counterEl.style.display = 'none';
+        }
+      }
+
+      if (priceEl) {
+        const pr = calculateTierPrice(tierLabel, mode, matches);
+        if (pr.isPaid) {
+          priceEl.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; background:rgba(234,179,8,0.12); border:1px solid rgba(234,179,8,0.4); border-radius:6px; padding:6px 12px; font-size:0.80rem; font-weight:800;">
+              <span style="color:#facc15;">🪙 ${pr.totalCoins} Koin TikTok</span>
+              <span style="color:#929AAB;">atau</span>
+              <span style="color:#4ade80;">💳 Rp ${pr.totalRpFormatted} (SociaBuzz)</span>
+            </div>
+          `;
+        } else {
+          priceEl.innerHTML = `
+            <div style="display:inline-block; background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.3); border-radius:6px; padding:5px 10px; font-size:0.78rem; font-weight:800; color:#86efac;">
+              Gratis (1 Match)
+            </div>
+          `;
+        }
+      }
+
+      if (cardBox) {
+        const borderCol = (tierLabel === 'VIP') ? '#FFD700' : ((tierLabel === 'SROBOT') ? '#a855f7' : '#929AAB');
+        cardBox.style.borderColor = borderCol;
+        cardBox.style.boxShadow = `0 0 20px ${borderCol}33`;
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function approveCurrentNotifPlayer() {
+      if (!currentNotifPlayer) return;
+      const id = currentNotifPlayer.id;
+      pendingNotifQueue = pendingNotifQueue.filter(p => p.id !== id);
+      approvePendingPlayer(id);
+      showNextPendingNotif();
+    }
+
+    function rejectCurrentNotifPlayer() {
+      if (!currentNotifPlayer) return;
+      const p = currentNotifPlayer;
+      const id = p.id;
+      if (!confirm(`Tolak pendaftaran ${p.name} (${p.type})?`)) return;
+      pendingNotifQueue = pendingNotifQueue.filter(item => item.id !== id);
+      rejectPendingPlayer(id, true);
+      showNextPendingNotif();
+    }
+
+    function closeNewPendingNotifModal() {
+      const modal = document.getElementById('modal-new-pending-notif');
+      if (modal) modal.style.display = 'none';
+      pendingNotifQueue = [];
+      currentNotifPlayer = null;
+      showToast('Notifikasi ditutup. Pendaftar tetap tersimpan di Daftar Tunggu.');
+    }
+
+    function editCurrentNotifPlayer() {
+      if (!currentNotifPlayer) return;
+      const id = currentNotifPlayer.id;
+      const modal = document.getElementById('modal-new-pending-notif');
+      if (modal) modal.style.display = 'none';
+      pendingNotifQueue = pendingNotifQueue.filter(p => p.id !== id);
+      currentNotifPlayer = null;
+      openEditPendingModal(id);
+    }
+
+    function openPendingNotifModalForPlayer(id) {
+      if (!Array.isArray(state.pendingApprovals)) return;
+      const p = state.pendingApprovals.find(item => item.id === id);
+      if (!p) return;
+      pendingNotifQueue = [p];
+      showNextPendingNotif();
+    }
+
+    function testPendingNotifModal() {
+      let testP = (Array.isArray(state.pendingApprovals) && state.pendingApprovals.length > 0)
+        ? state.pendingApprovals[0]
+        : {
+            id: 'demo_pnd_' + Date.now(),
+            name: 'Pemain_VIP_Demo',
+            char: 'Naruto (Kurama Link Mode)',
+            ulti: 'Bijudama Rasenshuriken',
+            matchesLeft: 3,
+            type: 'VIP',
+            ticketMode: state.masterMode || '1v1',
+            registeredAt: Date.now()
+          };
+      pendingNotifQueue = [testP];
+      playNotificationSound();
+      showNextPendingNotif();
     }
 
     let currentEditingPendingId = null;
@@ -1519,6 +1740,16 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         transform: translateX(8px);
       }
     }
+    @keyframes notifPopIn {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
     .admin-pin-input-field {
       width: 100%;
       max-width: 220px;
@@ -2099,18 +2330,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           <div id="saved-list-container"></div>
         </div>
 
-        <!-- TAB 3: MENUNGGU PERSETUJUAN (FREE & SROBOT) -->
+        <!-- TAB 3: MENUNGGU PERSETUJUAN (VIP & SROBOT) -->
         <div id="subtab-pending-content" style="display: none;">
           <div
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
             <div>
-              <span style="font-size: 0.88rem; font-weight: 800; color: #fde047;">⏳ Pendaftar Menunggu Persetujuan (FREE
-                & SROBOT):</span>
-              <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">Pendaftar Tier FREE & SROBOT
-                harus disetujui Admin sebelum tampil di antrian live overlay. Anda juga bisa mengedit detailnya sebelum
-                disetujui.</span>
+              <span style="font-size: 0.88rem; font-weight: 800; color: #fde047;">⏳ Pendaftar Menunggu Persetujuan (VIP & SROBOT):</span>
+              <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">Pendaftar Tier VIP & SROBOT
+                harus disetujui Admin sebelum tampil di antrian live overlay. Modal konfirmasi akan otomatis muncul setiap kali ada pendaftar baru.</span>
             </div>
-            <div style="display: flex; gap: 6px;">
+            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+              <button type="button" class="btn btn-sm btn-secondary" onclick="testPendingNotifModal()"
+                style="background: #393E46; border: 1px solid #929AAB; color: #EEEEEE; font-weight: 800;" title="Test Tampilan Popup Notifikasi Modal">🔔 Test Notif Modal</button>
               <button class="btn btn-sm btn-primary" onclick="approveAllPending()"
                 style="background:#22c55e; border-color:#22c55e; font-weight:800;">⚡ Setujui Semua</button>
             </div>
@@ -5548,6 +5779,7 @@ Penambahan ditolak untuk mencegah double user.`);
       renderTopRecordAdmin();
       updateUndoRedoUI();
       updatePlayerFormValidation();
+      checkNewPendingApprovals();
 
       const annInput = document.getElementById('input-announcement');
       if (annInput && state.announcement !== undefined) {
@@ -6556,6 +6788,118 @@ Penambahan ditolak untuk mencegah double user.`);
         <button type="button" class="btn btn-sm btn-primary" onclick="saveEditPendingPlayer(true)"
           style="background:#22c55e; border-color:#22c55e;">💾 Simpan & Setujui</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL NOTIFIKASI PENDAFTAR VIP / SROBOT BARU -->
+  <div id="modal-new-pending-notif"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); z-index:9999999; align-items:center; justify-content:center; padding:16px;">
+    <div
+      style="background:#222831; border:2px solid #F7F7F7; border-radius:12px; max-width:470px; width:100%; padding:22px; color:#F7F7F7; box-shadow:0 20px 50px rgba(0,0,0,0.9); font-family:'Consolas','Courier New',monospace; position:relative; animation:notifPopIn 0.25s ease-out;">
+
+      <!-- Header -->
+      <div
+        style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div
+            style="width:38px; height:38px; background:rgba(234,179,8,0.15); border:1.5px solid #facc15; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.25rem;">
+            🔔
+          </div>
+          <div>
+            <h4 style="margin:0; font-size:1.05rem; font-weight:900; color:#F7F7F7; letter-spacing:0.5px;">
+              PENDAFTAR BARU MASUK!
+            </h4>
+            <div style="font-size:0.72rem; color:#929AAB; margin-top:2px;">
+              Menunggu konfirmasi persetujuan admin
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span id="notif-pending-counter"
+            style="display:none; background:rgba(234,179,8,0.2); border:1px solid #facc15; color:#facc15; font-size:0.70rem; padding:2px 7px; border-radius:4px; font-weight:900;">
+            1 Pendaftar
+          </span>
+          <button type="button" onclick="closeNewPendingNotifModal()" title="Abaikan / Tutup Modal"
+            style="background:transparent; border:none; color:#EEEEEE; font-size:1.3rem; cursor:pointer; line-height:1; padding:2px 6px;">✕</button>
+        </div>
+      </div>
+
+      <!-- Detail Card Box -->
+      <div id="notif-card-box"
+        style="background:rgba(57,62,70,0.7); border:2px solid #FFD700; border-radius:10px; padding:14px 16px; margin-bottom:14px; transition:border-color 0.2s, box-shadow 0.2s;">
+
+        <!-- Row 1: Nama, Tier, Mode -->
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="notif-player-tier" class="q-badge vip"
+              style="font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:4px;">VIP</span>
+            <span id="notif-player-mode" class="badge"
+              style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); font-size:0.70rem; padding:2px 6px; border-radius:4px; color:#EEEEEE; font-weight:800;">1v1</span>
+          </div>
+          <div id="notif-player-matches"
+            style="font-size:0.80rem; font-weight:900; color:#86efac; background:rgba(34,197,94,0.15); border:1px solid #22c55e; border-radius:4px; padding:2px 8px;">
+            1 Match
+          </div>
+        </div>
+
+        <!-- Nama Pemain -->
+        <div style="margin-bottom:10px;">
+          <div
+            style="font-size:0.70rem; color:#929AAB; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">
+            Nama Pemain (TikTok / IG):</div>
+          <div id="notif-player-name"
+            style="font-size:1.25rem; font-weight:900; color:#ffffff; word-break:break-word;">
+            -
+          </div>
+        </div>
+
+        <!-- Karakter & Ulti -->
+        <div
+          style="background:rgba(34,40,49,0.85); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:8px 10px; margin-bottom:10px;">
+          <div style="font-size:0.70rem; color:#929AAB; font-weight:800; text-transform:uppercase;">Karakter Pilihan:
+          </div>
+          <div id="notif-player-char"
+            style="font-size:0.90rem; font-weight:900; color:#F7F7F7; margin-top:2px; word-break:break-word;">
+            -
+          </div>
+          <div id="notif-player-ulti"
+            style="display:none; color:#facc15; font-size:0.78rem; font-weight:800; margin-top:3px; word-break:break-word;">
+            -
+          </div>
+        </div>
+
+        <!-- Estimasi Biaya Gift -->
+        <div id="notif-player-price" style="text-align:center;">
+          <!-- dynamic price hint -->
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div
+        style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:16px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="closeNewPendingNotifModal()"
+          style="background:#393E46; border:1px solid #929AAB; color:#EEEEEE; font-weight:800; font-size:0.82rem; padding:8px 14px; border-radius:6px;"
+          title="Tutup notifikasi, pemain tetap ada di daftar tunggu">
+          Abaikan
+        </button>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="editCurrentNotifPlayer()"
+            title="Edit data pendaftar sebelum disetujui"
+            style="background:#374151; border:1px solid #4b5563; color:#ffffff; font-weight:800; font-size:0.82rem; padding:8px 12px; border-radius:6px;">
+            ✏️ Edit
+          </button>
+          <button type="button" class="btn btn-sm btn-danger" onclick="rejectCurrentNotifPlayer()"
+            style="background:#ef4444; border:1px solid #dc2626; color:#ffffff; font-weight:800; font-size:0.85rem; padding:8px 14px; border-radius:6px;">
+            ❌ Tolak
+          </button>
+          <button type="button" class="btn btn-sm btn-primary" onclick="approveCurrentNotifPlayer()"
+            style="background:#22c55e; border:1px solid #16a34a; color:#ffffff; font-weight:900; font-size:0.88rem; padding:8px 18px; border-radius:6px; box-shadow:0 4px 14px rgba(34,197,94,0.4);">
+            ✅ Setujui
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 </body>

@@ -3262,6 +3262,111 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     </div>
   </div>
 
+  <!-- MODAL GANTI KARAKTER PEMAIN (PERSIS FORM PENDAFTARAN) -->
+  <div id="modal-edit-player-char" class="modal-overlay" onclick="handleEditCharBackdrop(event)">
+    <div class="modal-box"
+      style="max-width: 580px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border: 2px solid var(--border-strong); box-shadow: 0 16px 40px rgba(0,0,0,0.85); border-radius: 12px; background: var(--panel-bg); color: var(--text-light);">
+      
+      <!-- Modal Header -->
+      <div style="padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <h3 style="margin: 0; color: var(--accent-gold); font-size: 1.15rem; font-weight: 800;">
+            🥋 Ganti Karakter Pemain
+          </h3>
+          <span id="edit-char-player-badge" style="font-size: 0.72rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3);">
+            -
+          </span>
+        </div>
+        <button type="button" class="btn btn-sm btn-danger" onclick="closeEditPlayerCharModal()"
+          style="padding: 2px 8px; font-weight: 900; font-size: 1rem; border-radius: 4px;">✕</button>
+      </div>
+
+      <!-- Step Indicator Bar -->
+      <div class="admin-reg-steps-bar" style="background: rgba(0,0,0,0.3); padding: 8px 18px; border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; justify-content: center; flex-shrink: 0;">
+        <div id="edit-char-step-tab-1" class="admin-step-item active" style="flex: 1; text-align: center; font-size: 0.8rem; font-weight: 800; padding: 5px; border-radius: 6px; background: rgba(234, 179, 8, 0.18); color: #facc15; border: 1px solid #facc15; cursor: pointer;" onclick="editCharGoToStep(1)">
+          1. Pilih Karakter
+        </div>
+        <div id="edit-char-step-tab-2" class="admin-step-item" style="flex: 1; text-align: center; font-size: 0.8rem; font-weight: 800; padding: 5px; border-radius: 6px; background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;" onclick="editCharNextStep()">
+          2. Pilih Jurus Ulti
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div style="padding: 16px 18px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px;">
+        
+        <!-- STEP 1: PILIH KARAKTER A-Z & SEARCH -->
+        <div id="edit-char-step-1" style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin: 0;">Pilih Karakter (A-Z Master Roster):</label>
+            <span id="edit-char-selected-badge" style="font-size: 0.75rem; font-weight: 800; color: #facc15; background: rgba(234, 179, 8, 0.15); padding: 2px 8px; border-radius: 4px;">Belum dipilih</span>
+          </div>
+
+          <!-- Search Input Karakter atau Ulti -->
+          <input type="text" id="edit-char-search" class="form-control" placeholder="🔍 Cari nama karakter atau ulti (misal: Sasuke, kilat, malam...)" autocomplete="off" oninput="renderEditCharGrid()">
+
+          <!-- Alphabet Filter Bar -->
+          <div class="alphabet-filter-bar" id="edit-char-alpha-bar" style="display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px;">
+            <!-- Buttons ALL, A, B, C... Z -->
+          </div>
+
+          <!-- Character Cards Grid -->
+          <div class="char-grid-container admin-char-grid" id="edit-char-grid" style="max-height: 270px; overflow-y: auto;">
+            <!-- Rendered cards -->
+          </div>
+        </div>
+
+        <!-- STEP 2: PILIH ULTI -->
+        <div id="edit-char-step-2" style="display: none; flex-direction: column; gap: 12px;">
+          <!-- Multi ulti box -->
+          <div id="edit-char-multi-ulti-box" style="display: none;">
+            <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin-bottom: 8px;">
+              ⚡ Karakter ini memiliki lebih dari 1 jurus Ulti. Pilih salah satu:
+            </div>
+            <div class="ulti-options-grid" id="edit-char-ulti-options">
+              <!-- Ulti card items -->
+            </div>
+          </div>
+
+          <!-- Single ulti box -->
+          <div id="edit-char-single-ulti-box" style="display: none; background: rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Jurus Ultimate Terkunci:</div>
+            <div id="edit-char-single-ulti-name" style="font-size: 1rem; font-weight: 900; color: var(--accent-gold);"></div>
+          </div>
+
+          <!-- Summary Box -->
+          <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 8px;">📋 Ringkasan Karakter yang Dipilih:</div>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 6px; font-size: 0.83rem;">
+              <div><span style="color:var(--text-muted)">Pemain:</span> <b id="edit-char-sum-player-name" style="color:#fff;">-</b></div>
+              <div><span style="color:var(--text-muted)">Karakter:</span> <b id="edit-char-sum-char-name" style="color:var(--accent-gold);">-</b></div>
+              <div><span style="color:var(--text-muted)">Jurus Ulti:</span> <b id="edit-char-sum-ulti-name" style="color:#fde047;">-</b></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="padding: 12px 18px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-shrink: 0;">
+        <button type="button" id="btn-edit-char-prev" class="btn btn-secondary" onclick="editCharGoToStep(1)" style="display: none; padding: 8px 14px; font-weight: 800;">
+          ← Kembali ke Roster
+        </button>
+        <div style="display: flex; gap: 8px; margin-left: auto;">
+          <button type="button" class="btn btn-danger" onclick="closeEditPlayerCharModal()" style="padding: 8px 14px; font-weight: 800;">
+            Batal
+          </button>
+          <button type="button" id="btn-edit-char-next" class="btn btn-primary" onclick="editCharNextStep()" style="padding: 8px 18px; font-weight: 800;">
+            Lanjut Pilih Ulti ➔
+          </button>
+          <button type="button" id="btn-edit-char-save" class="btn btn-success" onclick="saveEditedPlayerChar()" style="display: none; padding: 8px 18px; font-weight: 800;">
+            💾 Simpan Karakter
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL EDIT CHAR -->
   <div id="modal-char" class="modal-overlay">
     <div class="modal-box">
@@ -6630,6 +6735,19 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
     // Modal Character Editor
     function promptEditChar(target) {
+      if (target === 'p1') {
+        openEditPlayerCharModal('p1', 'arena');
+        return;
+      }
+      if (target === 'p2') {
+        openEditPlayerCharModal('p2', 'arena');
+        return;
+      }
+      if (target && typeof target === 'object' && target.id) {
+        openEditPlayerCharModal(target.id, 'queue');
+        return;
+      }
+
       editingTarget = target;
       let name = "";
       let curChar = "";
@@ -7291,10 +7409,8 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     }
 
     function handleActionEditChar(playerId, listType) {
-      const list = (listType === 'queue') ? state.queue : state.saved;
-      const p = list.find(x => String(x.id) === String(playerId));
       closePlayerActionModal();
-      if (p) promptEditChar(p);
+      openEditPlayerCharModal(playerId, listType);
     }
 
     function handleActionEditPlayerName(playerId, listType) {
@@ -7342,6 +7458,399 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     function handleActionDeletePlayer(listType, playerId) {
       deletePlayer(listType, playerId);
       closePlayerActionModal();
+    }
+
+    // ==========================================
+    // LOGIKA GANTI KARAKTER (PERSIS FORM PENDAFTARAN)
+    // ==========================================
+    let editCharTargetPlayer = null; // { id, listType, name, type }
+    let editCharSelectedChar = null;
+    let editCharSelectedUlti = '';
+    let editCharAlphaFilter = 'ALL';
+    let editCharStep = 1;
+
+    function openEditPlayerCharModal(playerId, listType = 'queue') {
+      let player = null;
+      if (playerId === 'p1') {
+        player = state.p1;
+      } else if (playerId === 'p2') {
+        player = state.p2;
+      } else {
+        const list = (listType === 'queue') ? state.queue : state.saved;
+        player = list.find(p => String(p.id) === String(playerId));
+      }
+      if (!player) return;
+
+      editCharTargetPlayer = {
+        id: playerId,
+        listType: listType,
+        name: player.name || (playerId === 'p1' ? 'Player 1' : (playerId === 'p2' ? 'Player 2' : 'Pemain')),
+        type: player.type || 'VIP'
+      };
+
+      const modal = document.getElementById('modal-edit-player-char');
+      if (!modal) return;
+
+      // Set badge header
+      const pTierLabel = getTierLabel(editCharTargetPlayer.type);
+      const badgeEl = document.getElementById('edit-char-player-badge');
+      if (badgeEl) {
+        badgeEl.innerText = `${editCharTargetPlayer.name} (${pTierLabel})`;
+        badgeEl.className = `badge badge-${getTierCls(editCharTargetPlayer.type)}`;
+      }
+
+      editCharAlphaFilter = 'ALL';
+      const searchInput = document.getElementById('edit-char-search');
+      if (searchInput) searchInput.value = '';
+
+      if (player.char && player.char !== '-' && player.char !== 'TBA' && player.char !== 'Belum Pilih') {
+        const found = findNarutoChar(player.char);
+        if (found) {
+          editCharSelectedChar = found;
+          editCharSelectedUlti = player.ulti || (found.ultis && found.ultis[0]) || '';
+        } else {
+          editCharSelectedChar = null;
+          editCharSelectedUlti = '';
+        }
+      } else {
+        editCharSelectedChar = null;
+        editCharSelectedUlti = '';
+      }
+
+      renderEditCharAlphaBar();
+      modal.classList.add('active');
+      editCharGoToStep(1);
+    }
+
+    function closeEditPlayerCharModal() {
+      const modal = document.getElementById('modal-edit-player-char');
+      if (modal) modal.classList.remove('active');
+      editCharTargetPlayer = null;
+      editCharSelectedChar = null;
+      editCharSelectedUlti = '';
+    }
+
+    function handleEditCharBackdrop(e) {
+      if (e.target && e.target.id === 'modal-edit-player-char') {
+        closeEditPlayerCharModal();
+      }
+    }
+
+    function editCharGoToStep(step) {
+      editCharStep = step;
+
+      const tab1 = document.getElementById('edit-char-step-tab-1');
+      const tab2 = document.getElementById('edit-char-step-tab-2');
+      const step1El = document.getElementById('edit-char-step-1');
+      const step2El = document.getElementById('edit-char-step-2');
+      const btnPrev = document.getElementById('btn-edit-char-prev');
+      const btnNext = document.getElementById('btn-edit-char-next');
+      const btnSave = document.getElementById('btn-edit-char-save');
+
+      if (step === 1) {
+        if (tab1) {
+          tab1.style.background = 'rgba(234, 179, 8, 0.18)';
+          tab1.style.color = '#facc15';
+          tab1.style.borderColor = '#facc15';
+        }
+        if (tab2) {
+          tab2.style.background = 'rgba(255, 255, 255, 0.05)';
+          tab2.style.color = '#94a3b8';
+          tab2.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        }
+        if (step1El) step1El.style.display = 'flex';
+        if (step2El) step2El.style.display = 'none';
+
+        if (btnPrev) btnPrev.style.display = 'none';
+
+        const hasMultiUlti = editCharSelectedChar && editCharSelectedChar.ultis && editCharSelectedChar.ultis.length > 1;
+        if (btnNext) {
+          btnNext.style.display = hasMultiUlti ? 'inline-block' : 'none';
+          btnNext.innerText = 'Lanjut Pilih Ulti ➔';
+        }
+        if (btnSave) {
+          btnSave.style.display = (!hasMultiUlti && editCharSelectedChar) ? 'inline-block' : 'none';
+        }
+
+        renderEditCharGrid();
+      } else if (step === 2) {
+        if (tab1) {
+          tab1.style.background = 'rgba(34, 197, 94, 0.15)';
+          tab1.style.color = '#4ade80';
+          tab1.style.borderColor = '#22c55e';
+        }
+        if (tab2) {
+          tab2.style.background = 'rgba(234, 179, 8, 0.18)';
+          tab2.style.color = '#facc15';
+          tab2.style.borderColor = '#facc15';
+        }
+        if (step1El) step1El.style.display = 'none';
+        if (step2El) step2El.style.display = 'flex';
+
+        if (btnPrev) btnPrev.style.display = 'inline-block';
+        if (btnNext) btnNext.style.display = 'none';
+        if (btnSave) btnSave.style.display = 'inline-block';
+
+        setupEditCharStep2();
+      }
+    }
+
+    function editCharNextStep() {
+      if (!editCharSelectedChar) {
+        alert('Silakan pilih salah satu karakter terlebih dahulu!');
+        return;
+      }
+      const ultis = editCharSelectedChar.ultis || [];
+      if (ultis.length > 1) {
+        editCharGoToStep(2);
+      } else {
+        saveEditedPlayerChar();
+      }
+    }
+
+    function renderEditCharAlphaBar() {
+      const container = document.getElementById('edit-char-alpha-bar');
+      if (!container) return;
+      const letters = ['ALL', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')];
+      container.innerHTML = letters.map(l => `
+        <button type="button" class="btn-alpha ${editCharAlphaFilter === l ? 'active' : ''}" onclick="filterEditCharAlpha('${l}')">
+          ${l}
+        </button>
+      `).join('');
+    }
+
+    function filterEditCharAlpha(letter) {
+      editCharAlphaFilter = letter;
+      renderEditCharAlphaBar();
+      renderEditCharGrid();
+    }
+
+    function renderEditCharGrid() {
+      const container = document.getElementById('edit-char-grid');
+      if (!container) return;
+      const q = (document.getElementById('edit-char-search').value || '').trim().toLowerCase();
+
+      const baseChars = (typeof ALPHABETICAL_CHARS !== 'undefined' && Array.isArray(ALPHABETICAL_CHARS))
+        ? ALPHABETICAL_CHARS
+        : (typeof NARUTO_CHARACTERS !== 'undefined' ? [...NARUTO_CHARACTERS].sort((a, b) => a.name.localeCompare(b.name, 'id', { sensitivity: 'base' })) : []);
+      let list = baseChars.slice();
+      if (editCharAlphaFilter !== 'ALL') {
+        list = list.filter(c => c.name.toUpperCase().startsWith(editCharAlphaFilter));
+      }
+      if (q) {
+        list = list.filter(c => {
+          const matchName = c.name.toLowerCase().includes(q) || (typeof normCharName === 'function' && normCharName(c.name).includes(normCharName(q)));
+          const matchShort = c.short1v1 && c.short1v1.toLowerCase().includes(q);
+          const matchTeam = c.shortTeam && c.shortTeam.toLowerCase().includes(q);
+          const matchedUlti = Array.isArray(c.ultis) ? c.ultis.find(u => u.toLowerCase().includes(q) || (typeof normCharName === 'function' && normCharName(u).includes(normCharName(q)))) : null;
+          c._matchedUlti = matchedUlti || null;
+          return matchName || matchShort || matchTeam || Boolean(matchedUlti);
+        });
+      } else {
+        list.forEach(c => c._matchedUlti = null);
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1 / -1; padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">Tidak ada karakter atau jurus ulti yang cocok dengan "${escapeHtml(q)}".</div>`;
+        return;
+      }
+
+      const pTier = editCharTargetPlayer ? editCharTargetPlayer.type : 'FREE';
+      const isFreeTier = (pTier === 'FREE');
+
+      const badge = document.getElementById('edit-char-selected-badge');
+      if (badge) {
+        badge.innerText = editCharSelectedChar ? `✓ ${editCharSelectedChar.name}` : 'Belum dipilih';
+      }
+
+      container.innerHTML = list.map(c => {
+        const isSel = editCharSelectedChar && editCharSelectedChar.id === c.id;
+        const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
+        const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
+        const matchTagHtml = c._matchedUlti ? `
+          <div style="font-size:0.68rem; font-weight:800; color:#facc15; background:rgba(234, 179, 8, 0.15); border:1px solid rgba(234, 179, 8, 0.35); padding:2px 6px; border-radius:4px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Ulti Cocok: ${escapeHtml(c._matchedUlti)}">
+            ⚡ ${escapeHtml(c._matchedUlti)}
+          </div>
+        ` : '';
+
+        const banned = typeof isCharBanned === 'function' && isCharBanned(c);
+        const isVipEx = !banned && (typeof isCharVipExclusive === 'function' && isCharVipExclusive(c));
+
+        let cardClass = 'admin-char-card';
+        let clickAttr = `onclick="selectEditChar(${c.id}, '${safeUltiArg}')"`;
+        let statusBadgeHtml = '';
+
+        if (banned) {
+          cardClass += ' disabled banned';
+          clickAttr = `onclick="showBannedAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-banned">🚫 BANNED</span>`;
+        } else if (isFreeTier && isVipEx) {
+          cardClass += ' disabled vip-only';
+          clickAttr = `onclick="showVipOnlyAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-vip">🔒 KHUSUS VIP</span>`;
+        } else {
+          if (isVipEx) {
+            statusBadgeHtml = `<span class="badge-status-vip-unlocked">⭐ VIP EXCLUSIVE</span>`;
+          }
+          if (isSel) {
+            cardClass += ' selected';
+          }
+        }
+
+        const metaRight = isSel
+          ? `<span style="color:#4ade80; font-weight:800;">✅ Terpilih</span>`
+          : statusBadgeHtml;
+
+        return `
+          <div class="${cardClass}" ${clickAttr}>
+            <div style="font-size:0.80rem; font-weight:800; color:#f8fafc; line-height:1.25; word-break:break-word;">${escapeHtml(c.name)}</div>
+            ${matchTagHtml}
+            <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.65rem; color:#94a3b8; margin-top:4px;">
+              <span class="char-ulti-badge">⚡ ${ultiCount} Ulti</span>
+              ${metaRight}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectEditChar(id, preselectedUlti = '') {
+      const c = NARUTO_CHARACTERS.find(x => x.id === id);
+      if (!c) return;
+      if (typeof isCharBanned === 'function' && isCharBanned(c)) {
+        showBannedAlert(c.name);
+        return;
+      }
+      const pTier = editCharTargetPlayer ? editCharTargetPlayer.type : 'FREE';
+      if (pTier === 'FREE' && typeof isCharVipExclusive === 'function' && isCharVipExclusive(c)) {
+        showVipOnlyAlert(c.name);
+        return;
+      }
+
+      editCharSelectedChar = c;
+      if (preselectedUlti) {
+        editCharSelectedUlti = preselectedUlti;
+      } else if (c.ultis && c.ultis.length > 0) {
+        editCharSelectedUlti = c.ultis[0];
+      }
+
+      const badge = document.getElementById('edit-char-selected-badge');
+      if (badge) badge.innerText = `✓ ${c.name}`;
+
+      const btnNext = document.getElementById('btn-edit-char-next');
+      const btnSave = document.getElementById('btn-edit-char-save');
+      const hasMultiUlti = c.ultis && c.ultis.length > 1;
+
+      if (hasMultiUlti) {
+        if (btnNext) btnNext.style.display = 'inline-block';
+        if (btnSave) btnSave.style.display = 'none';
+        editCharGoToStep(2);
+      } else {
+        if (btnNext) btnNext.style.display = 'none';
+        if (btnSave) btnSave.style.display = 'inline-block';
+        renderEditCharGrid();
+      }
+    }
+
+    function setupEditCharStep2() {
+      if (!editCharSelectedChar) return;
+
+      const multiBox = document.getElementById('edit-char-multi-ulti-box');
+      const singleBox = document.getElementById('edit-char-single-ulti-box');
+      const ultiOptions = document.getElementById('edit-char-ulti-options');
+
+      const ultis = editCharSelectedChar.ultis || [];
+      if (ultis.length > 1) {
+        multiBox.style.display = 'block';
+        singleBox.style.display = 'none';
+
+        if (!editCharSelectedUlti || !ultis.includes(editCharSelectedUlti)) {
+          editCharSelectedUlti = ultis[0];
+        }
+
+        ultiOptions.innerHTML = ultis.map(u => {
+          const isSel = (editCharSelectedUlti === u);
+          return `
+            <div class="admin-ulti-card ${isSel ? 'selected' : ''}" onclick="selectEditCharUlti('${escapeHtml(u).replace(/'/g, "\\'")}')">
+              <div style="font-size:0.88rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
+                <span>⚡</span>
+                <span>${escapeHtml(u)}</span>
+              </div>
+              <div style="font-size:0.75rem; font-weight:800; color:${isSel ? '#facc15' : '#94a3b8'};">
+                ${isSel ? '✅ Dipilih' : 'Pilih'}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        multiBox.style.display = 'none';
+        singleBox.style.display = 'block';
+        const singleName = document.getElementById('edit-char-single-ulti-name');
+        editCharSelectedUlti = ultis[0] || '-';
+        if (singleName) singleName.innerText = `⚡ ${editCharSelectedUlti}`;
+      }
+
+      if (editCharTargetPlayer) {
+        const sumPlayer = document.getElementById('edit-char-sum-player-name');
+        const sumChar = document.getElementById('edit-char-sum-char-name');
+        const sumUlti = document.getElementById('edit-char-sum-ulti-name');
+        if (sumPlayer) sumPlayer.innerText = `${editCharTargetPlayer.name} (${getTierLabel(editCharTargetPlayer.type)})`;
+        if (sumChar) sumChar.innerText = editCharSelectedChar.name;
+        if (sumUlti) sumUlti.innerText = editCharSelectedUlti || '-';
+      }
+    }
+
+    function selectEditCharUlti(ultiName) {
+      editCharSelectedUlti = ultiName;
+      setupEditCharStep2();
+    }
+
+    function saveEditedPlayerChar() {
+      if (!editCharTargetPlayer) return;
+      if (!editCharSelectedChar) {
+        alert('Karakter belum dipilih!');
+        editCharGoToStep(1);
+        return;
+      }
+
+      if (typeof isCharBanned === 'function' && isCharBanned(editCharSelectedChar)) {
+        showBannedAlert(editCharSelectedChar.name);
+        editCharGoToStep(1);
+        return;
+      }
+      if (editCharTargetPlayer.type === 'FREE' && typeof isCharVipExclusive === 'function' && isCharVipExclusive(editCharSelectedChar)) {
+        showVipOnlyAlert(editCharSelectedChar.name);
+        editCharGoToStep(1);
+        return;
+      }
+
+      const finalChar = editCharSelectedChar.name;
+      const finalUlti = editCharSelectedUlti || (editCharSelectedChar.ultis && editCharSelectedChar.ultis[0]) || '-';
+
+      if (editCharTargetPlayer.id === 'p1' && state.p1) {
+        state.p1.char = finalChar;
+        state.p1.ulti = finalUlti;
+      } else if (editCharTargetPlayer.id === 'p2' && state.p2) {
+        state.p2.char = finalChar;
+        state.p2.ulti = finalUlti;
+      } else {
+        const list = (editCharTargetPlayer.listType === 'queue') ? state.queue : state.saved;
+        const player = list.find(p => String(p.id) === String(editCharTargetPlayer.id));
+        if (!player) {
+          alert('Pemain tidak ditemukan!');
+          closeEditPlayerCharModal();
+          return;
+        }
+        player.char = finalChar;
+        player.ulti = finalUlti;
+      }
+
+      saveState();
+      closeEditPlayerCharModal();
+
+      if (currentActionPlayerId && String(currentActionPlayerId) === String(editCharTargetPlayer.id)) {
+        openPlayerActionModal(editCharTargetPlayer.id, editCharTargetPlayer.listType);
+      }
     }
 
     // ==========================================
@@ -7920,6 +8429,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         closeModal();
         closeConvertModal();
         closePlayerActionModal();
+        closeEditPlayerCharModal();
       }
 
       const activeEl = document.activeElement;

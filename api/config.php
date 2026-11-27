@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Konfigurasi & koneksi PDO MySQL untuk Naruto KotH.
  *
  * Urutan prioritas kredensial:
- * 1. File override `api/config.local.php` (di-ignore Git, wajib untuk kredensial produksi).
+ * 1. File override `config.local.php` (di folder api/ atau root folder).
  * 2. Environment variables (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`).
  * 3. Default XAMPP lokal jika diakses dari localhost / IP LAN / CLI.
  */
@@ -39,11 +39,27 @@ function isLocalEnvironment(): bool
     return false;
 }
 
+function findLocalConfigFile(): ?string
+{
+    $candidates = [
+        __DIR__ . '/config.local.php',
+        dirname(__DIR__) . '/config.local.php',
+        dirname(__DIR__) . '/api/config.local.php',
+    ];
+
+    foreach ($candidates as $file) {
+        if (is_file($file)) {
+            return $file;
+        }
+    }
+    return null;
+}
+
 function getDbConfig(): array
 {
-    $localOverrideFile = __DIR__ . '/config.local.php';
-    if (is_file($localOverrideFile)) {
-        $override = require $localOverrideFile;
+    $configFile = findLocalConfigFile();
+    if ($configFile !== null) {
+        $override = require $configFile;
         if (is_array($override)) {
             return array_merge([
                 'host' => '127.0.0.1',

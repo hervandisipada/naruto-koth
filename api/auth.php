@@ -70,7 +70,7 @@ if ($method === 'POST') {
         }
 
         if (!$admin || !password_verify($pin, (string) $admin['pin_hash'])) {
-            sendJson(['authenticated' => false, 'error' => 'PIN SALAH! PIN default adalah 7878.'], 401);
+            sendJson(['authenticated' => false, 'error' => 'PIN SALAH!'], 401);
         }
 
         startAdminSession();

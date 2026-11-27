@@ -1493,9 +1493,15 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
   </div>
 
   <!-- MODAL INSTRUKSI GIFT & KONFIRMASI PENDAFTARAN -->
-  <div id="modal-success" class="modal-backdrop" onclick="closeSuccessModal(event)">
+  <div id="modal-success" class="modal-backdrop" onclick="if (event.target === this) closeSuccessModal()">
     <div class="modal-box" onclick="event.stopPropagation()"
-      style="max-width: 440px; padding: 22px 20px; text-align: center;">
+      style="max-width: 440px; padding: 22px 20px; text-align: center; position: relative;">
+
+      <!-- Close Button Top Right -->
+      <button type="button" onclick="closeSuccessModal()" title="Tutup Modal"
+        style="position: absolute; top: 10px; right: 12px; background: transparent; border: none; color: #929AAB; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 4px 8px;">
+        ✕
+      </button>
 
       <!-- Top Icon & Title -->
       <div id="modal-header-icon" style="font-size: 36px; margin-bottom: 6px;">🎁</div>
@@ -1559,6 +1565,77 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         </div>
         <div style="font-size: 0.70rem; color: #cbd5e1; margin-top: 6px;">
           *Pilih salah satu metode pembayaran di atas.
+        </div>
+      </div>
+
+      <!-- VIP & SROBOT Interactive Flow -->
+      <div id="modal-gift-flow" style="display: none;">
+        <!-- Step 1: Question (Sudah / Belum) -->
+        <div id="gift-step-question">
+          <div style="font-size: 0.88rem; font-weight: 800; color: #f8fafc; margin-bottom: 12px;">
+            Apakah kamu sudah mengirim Gift TikTok atau Donasi SociaBuzz?
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button type="button" class="btn-reg-opt"
+              style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; font-weight: 900; padding: 10px 14px; border-radius: 6px; font-size: 0.90rem; cursor: pointer;"
+              onclick="handleGiftAnswer('belum')">
+              ❌ Belum
+            </button>
+            <button type="button" class="btn-reg-opt"
+              style="background: rgba(34, 197, 94, 0.25); border: 1px solid #22c55e; color: #86efac; font-weight: 900; padding: 10px 14px; border-radius: 6px; font-size: 0.90rem; cursor: pointer;"
+              onclick="handleGiftAnswer('sudah')">
+              ✅ Sudah
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Options / Links (Jika Klik 'Belum') -->
+        <div id="gift-step-options" style="display: none;">
+          <div style="font-size: 0.82rem; font-weight: 800; color: #fde047; margin-bottom: 10px;">
+            Silakan kirim gift di TikTok Live atau bayar via SociaBuzz:
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+            <a href="https://www.tiktok.com/@herzg1209/live" target="_blank" rel="noopener noreferrer"
+              style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; background: #000000; border: 1.5px solid #fe2c55; color: #ffffff; padding: 10px 14px; border-radius: 6px; font-weight: 900; font-size: 0.85rem;">
+              <span>🎁 Buka TikTok Live @herzg1209</span>
+              <span id="badge-gift-tiktok" style="background: #fe2c55; color: #fff; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px;">Koin</span>
+            </a>
+            <a href="https://sociabuzz.com/herzg/tribe" target="_blank" rel="noopener noreferrer"
+              style="text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; background: #052e16; border: 1.5px solid #22c55e; color: #86efac; padding: 10px 14px; border-radius: 6px; font-weight: 900; font-size: 0.85rem;">
+              <span>💳 Bayar via SociaBuzz</span>
+              <span id="badge-gift-sociabuzz" style="background: #22c55e; color: #000; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; font-weight: 900;">Rp</span>
+            </a>
+          </div>
+          <div style="display: flex; gap: 8px; justify-content: space-between;">
+            <button type="button"
+              style="flex: 1; background: rgba(34, 197, 94, 0.25); border: 1px solid #22c55e; color: #86efac; padding: 9px; border-radius: 6px; font-weight: 800; font-size: 0.82rem; cursor: pointer;"
+              onclick="handleGiftAnswer('sudah')">
+              ✓ Saya Sudah Kirim
+            </button>
+            <button type="button"
+              style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; padding: 9px 14px; border-radius: 6px; font-weight: 700; font-size: 0.80rem; cursor: pointer;"
+              onclick="closeSuccessModal()">
+              Tutup
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Confirmed (Jika Klik 'Sudah') -->
+        <div id="gift-step-confirmed" style="display: none; text-align: center;">
+          <div
+            style="background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 1.3rem; margin-bottom: 4px;">🎉</div>
+            <div style="font-weight: 900; font-size: 0.90rem; color: #86efac; margin-bottom: 4px;">
+              Pendaftaran Berhasil Masuk Antrian!
+            </div>
+            <div style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.4;">
+              Terima kasih! Pendaftaran kamu telah masuk ke daftar tunggu persetujuan Admin. Tunggu konfirmasi Admin saat giliranmu bertanding!
+            </div>
+          </div>
+          <button type="button" class="btn-submit-reg" style="padding: 10px; width: 100%; font-weight: 900; cursor: pointer;"
+            onclick="closeSuccessModal()">
+            Siap, Pantau Antrian!
+          </button>
         </div>
       </div>
 
@@ -1642,7 +1719,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
               bertanding.
             </div>
           </div>
-          <button type="button" class="btn-submit-reg" style="padding: 10px; width: 100%; font-weight: 900;"
+          <button type="button" class="btn-submit-reg" style="padding: 10px; width: 100%; font-weight: 900; cursor: pointer;"
             onclick="closeSuccessModal()">
             Siap, Pantau Antrian!
           </button>
@@ -3104,7 +3181,9 @@ ${freeCheck.reason}`);
 
       if (ans === 'belum') {
         // Otomatis buka link profil TikTok host di tab baru sesuai instruksi
-        window.open('https://www.tiktok.com/@herzg1209', '_blank');
+        try {
+          window.open('https://www.tiktok.com/@herzg1209', '_blank');
+        } catch (err) { }
 
         if (stepQuestion) stepQuestion.style.display = 'none';
         if (stepFollow) stepFollow.style.display = 'block';
@@ -3146,8 +3225,7 @@ ${freeCheck.reason}`);
       }
     }
 
-    function closeSuccessModal(e) {
-      if (e && e.target && e.target.id !== 'modal-success') return;
+    function closeSuccessModal() {
       const modal = document.getElementById('modal-success');
       if (modal) modal.style.display = 'none';
       showToast('Pendaftaran tersimpan di antrian!');

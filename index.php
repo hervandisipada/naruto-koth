@@ -736,7 +736,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
               <span id="free-selected-char-badge" style="color: #4ade80; font-weight:800; font-size:0.75rem;"></span>
             </label>
             <input type="text" id="free-char-search" class="form-control"
-              placeholder="🔍 Ketik nama karakter (Sasuke, Naruto, Kakashi...)" autocomplete="off"
+              placeholder="🔍 Cari nama karakter atau ulti (misal: Sasuke, kilat, malam...)" autocomplete="off"
               oninput="filterFreeChars()">
           </div>
 
@@ -1008,20 +1008,37 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         list = list.filter(c => c.name.toUpperCase().startsWith(freeAlphaFilter));
       }
       if (q) {
-        list = list.filter(c => c.name.toLowerCase().includes(q) || (c.short1v1 && c.short1v1.toLowerCase().includes(q)));
+        list = list.filter(c => {
+          const matchName = c.name.toLowerCase().includes(q) || (typeof normCharName === 'function' && normCharName(c.name).includes(normCharName(q)));
+          const matchShort = c.short1v1 && c.short1v1.toLowerCase().includes(q);
+          const matchTeam = c.shortTeam && c.shortTeam.toLowerCase().includes(q);
+          const matchedUlti = Array.isArray(c.ultis) ? c.ultis.find(u => u.toLowerCase().includes(q) || (typeof normCharName === 'function' && normCharName(u).includes(normCharName(q)))) : null;
+          c._matchedUlti = matchedUlti || null;
+          return matchName || matchShort || matchTeam || Boolean(matchedUlti);
+        });
+      } else {
+        list.forEach(c => c._matchedUlti = null);
       }
 
       if (list.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1 / -1; padding: 20px; text-align: center; color: #94a3b8; font-size: 0.85rem;">Tidak ada karakter dengan kata kunci tersebut.</div>`;
+        container.innerHTML = `<div style="grid-column: 1 / -1; padding: 20px; text-align: center; color: #94a3b8; font-size: 0.85rem;">Tidak ada karakter atau jurus ulti yang cocok dengan "${escapeHtml(q)}".</div>`;
         return;
       }
 
       container.innerHTML = list.map(c => {
         const isSel = freeSelectedChar && freeSelectedChar.id === c.id;
         const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
+        const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
+        const matchTagHtml = c._matchedUlti ? `
+          <div style="font-size:0.68rem; font-weight:800; color:#facc15; background:rgba(234, 179, 8, 0.15); border:1px solid rgba(234, 179, 8, 0.35); padding:2px 6px; border-radius:4px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="Ulti Cocok: ${escapeHtml(c._matchedUlti)}">
+            ⚡ ${escapeHtml(c._matchedUlti)}
+          </div>
+        ` : '';
+
         return `
-          <div class="char-card-item ${isSel ? 'selected' : ''}" onclick="selectFreeChar(${c.id})">
+          <div class="char-card-item ${isSel ? 'selected' : ''}" onclick="selectFreeChar(${c.id}, '${safeUltiArg}')">
             <div class="char-card-name">${escapeHtml(c.name)}</div>
+            ${matchTagHtml}
             <div class="char-card-meta">
               <span class="char-ulti-badge">⚡ ${ultiCount} Ulti</span>
               <span>${isSel ? '✅ Terpilih' : ''}</span>
@@ -1031,10 +1048,15 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       }).join('');
     }
 
-    function selectFreeChar(id) {
+    function selectFreeChar(id, preselectedUlti = '') {
       const c = NARUTO_CHARACTERS.find(x => x.id === id);
       if (!c) return;
       freeSelectedChar = c;
+      if (preselectedUlti) {
+        freeSelectedUlti = preselectedUlti;
+      } else if (c.ultis && c.ultis.length > 0) {
+        freeSelectedUlti = c.ultis[0];
+      }
       const badge = document.getElementById('free-selected-char-badge');
       if (badge) badge.innerText = `✓ ${c.name}`;
       renderFreeCharGrid();

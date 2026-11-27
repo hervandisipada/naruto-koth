@@ -3445,11 +3445,16 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
       if (q) {
         filtered = filtered.filter(c => {
-          return c.name.toLowerCase().includes(q) ||
+          const matchName = c.name.toLowerCase().includes(q) ||
             normCharName(c.name).includes(normCharName(q)) ||
             c.short1v1.toLowerCase().includes(q) ||
             c.shortTeam.toLowerCase().includes(q);
+          const matchedUlti = Array.isArray(c.ultis) ? c.ultis.find(u => u.toLowerCase().includes(q) || normCharName(u).includes(normCharName(q))) : null;
+          c._matchedUlti = matchedUlti || null;
+          return matchName || Boolean(matchedUlti);
         });
+      } else {
+        filtered.forEach(c => c._matchedUlti = null);
       }
 
       let sortSwitcherHtml = `
@@ -3512,13 +3517,19 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           ? `<span class="badge-multi-ulti">⚡ ${c.ultis.length} Ulti</span>`
           : `<span class="badge-single-ulti">1 Ulti (Kunci)</span>`;
 
+        const matchedUltiTag = c._matchedUlti
+          ? `<span style="font-size:0.68rem; font-weight:800; color:#facc15; background:rgba(234,179,8,0.2); border:1px solid rgba(234,179,8,0.4); padding:1px 5px; border-radius:3px;">⚡ Cocok: ${escapeHtml(c._matchedUlti)}</span>`
+          : '';
+
         const safeName = escapeHtml(c.name).replace(/'/g, "\'");
+        const safeUlti = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\'") : '';
         itemsHtml += `
-          <div class="char-picker-item" onmousedown="selectCharFromPicker(${slot}, '${context}', '${safeName}')">
+          <div class="char-picker-item" onmousedown="selectCharFromPicker(${slot}, '${context}', '${safeName}', '${safeUlti}')">
             <div class="char-item-title">${escapeHtml(c.name)}</div>
             <div class="char-item-tags">
               <span class="badge-slide">S${c.slide}</span>
               ${ultiBadge}
+              ${matchedUltiTag}
             </div>
           </div>
         `;
@@ -3528,14 +3539,14 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       popup.innerHTML = headerHtml + itemsHtml;
     }
 
-    function selectCharFromPicker(slot, context, charName) {
+    function selectCharFromPicker(slot, context, charName, preselectedUlti = '') {
       const inputId = context === 'add' ? `input-char-${slot}` : `modal-char-input-${slot}`;
       const inputEl = document.getElementById(inputId);
       if (inputEl) {
         inputEl.value = charName;
       }
 
-      updateUltiSelectForChar(slot, context, charName);
+      updateUltiSelectForChar(slot, context, charName, preselectedUlti);
       closeAllCharPickers();
 
       if (context === 'add') {

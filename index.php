@@ -1375,6 +1375,15 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             </div>
 
             <!-- SLOT 3: SUPPORT 2 (TIM) -->
+            <!-- OPSI HANYA 2 KARAKTER UNTUK MODE TIM -->
+            <div id="wrap-tim-2char" style="display: none; margin: 6px 0; padding: 7px 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 700; color: #fde047; margin: 0;">
+                <input type="checkbox" id="check-tim-2char" onchange="toggleTim2Char()" style="width: 16px; height: 16px; accent-color: #eab308; cursor: pointer;">
+                <span>Pakai hanya 2 karakter (Tanpa Karakter 3)</span>
+              </label>
+            </div>
+
+            <!-- SLOT 3: SUPPORT 2 (TIM) -->
             <div id="slot-wrap-3" style="display: none; margin-bottom: 6px;">
               <div style="font-size: 0.72rem; font-weight: 800; color: #d8b4fe; margin-bottom: 2px;">Karakter 3 (Support
                 2):</div>
@@ -1906,6 +1915,9 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       const slot3 = document.getElementById('slot-wrap-3');
       const slotLabel1 = document.getElementById('slot-label-1');
 
+      const wrapTim2 = document.getElementById('wrap-tim-2char');
+      const chkTim2 = document.getElementById('check-tim-2char');
+
       if (activeMode === '1v1') {
         if (bannerTitle) bannerTitle.innerText = '🎮 MODE AKTIF LIVE: 1vs1 (SOLO)';
         if (bannerDesc) bannerDesc.innerText = 'Format 1 Karakter Utama + Pilihan Ultimate Jutsu';
@@ -1913,6 +1925,8 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         if (slot2) slot2.style.display = 'none';
         if (slot3) slot3.style.display = 'none';
         if (slotLabel1) slotLabel1.innerText = 'Karakter Utama:';
+        if (wrapTim2) wrapTim2.style.display = 'none';
+        if (chkTim2) chkTim2.checked = false;
       } else if (activeMode === 'DUO') {
         if (bannerTitle) bannerTitle.innerText = '⚔️ MODE AKTIF LIVE: DUO (2 KARAKTER)';
         if (bannerDesc) bannerDesc.innerText = 'Format 2 Karakter (Leader + Support 1) + Pilihan Ultimate Jutsu';
@@ -1920,7 +1934,35 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         if (slot2) slot2.style.display = 'block';
         if (slot3) slot3.style.display = 'none';
         if (slotLabel1) slotLabel1.innerText = 'Karakter 1 (Leader):';
+        if (wrapTim2) wrapTim2.style.display = 'none';
+        if (chkTim2) chkTim2.checked = false;
       } else {
+        // TIM
+        if (bannerTitle) bannerTitle.innerText = '👑 MODE AKTIF LIVE: TIM (3 / 2 KARAKTER)';
+        if (bannerDesc) bannerDesc.innerText = 'Format Karakter TIM (Leader + Support) + Pilihan Ultimate Jutsu';
+        if (bannerPill) bannerPill.innerText = 'TIM';
+        if (slot2) slot2.style.display = 'block';
+        if (slotLabel1) slotLabel1.innerText = 'Karakter 1 (Leader):';
+        if (wrapTim2) wrapTim2.style.display = 'block';
+        const is2Char = chkTim2 && chkTim2.checked;
+        if (slot3) slot3.style.display = is2Char ? 'none' : 'block';
+      }
+    }
+
+    function toggleTim2Char() {
+      const chk = document.getElementById('check-tim-2char');
+      const slot3 = document.getElementById('slot-wrap-3');
+      const is2Char = chk && chk.checked;
+      if (slot3) {
+        slot3.style.display = is2Char ? 'none' : 'block';
+        if (is2Char) {
+          const c3 = document.getElementById('reg-char-3');
+          if (c3) c3.value = '';
+          updateUltiDropdown(3, '');
+        }
+      }
+    }
+else {
         // TIM
         if (bannerTitle) bannerTitle.innerText = '👑 MODE AKTIF LIVE: TIM (3 KARAKTER)';
         if (bannerDesc) bannerDesc.innerText = 'Format 3 Karakter (Leader + Support 1 + Support 2) + Pilihan Ultimate Jutsu';
@@ -2735,6 +2777,8 @@ Nama "${name}" sudah terdaftar dan sedang menunggu persetujuan Admin.`);
         return;
       }
 
+      const isTim2Char = (activeMode === 'TIM' && document.getElementById('check-tim-2char') && document.getElementById('check-tim-2char').checked);
+
       const chars = [c1];
       if (activeMode === 'DUO' || activeMode === 'TIM') {
         if (!c2) {
@@ -2744,9 +2788,9 @@ Nama "${name}" sudah terdaftar dan sedang menunggu persetujuan Admin.`);
         }
         chars.push(c2);
       }
-      if (activeMode === 'TIM') {
+      if (activeMode === 'TIM' && !isTim2Char) {
         if (!c3) {
-          alert("Pilih Karakter 3 (Support 2) untuk mode TIM!");
+          alert("Pilih Karakter 3 (Support 2) untuk mode TIM!\nAtau centang 'Pakai hanya 2 karakter' jika ingin bertanding dengan 2 karakter.");
           openCharPicker(3);
           return;
         }
@@ -2791,7 +2835,7 @@ ${freeCheck.reason}`);
       const u3 = document.getElementById('reg-ulti-3').value.trim();
       const ultiArr = [u1];
       if (activeMode === 'DUO' || activeMode === 'TIM') ultiArr.push(u2);
-      if (activeMode === 'TIM') ultiArr.push(u3);
+      if (activeMode === 'TIM' && !isTim2Char && u3) ultiArr.push(u3);
       const fullUlti = ultiArr.filter(Boolean).join(' / ') || getPlayerDefaultUlti(fullChar);
 
       let matchesCount = parseInt(document.getElementById('selected-matches-val').value) || 1;

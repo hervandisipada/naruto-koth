@@ -681,6 +681,69 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       border-radius: 8px;
       padding: 8px 10px;
     }
+    /* SLOT SELECTOR BAR & TABS */
+    .char-slot-tabs-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .char-slot-tab {
+      flex: 1;
+      min-width: 100px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .char-slot-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .char-slot-tab.active {
+      background: rgba(234, 179, 8, 0.18);
+      border-color: #facc15;
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+    }
+    .char-slot-tab.filled {
+      border-color: #22c55e;
+    }
+    .char-slot-tab.filled.active {
+      border-color: #facc15;
+    }
+    .char-slot-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+    }
+    .char-slot-tab.active .char-slot-badge {
+      color: #facc15;
+    }
+    .char-slot-name {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #f8fafc;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .slot-ulti-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
 
     /* BUTTONS */
     .btn-step-nav {
@@ -911,6 +974,21 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
 
         <!-- LANGKAH 2: PILIH KARAKTER (URUT ABJAD A - Z) -->
         <div id="paid-step-2" class="step-panel" style="display: none;">
+          <!-- Multi-Character Slot Header & Tabs for DUO / TIM -->
+          <div id="paid-mode-banner" style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 6px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; font-weight: 800; color: #fde047;">
+            <span id="paid-mode-banner-text">⚡ Mode: 1vs1</span>
+            <span style="font-size: 0.72rem; color: #cbd5e1; font-weight: 600;">Pilih karakter sesuai slot</span>
+          </div>
+
+          <div class="char-slot-tabs-bar" id="paid-slot-tabs" style="display: none;"></div>
+
+          <div id="paid-tim-flex-bar" style="display: none; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.2); border-radius: 6px; padding: 4px 10px; margin-bottom: 8px; font-size: 0.75rem; color: #cbd5e1;">
+            <span>Mode Tim: Fleksibel (2 atau 3 Karakter)</span>
+            <button type="button" class="btn btn-xs" id="btn-paid-tim-toggle" onclick="togglePaidTimSlot3()" style="background: rgba(234, 179, 8, 0.2); border: 1px solid #facc15; color: #facc15; border-radius: 4px; padding: 2px 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+              🔄 Gunakan 2 Karakter Saja
+            </button>
+          </div>
+
           <div class="form-group">
             <label class="form-label">
               <span>2. Pilih Karakter Naruto (Urut Abjad A - Z):</span>
@@ -930,18 +1008,7 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
 
         <!-- LANGKAH 3: PILIH ULTI (JIKA LEBIH DARI 1) -->
         <div id="paid-step-3" class="step-panel" style="display: none;">
-          <div id="paid-multi-ulti-box" style="display: none;">
-            <div style="font-size:0.84rem; font-weight:800; color:#fde047; margin-bottom:8px;">
-              ⚡ 3. Karakter terpilih memiliki lebih dari 1 Ultimate Jutsu. Pilih salah satu:
-            </div>
-            <div class="ulti-options-grid" id="paid-ulti-options"></div>
-          </div>
-
-          <div id="paid-single-ulti-box" style="display: none; background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px 14px;">
-            <div style="font-size:0.80rem; color:#cbd5e1;">⚡ 3. Ultimate Bawaan Karakter:</div>
-            <div id="paid-single-ulti-text" style="font-size:1.05rem; font-weight:900; color:#facc15; margin-top:3px;"></div>
-            <div style="font-size:0.72rem; color:#94a3b8; margin-top:4px;">*Karakter ini hanya memiliki 1 Ultimate bawaan, otomatis terpilih!</div>
-          </div>
+          <div id="paid-slots-ulti-container"></div>
         </div>
 
         <!-- LANGKAH 4: PILIH JUMLAH MATCH -->
@@ -987,6 +1054,10 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
           <!-- RINGKASAN DATA -->
           <div class="reg-summary-card">
             <div style="font-size:0.74rem; font-weight:900; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Rincian Pendaftaran:</div>
+            <div class="summary-row">
+              <span class="summary-row-label">Mode:</span>
+              <span class="summary-row-val" id="sum-paid-mode" style="color: #38bdf8;">1v1</span>
+            </div>
             <div class="summary-row">
               <span class="summary-row-label">Jalur:</span>
               <span class="summary-row-val" id="sum-paid-tier" style="color: #facc15;">VIP</span>
@@ -1095,6 +1166,10 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
           <span class="summary-row-val" id="suc-p-name">-</span>
         </div>
         <div class="summary-row">
+          <span class="summary-row-label">Mode:</span>
+          <span class="summary-row-val" id="suc-p-mode" style="color: #38bdf8;">1v1</span>
+        </div>
+        <div class="summary-row">
           <span class="summary-row-label">Jalur:</span>
           <span class="summary-row-val" id="suc-p-tier" style="color: #facc15;">VIP</span>
         </div>
@@ -1152,17 +1227,46 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
     // Modal state
     let paidCurrentStep = 1;
     let paidSelectedTier = 'VIP';
-    let paidSelectedChar = null;
-    let paidSelectedUlti = '';
+    let paidSlots = [
+      { char: null, ulti: '' },
+      { char: null, ulti: '' },
+      { char: null, ulti: '' }
+    ];
+    let paidActiveSlot = 0;
+    let paidTimCount = 3; // 2 or 3 for TIM mode
     let paidMatchCount = 1;
     let paidAlphaFilter = 'ALL';
     let paidGiftSent = false;
 
+    function getPaidActiveSlotCount() {
+      const mode = (state.masterMode || '1v1').toUpperCase();
+      if (mode === 'DUO') return 2;
+      if (mode === 'TIM' || mode === 'TRIO') return paidTimCount;
+      return 1;
+    }
+
+    function getPaidSlotLabel(idx) {
+      const mode = (state.masterMode || '1v1').toUpperCase();
+      if (mode === 'DUO') {
+        return idx === 0 ? 'Leader' : 'Support';
+      }
+      if (mode === 'TIM' || mode === 'TRIO') {
+        if (idx === 0) return 'Leader';
+        return `Support ${idx}`;
+      }
+      return 'Karakter Utama';
+    }
+
     function openPaidModal(tier = 'VIP') {
       paidCurrentStep = 1;
       paidSelectedTier = (tier === 'SROBOT' || tier === 'SB') ? 'SROBOT' : 'VIP';
-      paidSelectedChar = null;
-      paidSelectedUlti = '';
+      paidSlots = [
+        { char: null, ulti: '' },
+        { char: null, ulti: '' },
+        { char: null, ulti: '' }
+      ];
+      paidActiveSlot = 0;
+      paidTimCount = 3;
       paidMatchCount = 1;
       paidGiftSent = false;
 
@@ -1174,6 +1278,7 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       setPaidTier(paidSelectedTier);
       setPaidMatches(1);
       buildPaidAlphabetBar();
+      renderPaidSlotTabs();
       renderPaidCharGrid();
       goToPaidStep(1);
 
@@ -1182,6 +1287,94 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
         const inp = document.getElementById('paid-name-input');
         if (inp) inp.focus();
       }, 150);
+    }
+
+    function renderPaidSlotTabs() {
+      const tabsBar = document.getElementById('paid-slot-tabs');
+      const timBar = document.getElementById('paid-tim-flex-bar');
+      const banner = document.getElementById('paid-mode-banner-text');
+      const mode = (state.masterMode || '1v1').toUpperCase();
+      const count = getPaidActiveSlotCount();
+
+      if (banner) {
+        if (mode === 'DUO') {
+          banner.innerText = '⚔️ Mode: DUO (2 Karakter - Leader & Support)';
+        } else if (mode === 'TIM' || mode === 'TRIO') {
+          banner.innerText = `👑 Mode: TIM (${paidTimCount} Karakter - ${paidTimCount === 2 ? 'Leader + 1 Support' : 'Leader + 2 Support'})`;
+        } else {
+          banner.innerText = '⚡ Mode: 1vs1 (Single)';
+        }
+      }
+
+      if (timBar) {
+        timBar.style.display = (mode === 'TIM' || mode === 'TRIO') ? 'flex' : 'none';
+        const btnToggle = document.getElementById('btn-paid-tim-toggle');
+        if (btnToggle) {
+          btnToggle.innerHTML = paidTimCount === 3
+            ? '🔄 Mau 2 Karakter Saja? Klik Sini'
+            : '➕ Tambah Jadi 3 Karakter (Full Team)';
+        }
+      }
+
+      if (mode === '1V1') {
+        if (tabsBar) tabsBar.style.display = 'none';
+        const badge = document.getElementById('paid-selected-char-badge');
+        if (badge) {
+          badge.innerText = paidSlots[0].char ? `✓ ${paidSlots[0].char.name}` : '';
+        }
+        return;
+      }
+
+      if (!tabsBar) return;
+      tabsBar.style.display = 'flex';
+
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        const slot = paidSlots[i];
+        const isActive = (i === paidActiveSlot);
+        const isFilled = Boolean(slot.char);
+        const roleLabel = getPaidSlotLabel(i);
+        const charName = slot.char ? slot.char.name : '(Pilih Karakter)';
+
+        html += `
+          <div class="char-slot-tab ${isActive ? 'active' : ''} ${isFilled ? 'filled' : ''}" onclick="selectPaidSlot(${i})">
+            <div class="char-slot-badge">
+              <span>${isActive ? '👉 ' : ''}Slot ${i + 1} • ${roleLabel}</span>
+              ${isFilled ? '<span style="color:#22c55e;">✓</span>' : '<span style="color:#ef4444;">•</span>'}
+            </div>
+            <div class="char-slot-name">${escapeHtml(charName)}</div>
+          </div>
+        `;
+      }
+      tabsBar.innerHTML = html;
+
+      const badge = document.getElementById('paid-selected-char-badge');
+      if (badge) {
+        const curSlot = paidSlots[paidActiveSlot];
+        const curRole = getPaidSlotLabel(paidActiveSlot);
+        badge.innerText = curSlot && curSlot.char
+          ? `✓ Slot ${paidActiveSlot + 1} (${curRole}): ${curSlot.char.name}`
+          : `Slot ${paidActiveSlot + 1} (${curRole}): Belum Dipilih`;
+      }
+    }
+
+    function togglePaidTimSlot3() {
+      if (paidTimCount === 3) {
+        paidTimCount = 2;
+        if (paidActiveSlot > 1) paidActiveSlot = 1;
+      } else {
+        paidTimCount = 3;
+      }
+      renderPaidSlotTabs();
+      renderPaidCharGrid();
+    }
+
+    function selectPaidSlot(idx) {
+      const maxSlots = getPaidActiveSlotCount();
+      if (idx < 0 || idx >= maxSlots) return;
+      paidActiveSlot = idx;
+      renderPaidSlotTabs();
+      renderPaidCharGrid();
     }
 
     function closePaidModal() {
@@ -1277,12 +1470,17 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
           return;
         }
         hidePaidWarning();
+        renderPaidSlotTabs();
       }
 
       if (step === 3) {
-        if (!paidSelectedChar) {
-          alert('Silakan pilih salah satu karakter Naruto terlebih dahulu!');
-          return;
+        const count = getPaidActiveSlotCount();
+        for (let i = 0; i < count; i++) {
+          if (!paidSlots[i].char) {
+            alert(`Silakan pilih karakter untuk Slot ${i + 1} (${getPaidSlotLabel(i)}) terlebih dahulu!`);
+            selectPaidSlot(i);
+            return;
+          }
         }
         setupPaidStep3();
       }
@@ -1393,7 +1591,8 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       }
 
       container.innerHTML = list.map(c => {
-        const isSel = paidSelectedChar && paidSelectedChar.id === c.id;
+        const curSlotChar = paidSlots[paidActiveSlot] ? paidSlots[paidActiveSlot].char : null;
+        const isSel = curSlotChar && curSlotChar.id === c.id;
         const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
         const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
         const matchTagHtml = c._matchedUlti ? `
@@ -1446,14 +1645,26 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
         showBannedAlert(c.name);
         return;
       }
-      paidSelectedChar = c;
-      if (preselectedUlti) {
-        paidSelectedUlti = preselectedUlti;
-      } else if (c.ultis && c.ultis.length > 0) {
-        paidSelectedUlti = c.ultis[0];
+
+      let chosenUlti = preselectedUlti;
+      if (!chosenUlti && c.ultis && c.ultis.length > 0) {
+        chosenUlti = c.ultis[0];
       }
-      const badge = document.getElementById('paid-selected-char-badge');
-      if (badge) badge.innerText = `✓ ${c.name}`;
+
+      paidSlots[paidActiveSlot] = {
+        char: c,
+        ulti: chosenUlti
+      };
+
+      const count = getPaidActiveSlotCount();
+      // Auto-advance ke slot berikutnya jika masih kosong
+      if (paidActiveSlot === 0 && count > 1 && !paidSlots[1].char) {
+        paidActiveSlot = 1;
+      } else if (paidActiveSlot === 1 && count > 2 && !paidSlots[2].char) {
+        paidActiveSlot = 2;
+      }
+
+      renderPaidSlotTabs();
       renderPaidCharGrid();
     }
 
@@ -1462,49 +1673,85 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
     }
 
     function setupPaidStep3() {
-      if (!paidSelectedChar) return;
+      const container = document.getElementById('paid-slots-ulti-container');
+      if (!container) return;
 
-      const multiBox = document.getElementById('paid-multi-ulti-box');
-      const singleBox = document.getElementById('paid-single-ulti-box');
-      const ultiOptions = document.getElementById('paid-ulti-options');
+      const count = getPaidActiveSlotCount();
+      let html = '';
 
-      const ultis = paidSelectedChar.ultis || [];
-      if (ultis.length > 1) {
-        multiBox.style.display = 'block';
-        singleBox.style.display = 'none';
+      for (let i = 0; i < count; i++) {
+        const s = paidSlots[i];
+        if (!s || !s.char) continue;
+        const c = s.char;
+        const roleLabel = getPaidSlotLabel(i);
+        const ultis = c.ultis || [];
 
-        if (!paidSelectedUlti || !ultis.includes(paidSelectedUlti)) {
-          paidSelectedUlti = ultis[0];
+        let ultiBody = '';
+        if (ultis.length > 1) {
+          if (!s.ulti || !ultis.includes(s.ulti)) {
+            s.ulti = ultis[0];
+          }
+          ultiBody = `
+            <div style="font-size: 0.76rem; color: #cbd5e1; margin-bottom: 6px;">Pilih Ultimate Jutsu:</div>
+            <div class="ulti-options-grid">
+              ${ultis.map(u => `
+                <div class="ulti-card-item ${u === s.ulti ? 'selected' : ''}" onclick="selectPaidSlotUlti(${i}, '${escapeHtml(u).replace(/'/g, "\\'")}')">
+                  <div class="ulti-card-name">
+                    <span>⚡</span>
+                    <span>${escapeHtml(u)}</span>
+                  </div>
+                  <span>${u === s.ulti ? '✅' : '⚪'}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          s.ulti = (ultis.length === 1) ? ultis[0] : c.name;
+          ultiBody = `
+            <div style="background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:8px 10px;">
+              <div style="font-size:0.72rem; color:#94a3b8;">Ultimate Bawaan:</div>
+              <div style="font-size:0.92rem; font-weight:800; color:#facc15; margin-top:2px;">⚡ ${escapeHtml(s.ulti)}</div>
+            </div>
+          `;
         }
 
-        ultiOptions.innerHTML = ultis.map(u => `
-          <div class="ulti-card-item ${u === paidSelectedUlti ? 'selected' : ''}" onclick="selectPaidUlti('${escapeHtml(u)}')">
-            <div class="ulti-card-name">
-              <span>⚡</span>
-              <span>${escapeHtml(u)}</span>
+        html += `
+          <div class="slot-ulti-card">
+            <div class="slot-ulti-header">
+              <span class="slot-ulti-tag">Slot ${i + 1} • ${escapeHtml(roleLabel)}</span>
+              <span class="slot-ulti-char-name">${escapeHtml(c.name)}</span>
             </div>
-            <span>${u === paidSelectedUlti ? '✅' : '⚪'}</span>
+            ${ultiBody}
           </div>
-        `).join('');
-      } else {
-        multiBox.style.display = 'none';
-        singleBox.style.display = 'block';
-        paidSelectedUlti = (ultis.length === 1) ? ultis[0] : (paidSelectedChar.name);
-        document.getElementById('paid-single-ulti-text').innerText = `⚡ ${paidSelectedUlti}`;
+        `;
       }
+
+      container.innerHTML = html;
     }
 
-    function selectPaidUlti(u) {
-      paidSelectedUlti = u;
-      setupPaidStep3();
+    function selectPaidSlotUlti(slotIdx, u) {
+      if (paidSlots[slotIdx]) {
+        paidSlots[slotIdx].ulti = u;
+        setupPaidStep3();
+      }
     }
 
     function setupPaidStep5() {
       const nameVal = (document.getElementById('paid-name-input').value || '').trim();
+      const mode = (state.masterMode || '1v1').toUpperCase();
+      const count = getPaidActiveSlotCount();
+      const activeSlots = paidSlots.slice(0, count);
+
+      const charString = activeSlots.map(s => s.char ? s.char.name : '-').join(' / ');
+      const ultiString = activeSlots.map(s => (s.ulti || (s.char ? s.char.name : '-'))).join(' / ');
+
+      const elMode = document.getElementById('sum-paid-mode');
+      if (elMode) elMode.innerText = (mode === 'DUO' ? 'DUO' : (mode === 'TIM' || mode === 'TRIO' ? `TIM (${count} CHAR)` : '1v1'));
+
       document.getElementById('sum-paid-tier').innerText = paidSelectedTier;
       document.getElementById('sum-paid-name').innerText = nameVal;
-      document.getElementById('sum-paid-char').innerText = paidSelectedChar ? paidSelectedChar.name : '-';
-      document.getElementById('sum-paid-ulti').innerText = paidSelectedUlti || '-';
+      document.getElementById('sum-paid-char').innerText = charString;
+      document.getElementById('sum-paid-ulti').innerText = ultiString;
       document.getElementById('sum-paid-matches').innerText = `${paidMatchCount} Match`;
 
       updatePaidPriceDisplay();
@@ -1533,16 +1780,21 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
         goToPaidStep(1);
         return;
       }
-      if (!paidSelectedChar) {
-        alert('Karakter belum dipilih!');
-        goToPaidStep(2);
-        return;
-      }
 
-      if (typeof isCharBanned === 'function' && isCharBanned(paidSelectedChar)) {
-        showBannedAlert(paidSelectedChar.name);
-        goToPaidStep(2);
-        return;
+      const count = getPaidActiveSlotCount();
+      for (let i = 0; i < count; i++) {
+        if (!paidSlots[i].char) {
+          alert(`Karakter untuk Slot ${i + 1} (${getPaidSlotLabel(i)}) belum dipilih!`);
+          goToPaidStep(2);
+          selectPaidSlot(i);
+          return;
+        }
+        if (typeof isCharBanned === 'function' && isCharBanned(paidSlots[i].char)) {
+          showBannedAlert(paidSlots[i].char.name);
+          goToPaidStep(2);
+          selectPaidSlot(i);
+          return;
+        }
       }
 
       // 1. Anti double check
@@ -1563,8 +1815,9 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       }
 
       const activeMode = state.masterMode || '1v1';
-      const fullChar = paidSelectedChar.name;
-      const fullUlti = paidSelectedUlti || (paidSelectedChar.ultis ? paidSelectedChar.ultis[0] : '-');
+      const activeSlots = paidSlots.slice(0, count);
+      const fullChar = activeSlots.map(s => s.char.name).join(' / ');
+      const fullUlti = activeSlots.map(s => s.ulti || s.char.name).join(' / ');
 
       // Ambil state terbaru
       if (window.location.protocol.startsWith('http')) {
@@ -1614,6 +1867,8 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       // Show success modal
       document.getElementById('suc-p-name').innerText = name;
       document.getElementById('suc-p-tier').innerText = paidSelectedTier;
+      const elSucMode = document.getElementById('suc-p-mode');
+      if (elSucMode) elSucMode.innerText = (activeMode === 'DUO' ? 'DUO' : (activeMode === 'TIM' || activeMode === 'TRIO' ? `TIM (${count} CHAR)` : '1v1'));
       document.getElementById('suc-p-char').innerText = fullChar;
       document.getElementById('suc-p-ulti').innerText = fullUlti;
       document.getElementById('suc-p-match').innerText = `${paidMatchCount} Match`;

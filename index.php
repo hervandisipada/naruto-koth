@@ -546,6 +546,69 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       flex-direction: column;
       gap: 8px;
     }
+    /* SLOT SELECTOR BAR & TABS */
+    .char-slot-tabs-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .char-slot-tab {
+      flex: 1;
+      min-width: 100px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .char-slot-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .char-slot-tab.active {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+    }
+    .char-slot-tab.filled {
+      border-color: #22c55e;
+    }
+    .char-slot-tab.filled.active {
+      border-color: #4ade80;
+    }
+    .char-slot-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+    }
+    .char-slot-tab.active .char-slot-badge {
+      color: #4ade80;
+    }
+    .char-slot-name {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #f8fafc;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .slot-ulti-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
     .ulti-card-item {
       background: rgba(0, 0, 0, 0.35);
       border: 1.5px solid rgba(255, 255, 255, 0.15);
@@ -773,9 +836,25 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
         <!-- LANGKAH 2: PILIH KARAKTER (URUT ABJAD A - Z) -->
         <div id="free-step-2" class="step-panel" style="display: none;">
+          <!-- Mode Banner -->
+          <div id="free-mode-banner" style="display: none; background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; border-radius: 8px; padding: 6px 12px; margin-bottom: 8px; font-size: 0.76rem; font-weight: 800; color: #86efac; align-items: center; justify-content: space-between;">
+            <span id="free-mode-banner-text">⚔️ Mode DUO Aktif: Pilih 2 Karakter</span>
+          </div>
+
+          <!-- Slot Tabs Bar for DUO / TIM -->
+          <div id="free-slot-tabs" class="char-slot-tabs-bar" style="display: none;"></div>
+
+          <!-- TIM Flexible Toggle Bar -->
+          <div id="free-tim-flex-bar" style="display: none; justify-content: space-between; align-items: center; background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.3); border-radius: 6px; padding: 6px 10px; margin-bottom: 8px;">
+            <span style="font-size: 0.74rem; font-weight: 700; color: #d8b4fe;">💡 Mode TIM Fleksibel: Kamu bisa pilih 2 atau 3 karakter</span>
+            <button type="button" id="btn-free-tim-toggle-slot3" class="btn-step-nav" style="padding: 4px 10px; font-size: 0.72rem; background: rgba(255,255,255,0.1); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2);" onclick="toggleFreeTimSlot3()">
+              Hanya Pakai 2 Karakter
+            </button>
+          </div>
+
           <div class="form-group">
             <label class="form-label">
-              <span>Pilih Karakter (Urut Abjad A - Z):</span>
+              <span id="free-char-label">Pilih Karakter (Urut Abjad A - Z):</span>
               <span id="free-selected-char-badge" style="color: #4ade80; font-weight:800; font-size:0.75rem;"></span>
             </label>
             <input type="text" id="free-char-search" class="form-control"
@@ -792,6 +871,11 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
         <!-- LANGKAH 3: PILIH ULTI (JIKA LEBIH DARI 1) & KONFIRMASI -->
         <div id="free-step-3" class="step-panel" style="display: none;">
+          <!-- Multi-slot ulti container -->
+          <div id="free-slots-ulti-container">
+            <!-- Rendered dynamically per slot -->
+          </div>
+
           <div id="free-multi-ulti-box" style="display: none;">
             <div style="font-size:0.84rem; font-weight:800; color:#fde047; margin-bottom:8px;">
               ⚡ Karakter terpilih memiliki lebih dari 1 Ultimate Jutsu. Pilih salah satu:
@@ -811,6 +895,10 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             <div class="summary-row">
               <span class="summary-row-label">Nama TikTok:</span>
               <span class="summary-row-val" id="sum-free-name">-</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-row-label">Mode Match:</span>
+              <span class="summary-row-val" id="sum-free-mode" style="color: #38bdf8;">1v1</span>
             </div>
             <div class="summary-row">
               <span class="summary-row-label">Karakter:</span>
@@ -917,18 +1005,34 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
     // Modal state
     let freeCurrentStep = 1;
-    let freeSelectedChar = null;
+    let freeSlots = [
+      { char: null, ulti: '' },
+      { char: null, ulti: '' },
+      { char: null, ulti: '' }
+    ];
+    let freeActiveSlot = 0; // 0, 1, 2
+    let freeTimCount = 3; // 2 or 3 in TIM mode
+    let freeSelectedChar = null; // backward compatibility
     let freeSelectedUlti = '';
     let freeAlphaFilter = 'ALL';
 
     function openFreeModal() {
       freeCurrentStep = 1;
+      freeSlots = [
+        { char: null, ulti: '' },
+        { char: null, ulti: '' },
+        { char: null, ulti: '' }
+      ];
+      freeActiveSlot = 0;
+      freeTimCount = 3;
       freeSelectedChar = null;
       freeSelectedUlti = '';
       document.getElementById('free-name-input').value = '';
       document.getElementById('free-name-warning').style.display = 'none';
       document.getElementById('free-char-search').value = '';
       freeAlphaFilter = 'ALL';
+
+      renderFreeSlotTabs();
       buildFreeAlphabetBar();
       renderFreeCharGrid();
       goToFreeStep(1);
@@ -947,6 +1051,87 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       document.getElementById('modal-free-success').style.display = 'none';
     }
 
+    function toggleFreeTimSlot3() {
+      if (freeTimCount === 3) {
+        freeTimCount = 2;
+        freeSlots[2] = { char: null, ulti: '' };
+        if (freeActiveSlot === 2) freeActiveSlot = 1;
+      } else {
+        freeTimCount = 3;
+      }
+      renderFreeSlotTabs();
+      renderFreeCharGrid();
+    }
+
+    function selectFreeSlot(idx) {
+      freeActiveSlot = idx;
+      renderFreeSlotTabs();
+      renderFreeCharGrid();
+    }
+
+    function renderFreeSlotTabs() {
+      const activeMode = (state.masterMode || '1v1').toUpperCase();
+      const container = document.getElementById('free-slot-tabs');
+      const flexBar = document.getElementById('free-tim-flex-bar');
+      const flexBtn = document.getElementById('btn-free-tim-toggle-slot3');
+      const banner = document.getElementById('free-mode-banner');
+      const bannerText = document.getElementById('free-mode-banner-text');
+      const label = document.getElementById('free-char-label');
+
+      if (!container) return;
+
+      if (activeMode === '1v1' || !['DUO', 'TIM'].includes(activeMode)) {
+        if (banner) banner.style.display = 'none';
+        container.style.display = 'none';
+        if (flexBar) flexBar.style.display = 'none';
+        if (label) label.innerText = 'Pilih Karakter (Urut Abjad A - Z):';
+        return;
+      }
+
+      if (banner && bannerText) {
+        banner.style.display = 'flex';
+        bannerText.innerText = (activeMode === 'DUO')
+          ? '⚔️ Mode DUO Aktif: Pilih 2 Karakter (Leader & Support)'
+          : '👑 Mode TIM Aktif: Fleksibel, pilih 2 atau 3 Karakter';
+      }
+
+      container.style.display = 'flex';
+      if (label) label.innerText = `Pilih Karakter untuk Slot ${freeActiveSlot + 1}:`;
+
+      if (activeMode === 'TIM') {
+        if (flexBar) flexBar.style.display = 'flex';
+        if (flexBtn) {
+          flexBtn.innerText = (freeTimCount === 3) ? '👥 Gunakan 2 Karakter Saja' : '➕ Tambah Karakter 3';
+        }
+      } else {
+        if (flexBar) flexBar.style.display = 'none';
+      }
+
+      const totalSlots = (activeMode === 'DUO') ? 2 : freeTimCount;
+      const slotDefs = [
+        { label: 'Slot 1: Leader', opt: false },
+        { label: (activeMode === 'DUO') ? 'Slot 2: Support' : 'Slot 2: Support 1', opt: false },
+        { label: 'Slot 3: Support 2', opt: true }
+      ];
+
+      container.innerHTML = slotDefs.slice(0, totalSlots).map((def, idx) => {
+        const slot = freeSlots[idx];
+        const isActive = (freeActiveSlot === idx);
+        const isFilled = Boolean(slot && slot.char);
+        const charName = isFilled ? slot.char.name : (def.opt ? '(Opsional / Kosong)' : '(Belum Dipilih)');
+        let cls = 'char-slot-tab';
+        if (isActive) cls += ' active';
+        if (isFilled) cls += ' filled';
+
+        return `
+          <button type="button" class="${cls}" onclick="selectFreeSlot(${idx})">
+            <span class="char-slot-badge">${def.label}</span>
+            <span class="char-slot-name">${escapeHtml(charName)}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
     function goToFreeStep(step) {
       if (step === 2) {
         const nameVal = (document.getElementById('free-name-input').value || '').trim();
@@ -960,12 +1145,27 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           return;
         }
         hideFreeWarning();
+        renderFreeSlotTabs();
+        renderFreeCharGrid();
       }
 
       if (step === 3) {
-        if (!freeSelectedChar) {
-          alert('Silakan pilih salah satu karakter Naruto terlebih dahulu!');
-          return;
+        const activeMode = (state.masterMode || '1v1').toUpperCase();
+        if (activeMode === '1v1') {
+          if (!freeSlots[0].char) {
+            alert('Silakan pilih salah satu karakter Naruto terlebih dahulu!');
+            return;
+          }
+        } else if (activeMode === 'DUO') {
+          if (!freeSlots[0].char || !freeSlots[1].char) {
+            alert('Mode DUO membutuhkan 2 karakter (Slot 1: Leader & Slot 2: Support)!');
+            return;
+          }
+        } else if (activeMode === 'TIM') {
+          if (!freeSlots[0].char || !freeSlots[1].char) {
+            alert('Mode TIM membutuhkan minimal 2 karakter (Slot 1: Leader & Slot 2: Support 1)!');
+            return;
+          }
         }
         setupFreeStep3();
       }
@@ -1068,8 +1268,19 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         return;
       }
 
+      const activeMode = (state.masterMode || '1v1').toUpperCase();
+      const totalSlots = (activeMode === '1v1') ? 1 : (activeMode === 'DUO' ? 2 : freeTimCount);
+      const curSlotChar = freeSlots[freeActiveSlot] ? freeSlots[freeActiveSlot].char : null;
+
+      const badge = document.getElementById('free-selected-char-badge');
+      if (badge) {
+        const filled = freeSlots.slice(0, totalSlots).filter(s => s && s.char).length;
+        badge.innerText = `${filled}/${totalSlots} Terpilih`;
+      }
+
       container.innerHTML = list.map(c => {
-        const isSel = freeSelectedChar && freeSelectedChar.id === c.id;
+        const isSel = curSlotChar && curSlotChar.id === c.id;
+        const otherSlotIdx = freeSlots.findIndex((s, idx) => idx !== freeActiveSlot && s.char && s.char.id === c.id);
         const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
         const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
         const matchTagHtml = c._matchedUlti ? `
@@ -1097,9 +1308,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           cardClass += ' selected';
         }
 
-        const metaRight = isSel
-          ? `<span>✅ Terpilih</span>`
-          : statusBadgeHtml;
+        let metaRight = statusBadgeHtml;
+        if (isSel) {
+          metaRight = `<span style="color:#4ade80; font-weight:800;">✅ Slot ${freeActiveSlot + 1}</span>`;
+        } else if (otherSlotIdx !== -1) {
+          metaRight = `<span style="color:#38bdf8; font-weight:700; font-size:0.65rem;">Slot ${otherSlotIdx + 1}</span>`;
+        }
 
         return `
           <div class="${cardClass}" ${clickAttr}>
@@ -1125,14 +1339,30 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         showVipOnlyAlert(c.name);
         return;
       }
-      freeSelectedChar = c;
-      if (preselectedUlti) {
-        freeSelectedUlti = preselectedUlti;
-      } else if (c.ultis && c.ultis.length > 0) {
-        freeSelectedUlti = c.ultis[0];
+
+      let chosenUlti = preselectedUlti;
+      if (!chosenUlti && c.ultis && c.ultis.length > 0) {
+        chosenUlti = c.ultis[0];
       }
-      const badge = document.getElementById('free-selected-char-badge');
-      if (badge) badge.innerText = `✓ ${c.name}`;
+
+      freeSlots[freeActiveSlot] = {
+        char: c,
+        ulti: chosenUlti || '-'
+      };
+      freeSelectedChar = freeSlots[0].char;
+      freeSelectedUlti = freeSlots[0].ulti;
+
+      const activeMode = (state.masterMode || '1v1').toUpperCase();
+      const totalSlots = (activeMode === '1v1') ? 1 : (activeMode === 'DUO' ? 2 : freeTimCount);
+
+      // Auto advance to next slot if empty
+      if (freeActiveSlot < totalSlots - 1) {
+        if (!freeSlots[freeActiveSlot + 1].char) {
+          freeActiveSlot++;
+        }
+      }
+
+      renderFreeSlotTabs();
       renderFreeCharGrid();
     }
 
@@ -1145,49 +1375,100 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     }
 
     function setupFreeStep3() {
-      if (!freeSelectedChar) return;
-
-      const nameVal = (document.getElementById('free-name-input').value || '').trim();
-      document.getElementById('sum-free-name').innerText = nameVal;
-      document.getElementById('sum-free-char').innerText = freeSelectedChar.name;
-
+      const activeMode = (state.masterMode || '1v1').toUpperCase();
+      const container = document.getElementById('free-slots-ulti-container');
       const multiBox = document.getElementById('free-multi-ulti-box');
       const singleBox = document.getElementById('free-single-ulti-box');
-      const ultiOptions = document.getElementById('free-ulti-options');
 
-      const ultis = freeSelectedChar.ultis || [];
-      if (ultis.length > 1) {
-        // Multi ulti
-        multiBox.style.display = 'block';
-        singleBox.style.display = 'none';
+      if (multiBox) multiBox.style.display = 'none';
+      if (singleBox) singleBox.style.display = 'none';
 
-        if (!freeSelectedUlti || !ultis.includes(freeSelectedUlti)) {
-          freeSelectedUlti = ultis[0];
+      const totalSlots = (activeMode === '1v1') ? 1 : (activeMode === 'DUO' ? 2 : freeTimCount);
+      const activeSlots = [];
+      for (let i = 0; i < totalSlots; i++) {
+        if (freeSlots[i] && freeSlots[i].char) {
+          activeSlots.push({ idx: i, slot: freeSlots[i] });
         }
-
-        ultiOptions.innerHTML = ultis.map(u => `
-          <div class="ulti-card-item ${u === freeSelectedUlti ? 'selected' : ''}" onclick="selectFreeUlti('${escapeHtml(u)}')">
-            <div class="ulti-card-name">
-              <span>⚡</span>
-              <span>${escapeHtml(u)}</span>
-            </div>
-            <span>${u === freeSelectedUlti ? '✅' : '⚪'}</span>
-          </div>
-        `).join('');
-      } else {
-        // Single ulti
-        multiBox.style.display = 'none';
-        singleBox.style.display = 'block';
-        freeSelectedUlti = (ultis.length === 1) ? ultis[0] : (freeSelectedChar.name);
-        document.getElementById('free-single-ulti-text').innerText = `⚡ ${freeSelectedUlti}`;
       }
 
-      document.getElementById('sum-free-ulti').innerText = freeSelectedUlti;
+      if (activeSlots.length === 0) return;
+
+      if (container) {
+        container.innerHTML = activeSlots.map(({ idx, slot }) => {
+          const c = slot.char;
+          const ultis = c.ultis || [];
+          const slotLabel = (activeMode === '1v1')
+            ? 'Karakter Utama'
+            : (idx === 0 ? 'Slot 1: Leader' : (idx === 1 ? (activeMode === 'DUO' ? 'Slot 2: Support' : 'Slot 2: Support 1') : 'Slot 3: Support 2'));
+
+          let ultiSelectionHtml = '';
+          if (ultis.length > 1) {
+            if (!slot.ulti || !ultis.includes(slot.ulti)) {
+              slot.ulti = ultis[0];
+            }
+            ultiSelectionHtml = `
+              <div style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 6px;">Pilih Jurus Ulti:</div>
+              <div class="ulti-options-grid">
+                ${ultis.map(u => {
+                  const isSel = (slot.ulti === u);
+                  return `
+                    <div class="ulti-card-item ${isSel ? 'selected' : ''}" style="padding: 8px 12px;" onclick="selectFreeSlotUlti(${idx}, '${escapeHtml(u).replace(/'/g, "\\'")}')">
+                      <div class="ulti-card-name" style="font-size: 0.84rem;">⚡ ${escapeHtml(u)}</div>
+                      <span style="font-size: 0.72rem; font-weight: 800; color: ${isSel ? '#facc15' : '#94a3b8'};">
+                        ${isSel ? '✅ Dipilih' : 'Pilih'}
+                      </span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `;
+          } else {
+            slot.ulti = ultis[0] || '-';
+            ultiSelectionHtml = `
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.74rem; color: #94a3b8;">Ultimate Terkunci:</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: #facc15;">⚡ ${escapeHtml(slot.ulti)}</span>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="slot-ulti-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.75rem; font-weight: 900; color: #4ade80; text-transform: uppercase;">${slotLabel}</span>
+                <span style="font-size: 0.88rem; font-weight: 900; color: #fff;">${escapeHtml(c.name)}</span>
+              </div>
+              ${ultiSelectionHtml}
+            </div>
+          `;
+        }).join('');
+      }
+
+      const allNames = activeSlots.map(a => a.slot.char.name).join(' / ');
+      const allUltis = activeSlots.map(a => a.slot.ulti).join(' / ');
+
+      const nameVal = (document.getElementById('free-name-input').value || '').trim();
+      const sumName = document.getElementById('sum-free-name');
+      const sumMode = document.getElementById('sum-free-mode');
+      const sumChar = document.getElementById('sum-free-char');
+      const sumUlti = document.getElementById('sum-free-ulti');
+
+      if (sumName) sumName.innerText = nameVal;
+      if (sumMode) sumMode.innerText = (activeMode === '1v1') ? '1vs1' : (activeMode === 'DUO' ? 'DUO (2)' : `TIM (${activeSlots.length})`);
+      if (sumChar) sumChar.innerText = allNames || '-';
+      if (sumUlti) sumUlti.innerText = allUltis || '-';
+    }
+
+    function selectFreeSlotUlti(slotIdx, u) {
+      if (freeSlots[slotIdx]) {
+        freeSlots[slotIdx].ulti = u;
+        setupFreeStep3();
+      }
     }
 
     function selectFreeUlti(u) {
       freeSelectedUlti = u;
-      document.getElementById('sum-free-ulti').innerText = u;
+      if (freeSlots[0]) freeSlots[0].ulti = u;
       setupFreeStep3();
     }
 
@@ -1199,22 +1480,47 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         goToFreeStep(1);
         return;
       }
-      if (!freeSelectedChar) {
-        alert('Karakter belum dipilih!');
-        goToFreeStep(2);
-        return;
+
+      const activeMode = (state.masterMode || '1v1').toUpperCase();
+      if (activeMode === '1v1') {
+        if (!freeSlots[0].char) {
+          alert('Karakter belum dipilih!');
+          goToFreeStep(2);
+          return;
+        }
+      } else if (activeMode === 'DUO') {
+        if (!freeSlots[0].char || !freeSlots[1].char) {
+          alert('Mode DUO membutuhkan 2 karakter (Slot 1 & Slot 2)!');
+          goToFreeStep(2);
+          return;
+        }
+      } else if (activeMode === 'TIM') {
+        if (!freeSlots[0].char || !freeSlots[1].char) {
+          alert('Mode TIM membutuhkan minimal 2 karakter (Slot 1 & Slot 2)!');
+          goToFreeStep(2);
+          return;
+        }
       }
 
-      if (typeof isCharBanned === 'function' && isCharBanned(freeSelectedChar)) {
-        showBannedAlert(freeSelectedChar.name);
-        goToFreeStep(2);
-        return;
+      const totalSlots = (activeMode === '1v1') ? 1 : (activeMode === 'DUO' ? 2 : freeTimCount);
+      const activeSlots = [];
+      for (let i = 0; i < totalSlots; i++) {
+        if (freeSlots[i] && freeSlots[i].char) {
+          activeSlots.push(freeSlots[i]);
+        }
       }
 
-      if (typeof isCharVipExclusive === 'function' && isCharVipExclusive(freeSelectedChar)) {
-        showVipOnlyAlert(freeSelectedChar.name);
-        goToFreeStep(2);
-        return;
+      for (const s of activeSlots) {
+        if (typeof isCharBanned === 'function' && isCharBanned(s.char)) {
+          showBannedAlert(s.char.name);
+          goToFreeStep(2);
+          return;
+        }
+        if (typeof isCharVipExclusive === 'function' && isCharVipExclusive(s.char)) {
+          showVipOnlyAlert(s.char.name);
+          goToFreeStep(2);
+          return;
+        }
       }
 
       // 1. Anti double check
@@ -1231,9 +1537,8 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         return;
       }
 
-      const activeMode = state.masterMode || '1v1';
-      const fullChar = freeSelectedChar.name;
-      const fullUlti = freeSelectedUlti || (freeSelectedChar.ultis ? freeSelectedChar.ultis[0] : '-');
+      const fullChar = activeSlots.map(s => s.char.name).join(' / ');
+      const fullUlti = activeSlots.map(s => s.ulti || (s.char.ultis ? s.char.ultis[0] : '-')).join(' / ');
 
       // Ambil state terbaru
       if (window.location.protocol.startsWith('http')) {

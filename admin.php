@@ -2121,6 +2121,69 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       border-color: #facc15;
       box-shadow: 0 0 8px rgba(250, 204, 21, 0.25);
     }
+    /* SLOT SELECTOR BAR & TABS */
+    .char-slot-tabs-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .char-slot-tab {
+      flex: 1;
+      min-width: 100px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .char-slot-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .char-slot-tab.active {
+      background: rgba(234, 179, 8, 0.18);
+      border-color: #facc15;
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+    }
+    .char-slot-tab.filled {
+      border-color: #22c55e;
+    }
+    .char-slot-tab.filled.active {
+      border-color: #facc15;
+    }
+    .char-slot-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+    }
+    .char-slot-tab.active .char-slot-badge {
+      color: #facc15;
+    }
+    .char-slot-name {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #f8fafc;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .slot-ulti-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
     .btn-match-count {
       flex: 1;
       min-width: 60px;
@@ -3004,14 +3067,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             <label style="display: block; margin-bottom: 6px; font-size: 0.80rem; font-weight: 800; color: var(--accent-gold);">
               🎟️ Jenis Tiket Match:
             </label>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 6px;">
               <button type="button" id="btn-aticket-1v1" class="btn btn-sm btn-primary"
-                style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem;" onclick="setAdminRegTicketMode('1v1')">
-                ⚡ Tiket 1vs1
+                style="flex: 1; padding: 6px 4px; font-weight: 800; font-size: 0.78rem;" onclick="setAdminRegTicketMode('1v1')">
+                ⚡ 1vs1
+              </button>
+              <button type="button" id="btn-aticket-duo" class="btn btn-sm btn-blue"
+                style="flex: 1; padding: 6px 4px; font-weight: 800; font-size: 0.78rem; opacity: 0.7;" onclick="setAdminRegTicketMode('DUO')">
+                ⚔️ DUO (2)
               </button>
               <button type="button" id="btn-aticket-tim" class="btn btn-sm btn-blue"
-                style="flex: 1; padding: 6px; font-weight: 800; font-size: 0.8rem; opacity: 0.7;" onclick="setAdminRegTicketMode('TIM')">
-                👑 Tiket DUO / TIM
+                style="flex: 1; padding: 6px 4px; font-weight: 800; font-size: 0.78rem; opacity: 0.7;" onclick="setAdminRegTicketMode('TIM')">
+                👑 TIM (2-3)
               </button>
             </div>
           </div>
@@ -3033,8 +3100,19 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
         <!-- STEP 2: PILIH KARAKTER A-Z -->
         <div id="admin-reg-step-2" style="display: none; flex-direction: column; gap: 10px;">
+          <!-- Slot Tabs Bar for DUO / TIM -->
+          <div id="admin-reg-slot-tabs" class="char-slot-tabs-bar" style="display: none;"></div>
+
+          <!-- TIM Flexible Toggle Bar -->
+          <div id="admin-reg-tim-flex-bar" style="display: none; justify-content: space-between; align-items: center; background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.3); border-radius: 6px; padding: 6px 10px;">
+            <span style="font-size: 0.74rem; font-weight: 700; color: #d8b4fe;">💡 Mode TIM Fleksibel: Bisa pakai 2 atau 3 karakter</span>
+            <button type="button" id="btn-admin-tim-toggle-slot3" class="btn btn-sm btn-blue" style="font-size: 0.72rem; padding: 2px 8px;" onclick="toggleAdminRegTimSlot3()">
+              Hanya Pakai 2 Karakter
+            </button>
+          </div>
+
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin: 0;">Pilih Karakter (A-Z Master Roster):</label>
+            <label id="admin-reg-char-label" style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin: 0;">Pilih Karakter (A-Z Master Roster):</label>
             <span id="admin-reg-char-badge" style="font-size: 0.75rem; font-weight: 800; color: #facc15; background: rgba(234, 179, 8, 0.15); padding: 2px 8px; border-radius: 4px;">Belum dipilih</span>
           </div>
 
@@ -3054,7 +3132,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
         <!-- STEP 3: PILIH ULTI -->
         <div id="admin-reg-step-3" style="display: none; flex-direction: column; gap: 12px;">
-          <!-- Multi ulti box -->
+          <!-- Multi-slot ulti container -->
+          <div id="admin-reg-slots-ulti-container">
+            <!-- Rendered dynamically per slot -->
+          </div>
+
+          <!-- Multi ulti box (fallback / single slot) -->
           <div id="admin-reg-multi-ulti-box" style="display: none;">
             <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin-bottom: 8px;">
               ⚡ Karakter ini memiliki lebih dari 1 jurus Ulti. Pilih salah satu:
@@ -3064,7 +3147,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             </div>
           </div>
 
-          <!-- Single ulti box -->
+          <!-- Single ulti box (fallback / single slot) -->
           <div id="admin-reg-single-ulti-box" style="display: none; background: rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 12px; text-align: center;">
             <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Jurus Ultimate Terkunci:</div>
             <div id="admin-reg-single-ulti-name" style="font-size: 1rem; font-weight: 900; color: var(--accent-gold);"></div>
@@ -3075,7 +3158,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             <div style="font-size: 0.8rem; font-weight: 800; color: #4ade80; margin-bottom: 8px;">📋 Ringkasan Pendaftaran Free Request:</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.8rem;">
               <div><span style="color:var(--text-muted)">Nama TT:</span> <b id="admin-sum-free-name" style="color:#fff;">-</b></div>
-              <div><span style="color:var(--text-muted)">Tier:</span> <b style="color:#4ade80;">FREE (1 Match)</b></div>
+              <div><span style="color:var(--text-muted)">Tiket:</span> <b id="admin-sum-free-ticket" style="color:#fff;">1v1</b></div>
               <div style="grid-column: 1 / -1;"><span style="color:var(--text-muted)">Karakter:</span> <b id="admin-sum-free-char" style="color:var(--accent-gold);">-</b></div>
               <div style="grid-column: 1 / -1;"><span style="color:var(--text-muted)">Ulti:</span> <b id="admin-sum-free-ulti" style="color:#fde047;">-</b></div>
             </div>
@@ -3281,8 +3364,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           style="padding: 2px 8px; font-weight: 900; font-size: 1rem; border-radius: 4px;">✕</button>
       </div>
 
+      <!-- Mode Selector Bar -->
+      <div style="background: rgba(0,0,0,0.3); padding: 8px 18px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 0.78rem; font-weight: 800; color: var(--accent-gold);">🎟️ Mode Match:</span>
+        <div style="display: flex; gap: 6px;">
+          <button type="button" id="btn-edit-mode-1v1" class="btn btn-sm btn-primary" style="padding: 4px 10px; font-size: 0.76rem; font-weight: 800;" onclick="setEditCharMode('1v1')">⚡ 1v1</button>
+          <button type="button" id="btn-edit-mode-duo" class="btn btn-sm btn-blue" style="padding: 4px 10px; font-size: 0.76rem; font-weight: 800; opacity: 0.7;" onclick="setEditCharMode('DUO')">⚔️ DUO (2)</button>
+          <button type="button" id="btn-edit-mode-tim" class="btn btn-sm btn-blue" style="padding: 4px 10px; font-size: 0.76rem; font-weight: 800; opacity: 0.7;" onclick="setEditCharMode('TIM')">👑 TIM (2-3)</button>
+        </div>
+      </div>
+
       <!-- Step Indicator Bar -->
-      <div class="admin-reg-steps-bar" style="background: rgba(0,0,0,0.3); padding: 8px 18px; border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; justify-content: center; flex-shrink: 0;">
+      <div class="admin-reg-steps-bar" style="background: rgba(0,0,0,0.2); padding: 8px 18px; border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; justify-content: center; flex-shrink: 0;">
         <div id="edit-char-step-tab-1" class="admin-step-item active" style="flex: 1; text-align: center; font-size: 0.8rem; font-weight: 800; padding: 5px; border-radius: 6px; background: rgba(234, 179, 8, 0.18); color: #facc15; border: 1px solid #facc15; cursor: pointer;" onclick="editCharGoToStep(1)">
           1. Pilih Karakter
         </div>
@@ -3296,8 +3389,19 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         
         <!-- STEP 1: PILIH KARAKTER A-Z & SEARCH -->
         <div id="edit-char-step-1" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Slot Tabs Bar for DUO / TIM -->
+          <div id="edit-char-slot-tabs" class="char-slot-tabs-bar" style="display: none;"></div>
+
+          <!-- TIM Flexible Toggle Bar -->
+          <div id="edit-char-tim-flex-bar" style="display: none; justify-content: space-between; align-items: center; background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.3); border-radius: 6px; padding: 6px 10px;">
+            <span style="font-size: 0.74rem; font-weight: 700; color: #d8b4fe;">💡 Mode TIM Fleksibel: Bisa pakai 2 atau 3 karakter</span>
+            <button type="button" id="btn-edit-tim-toggle-slot3" class="btn btn-sm btn-blue" style="font-size: 0.72rem; padding: 2px 8px;" onclick="toggleEditTimSlot3()">
+              Hanya Pakai 2 Karakter
+            </button>
+          </div>
+
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin: 0;">Pilih Karakter (A-Z Master Roster):</label>
+            <label id="edit-char-label" style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin: 0;">Pilih Karakter (A-Z Master Roster):</label>
             <span id="edit-char-selected-badge" style="font-size: 0.75rem; font-weight: 800; color: #facc15; background: rgba(234, 179, 8, 0.15); padding: 2px 8px; border-radius: 4px;">Belum dipilih</span>
           </div>
 
@@ -3317,7 +3421,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
         <!-- STEP 2: PILIH ULTI -->
         <div id="edit-char-step-2" style="display: none; flex-direction: column; gap: 12px;">
-          <!-- Multi ulti box -->
+          <!-- Multi-slot ulti container -->
+          <div id="edit-char-slots-ulti-container">
+            <!-- Rendered dynamically per slot -->
+          </div>
+
+          <!-- Multi ulti box (fallback) -->
           <div id="edit-char-multi-ulti-box" style="display: none;">
             <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-light); margin-bottom: 8px;">
               ⚡ Karakter ini memiliki lebih dari 1 jurus Ulti. Pilih salah satu:
@@ -3327,7 +3436,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             </div>
           </div>
 
-          <!-- Single ulti box -->
+          <!-- Single ulti box (fallback) -->
           <div id="edit-char-single-ulti-box" style="display: none; background: rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 12px; text-align: center;">
             <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Jurus Ultimate Terkunci:</div>
             <div id="edit-char-single-ulti-name" style="font-size: 1rem; font-weight: 900; color: var(--accent-gold);"></div>
@@ -3338,6 +3447,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 8px;">📋 Ringkasan Karakter yang Dipilih:</div>
             <div style="display: grid; grid-template-columns: 1fr; gap: 6px; font-size: 0.83rem;">
               <div><span style="color:var(--text-muted)">Pemain:</span> <b id="edit-char-sum-player-name" style="color:#fff;">-</b></div>
+              <div><span style="color:var(--text-muted)">Mode:</span> <b id="edit-char-sum-mode" style="color:#38bdf8;">1v1</b></div>
               <div><span style="color:var(--text-muted)">Karakter:</span> <b id="edit-char-sum-char-name" style="color:var(--accent-gold);">-</b></div>
               <div><span style="color:var(--text-muted)">Jurus Ulti:</span> <b id="edit-char-sum-ulti-name" style="color:#fde047;">-</b></div>
             </div>
@@ -5655,11 +5765,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     // ==========================================
     let adminRegTier = 'FREE'; // 'FREE' | 'VIP' | 'SROBOT'
     let adminRegStep = 1;
-    let adminRegSelectedChar = null;
+    let adminRegTicketMode = '1v1'; // '1v1' | 'DUO' | 'TIM'
+    let adminRegSlots = [
+      { char: null, ulti: '' },
+      { char: null, ulti: '' },
+      { char: null, ulti: '' }
+    ];
+    let adminRegActiveSlot = 0; // 0, 1, 2
+    let adminRegTimCount = 3; // 2 or 3 in TIM mode
+    let adminRegSelectedChar = null; // backward compatibility
     let adminRegSelectedUlti = '';
     let adminRegMatchCount = 1;
     let adminRegAlphaFilter = 'ALL';
-    let adminRegTicketMode = '1v1';
 
     function openAdminRegModal(tier = 'FREE') {
       const modal = document.getElementById('modal-add-player');
@@ -5667,11 +5784,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
       adminRegTier = tier.toUpperCase();
       adminRegStep = 1;
+      adminRegSlots = [
+        { char: null, ulti: '' },
+        { char: null, ulti: '' },
+        { char: null, ulti: '' }
+      ];
+      adminRegActiveSlot = 0;
+      adminRegTimCount = 3;
       adminRegSelectedChar = null;
       adminRegSelectedUlti = '';
       adminRegMatchCount = 1;
       adminRegAlphaFilter = 'ALL';
-      adminRegTicketMode = (state.masterMode === '1v1' || !state.masterMode) ? '1v1' : 'TIM';
+      adminRegTicketMode = (state.masterMode === 'DUO' || state.masterMode === 'TIM') ? state.masterMode : '1v1';
 
       // Reset form fields
       const nameInput = document.getElementById('admin-reg-name-input');
@@ -5754,16 +5878,104 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     }
 
     function setAdminRegTicketMode(mode) {
-      adminRegTicketMode = mode;
+      let clean = '1v1';
+      if (mode === 'DUO') clean = 'DUO';
+      else if (mode === 'TIM') clean = 'TIM';
+      adminRegTicketMode = clean;
+
       const b1 = document.getElementById('btn-aticket-1v1');
-      const b2 = document.getElementById('btn-aticket-tim');
-      if (mode === '1v1') {
-        if (b1) { b1.style.opacity = '1'; b1.className = 'btn btn-sm btn-primary'; }
-        if (b2) { b2.style.opacity = '0.6'; b2.className = 'btn btn-sm btn-blue'; }
-      } else {
-        if (b1) { b1.style.opacity = '0.6'; b1.className = 'btn btn-sm btn-blue'; }
-        if (b2) { b2.style.opacity = '1'; b2.className = 'btn btn-sm btn-primary'; }
+      const bDuo = document.getElementById('btn-aticket-duo');
+      const bTim = document.getElementById('btn-aticket-tim');
+
+      if (b1) {
+        b1.className = clean === '1v1' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        b1.style.opacity = clean === '1v1' ? '1' : '0.6';
       }
+      if (bDuo) {
+        bDuo.className = clean === 'DUO' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        bDuo.style.opacity = clean === 'DUO' ? '1' : '0.6';
+      }
+      if (bTim) {
+        bTim.className = clean === 'TIM' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        bTim.style.opacity = clean === 'TIM' ? '1' : '0.6';
+      }
+
+      if (adminRegActiveSlot > 1 && clean === 'DUO') adminRegActiveSlot = 0;
+      if (adminRegActiveSlot > 0 && clean === '1v1') adminRegActiveSlot = 0;
+
+      renderAdminRegSlotTabs();
+      renderAdminRegCharGrid();
+    }
+
+    function toggleAdminRegTimSlot3() {
+      if (adminRegTimCount === 3) {
+        adminRegTimCount = 2;
+        adminRegSlots[2] = { char: null, ulti: '' };
+        if (adminRegActiveSlot === 2) adminRegActiveSlot = 1;
+      } else {
+        adminRegTimCount = 3;
+      }
+      renderAdminRegSlotTabs();
+      renderAdminRegCharGrid();
+    }
+
+    function selectAdminRegSlot(idx) {
+      adminRegActiveSlot = idx;
+      renderAdminRegSlotTabs();
+      renderAdminRegCharGrid();
+    }
+
+    function renderAdminRegSlotTabs() {
+      const container = document.getElementById('admin-reg-slot-tabs');
+      const flexBar = document.getElementById('admin-reg-tim-flex-bar');
+      const flexBtn = document.getElementById('btn-admin-tim-toggle-slot3');
+      if (!container) return;
+
+      if (adminRegTicketMode === '1v1') {
+        container.style.display = 'none';
+        if (flexBar) flexBar.style.display = 'none';
+        const label = document.getElementById('admin-reg-char-label');
+        if (label) label.innerText = 'Pilih Karakter (A-Z Master Roster):';
+        return;
+      }
+
+      container.style.display = 'flex';
+      const label = document.getElementById('admin-reg-char-label');
+      if (label) label.innerText = `Pilih Karakter untuk Slot ${adminRegActiveSlot + 1}:`;
+
+      if (adminRegTicketMode === 'TIM') {
+        if (flexBar) flexBar.style.display = 'flex';
+        if (flexBtn) {
+          flexBtn.innerText = (adminRegTimCount === 3) ? '👥 Gunakan 2 Karakter Saja' : '➕ Tambah Karakter 3';
+          flexBtn.className = (adminRegTimCount === 3) ? 'btn btn-sm btn-secondary' : 'btn btn-sm btn-primary';
+        }
+      } else {
+        if (flexBar) flexBar.style.display = 'none';
+      }
+
+      const totalSlots = (adminRegTicketMode === 'DUO') ? 2 : adminRegTimCount;
+      const slotDefs = [
+        { label: 'Slot 1: Leader', opt: false },
+        { label: (adminRegTicketMode === 'DUO') ? 'Slot 2: Support' : 'Slot 2: Support 1', opt: false },
+        { label: 'Slot 3: Support 2', opt: true }
+      ];
+
+      container.innerHTML = slotDefs.slice(0, totalSlots).map((def, idx) => {
+        const slot = adminRegSlots[idx];
+        const isActive = (adminRegActiveSlot === idx);
+        const isFilled = Boolean(slot && slot.char);
+        const charName = isFilled ? slot.char.name : (def.opt ? '(Opsional / Kosong)' : '(Belum Dipilih)');
+        let cls = 'char-slot-tab';
+        if (isActive) cls += ' active';
+        if (isFilled) cls += ' filled';
+
+        return `
+          <button type="button" class="${cls}" onclick="selectAdminRegSlot(${idx})">
+            <span class="char-slot-badge">${def.label}</span>
+            <span class="char-slot-name">${escapeHtml(charName)}</span>
+          </button>
+        `;
+      }).join('');
     }
 
     function renderAdminRegSteps() {
@@ -5839,6 +6051,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       }
 
       if (step === 2) {
+        renderAdminRegSlotTabs();
         renderAdminRegCharGrid();
       } else if (step === 3) {
         setupAdminRegStep3();
@@ -5858,9 +6071,21 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         }
         goToAdminRegStep(2);
       } else if (adminRegStep === 2) {
-        if (!adminRegSelectedChar) {
-          alert('Karakter belum dipilih! Silakan klik salah satu karakter di daftar roster.');
-          return;
+        if (adminRegTicketMode === '1v1') {
+          if (!adminRegSlots[0].char) {
+            alert('Karakter belum dipilih! Silakan klik salah satu karakter di daftar roster.');
+            return;
+          }
+        } else if (adminRegTicketMode === 'DUO') {
+          if (!adminRegSlots[0].char || !adminRegSlots[1].char) {
+            alert('Mode DUO membutuhkan 2 karakter (Slot 1: Leader & Slot 2: Support)!');
+            return;
+          }
+        } else if (adminRegTicketMode === 'TIM') {
+          if (!adminRegSlots[0].char || !adminRegSlots[1].char) {
+            alert('Mode TIM membutuhkan minimal 2 karakter (Slot 1: Leader & Slot 2: Support 1)!');
+            return;
+          }
         }
         goToAdminRegStep(3);
       } else if (adminRegStep === 3) {
@@ -5922,9 +6147,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       }
 
       const isFreeTier = (adminRegTier === 'FREE');
+      const curSlotChar = adminRegSlots[adminRegActiveSlot] ? adminRegSlots[adminRegActiveSlot].char : null;
+
+      const badge = document.getElementById('admin-reg-char-badge');
+      if (badge) {
+        const total = (adminRegTicketMode === '1v1') ? 1 : (adminRegTicketMode === 'DUO' ? 2 : adminRegTimCount);
+        const filled = adminRegSlots.slice(0, total).filter(s => s && s.char).length;
+        badge.innerText = `${filled}/${total} Terpilih`;
+      }
 
       container.innerHTML = list.map(c => {
-        const isSel = adminRegSelectedChar && adminRegSelectedChar.id === c.id;
+        const isSel = curSlotChar && curSlotChar.id === c.id;
+        const otherSlotIdx = adminRegSlots.findIndex((s, idx) => idx !== adminRegActiveSlot && s.char && s.char.id === c.id);
         const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
         const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
         const matchTagHtml = c._matchedUlti ? `
@@ -5957,9 +6191,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           }
         }
 
-        const metaRight = isSel
-          ? `<span style="color:#4ade80; font-weight:800;">✅ Terpilih</span>`
-          : statusBadgeHtml;
+        let metaRight = statusBadgeHtml;
+        if (isSel) {
+          metaRight = `<span style="color:#4ade80; font-weight:800;">✅ Slot ${adminRegActiveSlot + 1}</span>`;
+        } else if (otherSlotIdx !== -1) {
+          metaRight = `<span style="color:#38bdf8; font-weight:700; font-size:0.65rem;">Slot ${otherSlotIdx + 1}</span>`;
+        }
 
         return `
           <div class="${cardClass}" ${clickAttr}>
@@ -5986,70 +6223,130 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         return;
       }
 
-      adminRegSelectedChar = c;
-      if (preselectedUlti) {
-        adminRegSelectedUlti = preselectedUlti;
-      } else if (c.ultis && c.ultis.length > 0) {
-        adminRegSelectedUlti = c.ultis[0];
+      let chosenUlti = preselectedUlti;
+      if (!chosenUlti && c.ultis && c.ultis.length > 0) {
+        chosenUlti = c.ultis[0];
       }
 
-      const badge = document.getElementById('admin-reg-char-badge');
-      if (badge) badge.innerText = `✓ ${c.name}`;
+      adminRegSlots[adminRegActiveSlot] = {
+        char: c,
+        ulti: chosenUlti || '-'
+      };
+      adminRegSelectedChar = adminRegSlots[0].char;
+      adminRegSelectedUlti = adminRegSlots[0].ulti;
+
+      const total = (adminRegTicketMode === '1v1') ? 1 : (adminRegTicketMode === 'DUO' ? 2 : adminRegTimCount);
+
+      // Auto advance to next slot if empty
+      if (adminRegActiveSlot < total - 1) {
+        if (!adminRegSlots[adminRegActiveSlot + 1].char) {
+          adminRegActiveSlot++;
+        }
+      }
+
+      renderAdminRegSlotTabs();
       renderAdminRegCharGrid();
     }
 
     function setupAdminRegStep3() {
-      if (!adminRegSelectedChar) return;
-
+      const container = document.getElementById('admin-reg-slots-ulti-container');
       const multiBox = document.getElementById('admin-reg-multi-ulti-box');
       const singleBox = document.getElementById('admin-reg-single-ulti-box');
-      const ultiOptions = document.getElementById('admin-reg-ulti-options');
       const freeSumBox = document.getElementById('admin-reg-free-summary-box');
 
-      const ultis = adminRegSelectedChar.ultis || [];
-      if (ultis.length > 1) {
-        multiBox.style.display = 'block';
-        singleBox.style.display = 'none';
+      if (multiBox) multiBox.style.display = 'none';
+      if (singleBox) singleBox.style.display = 'none';
 
-        if (!adminRegSelectedUlti || !ultis.includes(adminRegSelectedUlti)) {
-          adminRegSelectedUlti = ultis[0];
+      const totalSlots = (adminRegTicketMode === '1v1') ? 1 : (adminRegTicketMode === 'DUO' ? 2 : adminRegTimCount);
+      const activeSlots = [];
+      for (let i = 0; i < totalSlots; i++) {
+        if (adminRegSlots[i] && adminRegSlots[i].char) {
+          activeSlots.push({ idx: i, slot: adminRegSlots[i] });
         }
+      }
 
-        ultiOptions.innerHTML = ultis.map(u => {
-          const isSel = (adminRegSelectedUlti === u);
+      if (activeSlots.length === 0) return;
+
+      if (container) {
+        container.innerHTML = activeSlots.map(({ idx, slot }) => {
+          const c = slot.char;
+          const ultis = c.ultis || [];
+          const slotLabel = (adminRegTicketMode === '1v1')
+            ? 'Karakter Utama'
+            : (idx === 0 ? 'Slot 1: Leader' : (idx === 1 ? (adminRegTicketMode === 'DUO' ? 'Slot 2: Support' : 'Slot 2: Support 1') : 'Slot 3: Support 2'));
+
+          let ultiSelectionHtml = '';
+          if (ultis.length > 1) {
+            if (!slot.ulti || !ultis.includes(slot.ulti)) {
+              slot.ulti = ultis[0];
+            }
+            ultiSelectionHtml = `
+              <div style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 6px;">Pilih Jurus Ulti:</div>
+              <div class="ulti-options-grid">
+                ${ultis.map(u => {
+                  const isSel = (slot.ulti === u);
+                  return `
+                    <div class="admin-ulti-card ${isSel ? 'selected' : ''}" style="padding: 8px 12px;" onclick="selectAdminRegSlotUlti(${idx}, '${escapeHtml(u).replace(/'/g, "\\'")}')">
+                      <div style="font-size: 0.84rem; font-weight: 800; color: #fff;">⚡ ${escapeHtml(u)}</div>
+                      <div style="font-size: 0.72rem; font-weight: 800; color: ${isSel ? '#facc15' : '#94a3b8'};">
+                        ${isSel ? '✅ Dipilih' : 'Pilih'}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `;
+          } else {
+            slot.ulti = ultis[0] || '-';
+            ultiSelectionHtml = `
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.74rem; color: var(--text-muted);">Ultimate Terkunci:</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--accent-gold);">⚡ ${escapeHtml(slot.ulti)}</span>
+              </div>
+            `;
+          }
+
           return `
-            <div class="admin-ulti-card ${isSel ? 'selected' : ''}" onclick="selectAdminRegUlti('${escapeHtml(u).replace(/'/g, "\\'")}')">
-              <div style="font-size:0.88rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
-                <span>⚡</span>
-                <span>${escapeHtml(u)}</span>
+            <div class="slot-ulti-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.75rem; font-weight: 900; color: var(--accent-gold); text-transform: uppercase;">${slotLabel}</span>
+                <span style="font-size: 0.88rem; font-weight: 900; color: #fff;">${escapeHtml(c.name)}</span>
               </div>
-              <div style="font-size:0.75rem; font-weight:800; color:${isSel ? '#facc15' : '#94a3b8'};">
-                ${isSel ? '✅ Dipilih' : 'Pilih'}
-              </div>
+              ${ultiSelectionHtml}
             </div>
           `;
         }).join('');
-      } else {
-        multiBox.style.display = 'none';
-        singleBox.style.display = 'block';
-        const singleName = document.getElementById('admin-reg-single-ulti-name');
-        adminRegSelectedUlti = ultis[0] || '-';
-        if (singleName) singleName.innerText = `⚡ ${adminRegSelectedUlti}`;
       }
+
+      const allNames = activeSlots.map(a => a.slot.char.name).join(' / ');
+      const allUltis = activeSlots.map(a => a.slot.ulti).join(' / ');
 
       if (adminRegTier === 'FREE') {
         if (freeSumBox) freeSumBox.style.display = 'block';
         const nameVal = (document.getElementById('admin-reg-name-input').value || '').trim();
-        document.getElementById('admin-sum-free-name').innerText = nameVal;
-        document.getElementById('admin-sum-free-char').innerText = adminRegSelectedChar.name;
-        document.getElementById('admin-sum-free-ulti').innerText = adminRegSelectedUlti;
+        const sumName = document.getElementById('admin-sum-free-name');
+        const sumTicket = document.getElementById('admin-sum-free-ticket');
+        const sumChar = document.getElementById('admin-sum-free-char');
+        const sumUlti = document.getElementById('admin-sum-free-ulti');
+        if (sumName) sumName.innerText = nameVal;
+        if (sumTicket) sumTicket.innerText = (adminRegTicketMode === '1v1') ? '1vs1' : (adminRegTicketMode === 'DUO' ? 'DUO (2)' : `TIM (${activeSlots.length})`);
+        if (sumChar) sumChar.innerText = allNames;
+        if (sumUlti) sumUlti.innerText = allUltis;
       } else {
         if (freeSumBox) freeSumBox.style.display = 'none';
       }
     }
 
+    function selectAdminRegSlotUlti(slotIdx, ultiName) {
+      if (adminRegSlots[slotIdx]) {
+        adminRegSlots[slotIdx].ulti = ultiName;
+        setupAdminRegStep3();
+      }
+    }
+
     function selectAdminRegUlti(ultiName) {
       adminRegSelectedUlti = ultiName;
+      if (adminRegSlots[0]) adminRegSlots[0].ulti = ultiName;
       setupAdminRegStep3();
     }
 
@@ -6072,8 +6369,16 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     }
 
     function calculatePaidPrice(tier, mode, count) {
-      const coinPerMatch = (tier === 'SROBOT') ? 30 : 5;
-      const rpPerMatch = (tier === 'SROBOT') ? 5000 : 1000;
+      const isTeamOrDuo = (mode === 'DUO' || mode === 'TIM' || mode === 'TRIO');
+      let coinPerMatch = 0;
+      let rpPerMatch = 0;
+      if (tier === 'VIP') {
+        if (isTeamOrDuo) { coinPerMatch = 10; rpPerMatch = 2000; }
+        else { coinPerMatch = 5; rpPerMatch = 1000; }
+      } else {
+        if (isTeamOrDuo) { coinPerMatch = 60; rpPerMatch = 10000; }
+        else { coinPerMatch = 30; rpPerMatch = 5000; }
+      }
       const totalCoins = coinPerMatch * count;
       const totalRp = rpPerMatch * count;
       const totalRpFormatted = totalRp.toLocaleString('id-ID');
@@ -6096,14 +6401,24 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
     function setupAdminRegStep5() {
       updateAdminRegPrice();
+      const totalSlots = (adminRegTicketMode === '1v1') ? 1 : (adminRegTicketMode === 'DUO' ? 2 : adminRegTimCount);
+      const activeSlots = [];
+      for (let i = 0; i < totalSlots; i++) {
+        if (adminRegSlots[i] && adminRegSlots[i].char) {
+          activeSlots.push(adminRegSlots[i]);
+        }
+      }
+      const allNames = activeSlots.map(s => s.char.name).join(' / ');
+      const allUltis = activeSlots.map(s => s.ulti).join(' / ');
+
       const nameVal = (document.getElementById('admin-reg-name-input').value || '').trim();
       document.getElementById('admin-sum-paid-name').innerText = nameVal;
       document.getElementById('admin-sum-paid-tier').innerText = adminRegTier;
       document.getElementById('admin-sum-paid-tier').style.color = (adminRegTier === 'SROBOT') ? '#d8b4fe' : '#fde047';
-      document.getElementById('admin-sum-paid-ticket').innerText = (adminRegTicketMode === '1v1') ? '1vs1' : 'DUO/TIM';
+      document.getElementById('admin-sum-paid-ticket').innerText = (adminRegTicketMode === '1v1') ? '1vs1' : (adminRegTicketMode === 'DUO' ? 'DUO (2)' : `TIM (${activeSlots.length})`);
       document.getElementById('admin-sum-paid-match').innerText = `${adminRegMatchCount} Match`;
-      document.getElementById('admin-sum-paid-char').innerText = adminRegSelectedChar ? adminRegSelectedChar.name : '-';
-      document.getElementById('admin-sum-paid-ulti').innerText = adminRegSelectedUlti || '-';
+      document.getElementById('admin-sum-paid-char').innerText = allNames || '-';
+      document.getElementById('admin-sum-paid-ulti').innerText = allUltis || '-';
     }
 
     function renderAdminRegUserDropdown() {
@@ -6159,22 +6474,46 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         goToAdminRegStep(1);
         return;
       }
-      if (!adminRegSelectedChar) {
-        alert('Karakter belum dipilih!');
-        goToAdminRegStep(2);
-        return;
+
+      if (adminRegTicketMode === '1v1') {
+        if (!adminRegSlots[0].char) {
+          alert('Karakter Slot 1 belum dipilih!');
+          goToAdminRegStep(2);
+          return;
+        }
+      } else if (adminRegTicketMode === 'DUO') {
+        if (!adminRegSlots[0].char || !adminRegSlots[1].char) {
+          alert('Mode DUO membutuhkan 2 karakter (Slot 1 & Slot 2)!');
+          goToAdminRegStep(2);
+          return;
+        }
+      } else if (adminRegTicketMode === 'TIM') {
+        if (!adminRegSlots[0].char || !adminRegSlots[1].char) {
+          alert('Mode TIM membutuhkan minimal 2 karakter (Slot 1 & Slot 2)!');
+          goToAdminRegStep(2);
+          return;
+        }
       }
 
-      if (typeof isCharBanned === 'function' && isCharBanned(adminRegSelectedChar)) {
-        showBannedAlert(adminRegSelectedChar.name);
-        goToAdminRegStep(2);
-        return;
+      const totalSlots = (adminRegTicketMode === '1v1') ? 1 : (adminRegTicketMode === 'DUO' ? 2 : adminRegTimCount);
+      const activeSlots = [];
+      for (let i = 0; i < totalSlots; i++) {
+        if (adminRegSlots[i] && adminRegSlots[i].char) {
+          activeSlots.push(adminRegSlots[i]);
+        }
       }
 
-      if (adminRegTier === 'FREE' && typeof isCharVipExclusive === 'function' && isCharVipExclusive(adminRegSelectedChar)) {
-        showVipOnlyAlert(adminRegSelectedChar.name);
-        goToAdminRegStep(2);
-        return;
+      for (const s of activeSlots) {
+        if (typeof isCharBanned === 'function' && isCharBanned(s.char)) {
+          showBannedAlert(s.char.name);
+          goToAdminRegStep(2);
+          return;
+        }
+        if (adminRegTier === 'FREE' && typeof isCharVipExclusive === 'function' && isCharVipExclusive(s.char)) {
+          showVipOnlyAlert(s.char.name);
+          goToAdminRegStep(2);
+          return;
+        }
       }
 
       const dup = checkDuplicatePlayer(name);
@@ -6183,10 +6522,9 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         if (!proceed) return;
       }
 
-      const fullChar = adminRegSelectedChar.name;
-      const fullUlti = adminRegSelectedUlti || getPlayerDefaultUlti(fullChar);
+      const fullChar = activeSlots.map(s => s.char.name).join(' / ');
+      const fullUlti = activeSlots.map(s => s.ulti || getPlayerDefaultUlti(s.char.name)).join(' / ');
       const matchesLeft = (adminRegTier === 'FREE') ? 1 : adminRegMatchCount;
-      const ticketText = (adminRegTicketMode === '1v1') ? '⚡ Tiket 1v1' : '⚔️ Tiket TIM';
       const targetLabel = (target === 'saved') ? 'LIST TABUNGAN' : 'MATCH QUEUE';
 
       const newPlayer = {
@@ -6217,7 +6555,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       closeAdminRegModal();
 
       if (typeof showToast === 'function') {
-        showToast(`✅ [${name}] (${adminRegTier}, ${matchesLeft} match) berhasil ditambahkan ke ${targetLabel}!`);
+        showToast(`✅ [${name}] (${adminRegTier}, ${matchesLeft} match, ${adminRegTicketMode}) berhasil ditambahkan ke ${targetLabel}!`);
       } else {
         alert(`✅ [${name}] berhasil ditambahkan ke ${targetLabel}!`);
       }
@@ -7464,10 +7802,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     // LOGIKA GANTI KARAKTER (PERSIS FORM PENDAFTARAN)
     // ==========================================
     let editCharTargetPlayer = null; // { id, listType, name, type }
-    let editCharSelectedChar = null;
-    let editCharSelectedUlti = '';
-    let editCharAlphaFilter = 'ALL';
     let editCharStep = 1;
+    let editCharMode = '1v1'; // '1v1', 'DUO', 'TIM'
+    let editCharSlots = [
+      { char: null, ulti: '' },
+      { char: null, ulti: '' },
+      { char: null, ulti: '' }
+    ];
+    let editCharActiveSlot = 0; // 0, 1, 2
+    let editCharTimCount = 3; // 2 or 3 in TIM mode
+    let editCharAlphaFilter = 'ALL';
+    let editCharSelectedChar = null; // backward compatibility
+    let editCharSelectedUlti = '';
 
     function openEditPlayerCharModal(playerId, listType = 'queue') {
       let player = null;
@@ -7485,7 +7831,8 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         id: playerId,
         listType: listType,
         name: player.name || (playerId === 'p1' ? 'Player 1' : (playerId === 'p2' ? 'Player 2' : 'Pemain')),
-        type: player.type || 'VIP'
+        type: player.type || 'VIP',
+        ticketMode: player.ticketMode || '1v1'
       };
 
       const modal = document.getElementById('modal-edit-player-char');
@@ -7503,20 +7850,52 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       const searchInput = document.getElementById('edit-char-search');
       if (searchInput) searchInput.value = '';
 
-      if (player.char && player.char !== '-' && player.char !== 'TBA' && player.char !== 'Belum Pilih') {
-        const found = findNarutoChar(player.char);
-        if (found) {
-          editCharSelectedChar = found;
-          editCharSelectedUlti = player.ulti || (found.ultis && found.ultis[0]) || '';
-        } else {
-          editCharSelectedChar = null;
-          editCharSelectedUlti = '';
-        }
-      } else {
-        editCharSelectedChar = null;
-        editCharSelectedUlti = '';
-      }
+      // Parse existing player character and ulti
+      const cleanChar = (player.char && player.char !== '-' && player.char !== 'TBA' && player.char !== 'Belum Pilih' && player.char !== 'Belum Pilih / TBA')
+        ? String(player.char)
+        : '';
+      const partsChar = cleanChar ? cleanChar.split('/').map(s => s.trim()).filter(Boolean) : [];
+      const partsUlti = player.ulti ? String(player.ulti).split('/').map(s => s.trim()).filter(Boolean) : [];
 
+      // Detect Mode
+      let detectedMode = '1v1';
+      if (player.ticketMode) {
+        const tm = String(player.ticketMode).toUpperCase();
+        if (tm === 'TIM') detectedMode = 'TIM';
+        else if (tm === 'DUO') detectedMode = 'DUO';
+        else detectedMode = '1v1';
+      } else if (state.masterMode) {
+        detectedMode = (state.masterMode === 'DUO' || state.masterMode === 'TIM') ? state.masterMode : '1v1';
+      }
+      if (partsChar.length === 2 && detectedMode === '1v1') detectedMode = 'DUO';
+      if (partsChar.length >= 3) detectedMode = 'TIM';
+
+      editCharMode = detectedMode;
+      editCharTimCount = (detectedMode === 'TIM' && partsChar.length === 2) ? 2 : 3;
+
+      editCharSlots = [
+        { char: null, ulti: '' },
+        { char: null, ulti: '' },
+        { char: null, ulti: '' }
+      ];
+
+      partsChar.forEach((cName, idx) => {
+        if (idx < 3) {
+          const found = findNarutoChar(cName);
+          if (found) {
+            editCharSlots[idx] = {
+              char: found,
+              ulti: partsUlti[idx] || (found.ultis && found.ultis[0]) || '-'
+            };
+          }
+        }
+      });
+
+      editCharActiveSlot = 0;
+      editCharSelectedChar = editCharSlots[0].char;
+      editCharSelectedUlti = editCharSlots[0].ulti;
+
+      setEditCharMode(editCharMode);
       renderEditCharAlphaBar();
       modal.classList.add('active');
       editCharGoToStep(1);
@@ -7528,12 +7907,118 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       editCharTargetPlayer = null;
       editCharSelectedChar = null;
       editCharSelectedUlti = '';
+      editCharSlots = [
+        { char: null, ulti: '' },
+        { char: null, ulti: '' },
+        { char: null, ulti: '' }
+      ];
     }
 
     function handleEditCharBackdrop(e) {
       if (e.target && e.target.id === 'modal-edit-player-char') {
         closeEditPlayerCharModal();
       }
+    }
+
+    function setEditCharMode(mode) {
+      let clean = '1v1';
+      if (mode === 'DUO') clean = 'DUO';
+      else if (mode === 'TIM') clean = 'TIM';
+      editCharMode = clean;
+
+      const b1 = document.getElementById('btn-edit-mode-1v1');
+      const bDuo = document.getElementById('btn-edit-mode-duo');
+      const bTim = document.getElementById('btn-edit-mode-tim');
+
+      if (b1) {
+        b1.className = clean === '1v1' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        b1.style.opacity = clean === '1v1' ? '1' : '0.6';
+      }
+      if (bDuo) {
+        bDuo.className = clean === 'DUO' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        bDuo.style.opacity = clean === 'DUO' ? '1' : '0.6';
+      }
+      if (bTim) {
+        bTim.className = clean === 'TIM' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-blue';
+        bTim.style.opacity = clean === 'TIM' ? '1' : '0.6';
+      }
+
+      if (editCharActiveSlot > 1 && clean === 'DUO') editCharActiveSlot = 0;
+      if (editCharActiveSlot > 0 && clean === '1v1') editCharActiveSlot = 0;
+
+      renderEditCharSlotTabs();
+      renderEditCharGrid();
+    }
+
+    function toggleEditTimSlot3() {
+      if (editCharTimCount === 3) {
+        editCharTimCount = 2;
+        editCharSlots[2] = { char: null, ulti: '' };
+        if (editCharActiveSlot === 2) editCharActiveSlot = 1;
+      } else {
+        editCharTimCount = 3;
+      }
+      renderEditCharSlotTabs();
+      renderEditCharGrid();
+    }
+
+    function selectEditCharSlot(idx) {
+      editCharActiveSlot = idx;
+      renderEditCharSlotTabs();
+      renderEditCharGrid();
+    }
+
+    function renderEditCharSlotTabs() {
+      const container = document.getElementById('edit-char-slot-tabs');
+      const flexBar = document.getElementById('edit-char-tim-flex-bar');
+      const flexBtn = document.getElementById('btn-edit-tim-toggle-slot3');
+      if (!container) return;
+
+      if (editCharMode === '1v1') {
+        container.style.display = 'none';
+        if (flexBar) flexBar.style.display = 'none';
+        const label = document.getElementById('edit-char-label');
+        if (label) label.innerText = 'Pilih Karakter (A-Z Master Roster):';
+        return;
+      }
+
+      container.style.display = 'flex';
+      const label = document.getElementById('edit-char-label');
+      if (label) label.innerText = `Pilih Karakter untuk Slot ${editCharActiveSlot + 1}:`;
+
+      if (editCharMode === 'TIM') {
+        if (flexBar) flexBar.style.display = 'flex';
+        if (flexBtn) {
+          flexBtn.innerText = (editCharTimCount === 3) ? '👥 Gunakan 2 Karakter Saja' : '➕ Tambah Karakter 3';
+          flexBtn.className = (editCharTimCount === 3) ? 'btn btn-sm btn-secondary' : 'btn btn-sm btn-primary';
+        }
+      } else {
+        if (flexBar) flexBar.style.display = 'none';
+      }
+
+      const totalSlots = (editCharMode === 'DUO') ? 2 : editCharTimCount;
+      const slotDefs = [
+        { label: 'Slot 1: Leader', opt: false },
+        { label: (editCharMode === 'DUO') ? 'Slot 2: Support' : 'Slot 2: Support 1', opt: false },
+        { label: 'Slot 3: Support 2', opt: true }
+      ];
+
+      container.innerHTML = slotDefs.slice(0, totalSlots).map((def, idx) => {
+        const slot = editCharSlots[idx];
+        const isActive = (editCharActiveSlot === idx);
+        const isFilled = Boolean(slot && slot.char);
+        const charName = isFilled ? slot.char.name : (def.opt ? '(Opsional / Kosong)' : '(Belum Dipilih)');
+        let cls = 'char-slot-tab';
+        if (isActive) cls += ' active';
+        if (isFilled) cls += ' filled';
+
+        return `
+          <button type="button" class="${cls}" onclick="selectEditCharSlot(${idx})">
+            <span class="char-slot-badge">${def.label}</span>
+            <span class="char-slot-name">${escapeHtml(charName)}</span>
+          </button>
+        `;
+      }).join('');
     }
 
     function editCharGoToStep(step) {
@@ -7562,16 +8047,13 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         if (step2El) step2El.style.display = 'none';
 
         if (btnPrev) btnPrev.style.display = 'none';
-
-        const hasMultiUlti = editCharSelectedChar && editCharSelectedChar.ultis && editCharSelectedChar.ultis.length > 1;
         if (btnNext) {
-          btnNext.style.display = hasMultiUlti ? 'inline-block' : 'none';
+          btnNext.style.display = 'inline-block';
           btnNext.innerText = 'Lanjut Pilih Ulti ➔';
         }
-        if (btnSave) {
-          btnSave.style.display = (!hasMultiUlti && editCharSelectedChar) ? 'inline-block' : 'none';
-        }
+        if (btnSave) btnSave.style.display = 'none';
 
+        renderEditCharSlotTabs();
         renderEditCharGrid();
       } else if (step === 2) {
         if (tab1) {
@@ -7596,16 +8078,23 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     }
 
     function editCharNextStep() {
-      if (!editCharSelectedChar) {
-        alert('Silakan pilih salah satu karakter terlebih dahulu!');
-        return;
+      if (editCharMode === '1v1') {
+        if (!editCharSlots[0].char) {
+          alert('Silakan pilih salah satu karakter terlebih dahulu!');
+          return;
+        }
+      } else if (editCharMode === 'DUO') {
+        if (!editCharSlots[0].char || !editCharSlots[1].char) {
+          alert('Mode DUO membutuhkan 2 karakter (Slot 1: Leader & Slot 2: Support)!');
+          return;
+        }
+      } else if (editCharMode === 'TIM') {
+        if (!editCharSlots[0].char || !editCharSlots[1].char) {
+          alert('Mode TIM membutuhkan minimal 2 karakter (Slot 1: Leader & Slot 2: Support 1)!');
+          return;
+        }
       }
-      const ultis = editCharSelectedChar.ultis || [];
-      if (ultis.length > 1) {
-        editCharGoToStep(2);
-      } else {
-        saveEditedPlayerChar();
-      }
+      editCharGoToStep(2);
     }
 
     function renderEditCharAlphaBar() {
@@ -7657,14 +8146,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
       const pTier = editCharTargetPlayer ? editCharTargetPlayer.type : 'FREE';
       const isFreeTier = (pTier === 'FREE');
+      const curSlotChar = editCharSlots[editCharActiveSlot] ? editCharSlots[editCharActiveSlot].char : null;
 
       const badge = document.getElementById('edit-char-selected-badge');
       if (badge) {
-        badge.innerText = editCharSelectedChar ? `✓ ${editCharSelectedChar.name}` : 'Belum dipilih';
+        const total = (editCharMode === '1v1') ? 1 : (editCharMode === 'DUO' ? 2 : editCharTimCount);
+        const filled = editCharSlots.slice(0, total).filter(s => s && s.char).length;
+        badge.innerText = `${filled}/${total} Terpilih`;
       }
 
       container.innerHTML = list.map(c => {
-        const isSel = editCharSelectedChar && editCharSelectedChar.id === c.id;
+        const isSel = curSlotChar && curSlotChar.id === c.id;
+        const otherSlotIdx = editCharSlots.findIndex((s, idx) => idx !== editCharActiveSlot && s.char && s.char.id === c.id);
         const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
         const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
         const matchTagHtml = c._matchedUlti ? `
@@ -7697,9 +8190,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           }
         }
 
-        const metaRight = isSel
-          ? `<span style="color:#4ade80; font-weight:800;">✅ Terpilih</span>`
-          : statusBadgeHtml;
+        let metaRight = statusBadgeHtml;
+        if (isSel) {
+          metaRight = `<span style="color:#4ade80; font-weight:800;">✅ Slot ${editCharActiveSlot + 1}</span>`;
+        } else if (otherSlotIdx !== -1) {
+          metaRight = `<span style="color:#38bdf8; font-weight:700; font-size:0.65rem;">Slot ${otherSlotIdx + 1}</span>`;
+        }
 
         return `
           <div class="${cardClass}" ${clickAttr}>
@@ -7727,112 +8223,183 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         return;
       }
 
-      editCharSelectedChar = c;
-      if (preselectedUlti) {
-        editCharSelectedUlti = preselectedUlti;
-      } else if (c.ultis && c.ultis.length > 0) {
-        editCharSelectedUlti = c.ultis[0];
+      let chosenUlti = preselectedUlti;
+      if (!chosenUlti && c.ultis && c.ultis.length > 0) {
+        chosenUlti = c.ultis[0];
       }
 
-      const badge = document.getElementById('edit-char-selected-badge');
-      if (badge) badge.innerText = `✓ ${c.name}`;
+      editCharSlots[editCharActiveSlot] = {
+        char: c,
+        ulti: chosenUlti || '-'
+      };
+      editCharSelectedChar = editCharSlots[0].char;
+      editCharSelectedUlti = editCharSlots[0].ulti;
 
-      const btnNext = document.getElementById('btn-edit-char-next');
-      const btnSave = document.getElementById('btn-edit-char-save');
-      const hasMultiUlti = c.ultis && c.ultis.length > 1;
+      const total = (editCharMode === '1v1') ? 1 : (editCharMode === 'DUO' ? 2 : editCharTimCount);
 
-      if (hasMultiUlti) {
-        if (btnNext) btnNext.style.display = 'inline-block';
-        if (btnSave) btnSave.style.display = 'none';
-        editCharGoToStep(2);
-      } else {
-        if (btnNext) btnNext.style.display = 'none';
-        if (btnSave) btnSave.style.display = 'inline-block';
-        renderEditCharGrid();
+      // Auto advance to next slot if empty
+      if (editCharActiveSlot < total - 1) {
+        if (!editCharSlots[editCharActiveSlot + 1].char) {
+          editCharActiveSlot++;
+        }
       }
+
+      renderEditCharSlotTabs();
+      renderEditCharGrid();
     }
 
     function setupEditCharStep2() {
-      if (!editCharSelectedChar) return;
-
+      const container = document.getElementById('edit-char-slots-ulti-container');
       const multiBox = document.getElementById('edit-char-multi-ulti-box');
       const singleBox = document.getElementById('edit-char-single-ulti-box');
-      const ultiOptions = document.getElementById('edit-char-ulti-options');
 
-      const ultis = editCharSelectedChar.ultis || [];
-      if (ultis.length > 1) {
-        multiBox.style.display = 'block';
-        singleBox.style.display = 'none';
+      if (multiBox) multiBox.style.display = 'none';
+      if (singleBox) singleBox.style.display = 'none';
 
-        if (!editCharSelectedUlti || !ultis.includes(editCharSelectedUlti)) {
-          editCharSelectedUlti = ultis[0];
+      const totalSlots = (editCharMode === '1v1') ? 1 : (editCharMode === 'DUO' ? 2 : editCharTimCount);
+      const activeSlots = [];
+      for (let i = 0; i < totalSlots; i++) {
+        if (editCharSlots[i] && editCharSlots[i].char) {
+          activeSlots.push({ idx: i, slot: editCharSlots[i] });
         }
+      }
 
-        ultiOptions.innerHTML = ultis.map(u => {
-          const isSel = (editCharSelectedUlti === u);
+      if (activeSlots.length === 0) return;
+
+      if (container) {
+        container.innerHTML = activeSlots.map(({ idx, slot }) => {
+          const c = slot.char;
+          const ultis = c.ultis || [];
+          const slotLabel = (editCharMode === '1v1')
+            ? 'Karakter Utama'
+            : (idx === 0 ? 'Slot 1: Leader' : (idx === 1 ? (editCharMode === 'DUO' ? 'Slot 2: Support' : 'Slot 2: Support 1') : 'Slot 3: Support 2'));
+
+          let ultiSelectionHtml = '';
+          if (ultis.length > 1) {
+            if (!slot.ulti || !ultis.includes(slot.ulti)) {
+              slot.ulti = ultis[0];
+            }
+            ultiSelectionHtml = `
+              <div style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 6px;">Pilih Jurus Ulti:</div>
+              <div class="ulti-options-grid">
+                ${ultis.map(u => {
+                  const isSel = (slot.ulti === u);
+                  return `
+                    <div class="admin-ulti-card ${isSel ? 'selected' : ''}" style="padding: 8px 12px;" onclick="selectEditCharSlotUlti(${idx}, '${escapeHtml(u).replace(/'/g, "\\'")}')">
+                      <div style="font-size: 0.84rem; font-weight: 800; color: #fff;">⚡ ${escapeHtml(u)}</div>
+                      <div style="font-size: 0.72rem; font-weight: 800; color: ${isSel ? '#facc15' : '#94a3b8'};">
+                        ${isSel ? '✅ Dipilih' : 'Pilih'}
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `;
+          } else {
+            slot.ulti = ultis[0] || '-';
+            ultiSelectionHtml = `
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.74rem; color: var(--text-muted);">Ultimate Terkunci:</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--accent-gold);">⚡ ${escapeHtml(slot.ulti)}</span>
+              </div>
+            `;
+          }
+
           return `
-            <div class="admin-ulti-card ${isSel ? 'selected' : ''}" onclick="selectEditCharUlti('${escapeHtml(u).replace(/'/g, "\\'")}')">
-              <div style="font-size:0.88rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
-                <span>⚡</span>
-                <span>${escapeHtml(u)}</span>
+            <div class="slot-ulti-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 0.75rem; font-weight: 900; color: var(--accent-gold); text-transform: uppercase;">${slotLabel}</span>
+                <span style="font-size: 0.88rem; font-weight: 900; color: #fff;">${escapeHtml(c.name)}</span>
               </div>
-              <div style="font-size:0.75rem; font-weight:800; color:${isSel ? '#facc15' : '#94a3b8'};">
-                ${isSel ? '✅ Dipilih' : 'Pilih'}
-              </div>
+              ${ultiSelectionHtml}
             </div>
           `;
         }).join('');
-      } else {
-        multiBox.style.display = 'none';
-        singleBox.style.display = 'block';
-        const singleName = document.getElementById('edit-char-single-ulti-name');
-        editCharSelectedUlti = ultis[0] || '-';
-        if (singleName) singleName.innerText = `⚡ ${editCharSelectedUlti}`;
       }
+
+      const allNames = activeSlots.map(a => a.slot.char.name).join(' / ');
+      const allUltis = activeSlots.map(a => a.slot.ulti).join(' / ');
 
       if (editCharTargetPlayer) {
         const sumPlayer = document.getElementById('edit-char-sum-player-name');
+        const sumMode = document.getElementById('edit-char-sum-mode');
         const sumChar = document.getElementById('edit-char-sum-char-name');
         const sumUlti = document.getElementById('edit-char-sum-ulti-name');
         if (sumPlayer) sumPlayer.innerText = `${editCharTargetPlayer.name} (${getTierLabel(editCharTargetPlayer.type)})`;
-        if (sumChar) sumChar.innerText = editCharSelectedChar.name;
-        if (sumUlti) sumUlti.innerText = editCharSelectedUlti || '-';
+        if (sumMode) sumMode.innerText = (editCharMode === '1v1') ? '1vs1' : (editCharMode === 'DUO' ? 'DUO (2)' : `TIM (${activeSlots.length})`);
+        if (sumChar) sumChar.innerText = allNames || '-';
+        if (sumUlti) sumUlti.innerText = allUltis || '-';
+      }
+    }
+
+    function selectEditCharSlotUlti(slotIdx, ultiName) {
+      if (editCharSlots[slotIdx]) {
+        editCharSlots[slotIdx].ulti = ultiName;
+        setupEditCharStep2();
       }
     }
 
     function selectEditCharUlti(ultiName) {
       editCharSelectedUlti = ultiName;
+      if (editCharSlots[0]) editCharSlots[0].ulti = ultiName;
       setupEditCharStep2();
     }
 
     function saveEditedPlayerChar() {
       if (!editCharTargetPlayer) return;
-      if (!editCharSelectedChar) {
-        alert('Karakter belum dipilih!');
-        editCharGoToStep(1);
-        return;
+
+      if (editCharMode === '1v1') {
+        if (!editCharSlots[0].char) {
+          alert('Karakter Slot 1 belum dipilih!');
+          editCharGoToStep(1);
+          return;
+        }
+      } else if (editCharMode === 'DUO') {
+        if (!editCharSlots[0].char || !editCharSlots[1].char) {
+          alert('Mode DUO membutuhkan 2 karakter (Slot 1 & Slot 2)!');
+          editCharGoToStep(1);
+          return;
+        }
+      } else if (editCharMode === 'TIM') {
+        if (!editCharSlots[0].char || !editCharSlots[1].char) {
+          alert('Mode TIM membutuhkan minimal 2 karakter (Slot 1 & Slot 2)!');
+          editCharGoToStep(1);
+          return;
+        }
       }
 
-      if (typeof isCharBanned === 'function' && isCharBanned(editCharSelectedChar)) {
-        showBannedAlert(editCharSelectedChar.name);
-        editCharGoToStep(1);
-        return;
-      }
-      if (editCharTargetPlayer.type === 'FREE' && typeof isCharVipExclusive === 'function' && isCharVipExclusive(editCharSelectedChar)) {
-        showVipOnlyAlert(editCharSelectedChar.name);
-        editCharGoToStep(1);
-        return;
+      const totalSlots = (editCharMode === '1v1') ? 1 : (editCharMode === 'DUO' ? 2 : editCharTimCount);
+      const activeSlots = [];
+      for (let i = 0; i < totalSlots; i++) {
+        if (editCharSlots[i] && editCharSlots[i].char) {
+          activeSlots.push(editCharSlots[i]);
+        }
       }
 
-      const finalChar = editCharSelectedChar.name;
-      const finalUlti = editCharSelectedUlti || (editCharSelectedChar.ultis && editCharSelectedChar.ultis[0]) || '-';
+      for (const s of activeSlots) {
+        if (typeof isCharBanned === 'function' && isCharBanned(s.char)) {
+          showBannedAlert(s.char.name);
+          editCharGoToStep(1);
+          return;
+        }
+        if (editCharTargetPlayer.type === 'FREE' && typeof isCharVipExclusive === 'function' && isCharVipExclusive(s.char)) {
+          showVipOnlyAlert(s.char.name);
+          editCharGoToStep(1);
+          return;
+        }
+      }
+
+      const finalChar = activeSlots.map(s => s.char.name).join(' / ');
+      const finalUlti = activeSlots.map(s => s.ulti || (s.char.ultis && s.char.ultis[0]) || '-').join(' / ');
 
       if (editCharTargetPlayer.id === 'p1' && state.p1) {
         state.p1.char = finalChar;
         state.p1.ulti = finalUlti;
+        state.p1.ticketMode = editCharMode;
       } else if (editCharTargetPlayer.id === 'p2' && state.p2) {
         state.p2.char = finalChar;
         state.p2.ulti = finalUlti;
+        state.p2.ticketMode = editCharMode;
       } else {
         const list = (editCharTargetPlayer.listType === 'queue') ? state.queue : state.saved;
         const player = list.find(p => String(p.id) === String(editCharTargetPlayer.id));
@@ -7843,6 +8410,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         }
         player.char = finalChar;
         player.ulti = finalUlti;
+        player.ticketMode = editCharMode;
       }
 
       saveState();

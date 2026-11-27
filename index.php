@@ -987,16 +987,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       font-size: 0.88rem;
       color: #ffffff;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .queue-char-row {
       font-size: 0.75rem;
       color: var(--c-light);
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .p-role-tag {
@@ -1843,6 +1839,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     // STATE & SYNC
     // ==========================================
     let state = <?= $initialStateJson ?>;
+    let _lastServerJson = JSON.stringify(state);
 
     let cloudMqttClient = null;
     const LOCAL_CLIENT_ID = 'reg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
@@ -1856,9 +1853,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       kothSyncChannel.onmessage = (event) => {
         if (event.data && event.data.state) {
           if (event.data.clientId === LOCAL_CLIENT_ID) return;
+          const raw = JSON.stringify(event.data.state);
+          if (raw === _lastServerJson) return;
+          _lastServerJson = raw;
           state = event.data.state;
           sanitizeState(state);
-          try { localStorage.setItem('koth_naruto_state', JSON.stringify(state)); } catch (e) { }
+          try { localStorage.setItem('koth_naruto_state', raw); } catch (e) { }
           renderAll();
         }
       };
@@ -2379,7 +2379,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     // ==========================================
     // MARQUEE AUTO-SCROLL (ARENA & QUEUE)
     // ==========================================
-    function applyMarquee(wrap, container, speed = 25, pauseStart = 2500, pauseEnd = 2000) {
+    function applyMarquee(wrap, container, speed = 28, pauseStart = 1500, pauseEnd = 1500) {
       if (!wrap || !container) return;
 
       const currentText = wrap.innerText || wrap.textContent || '';
@@ -2409,7 +2409,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       if (isRight) container.style.textAlign = 'left';
 
       const dist = -(diff + 16);
-      const walkDuration = Math.max(2500, (diff / speed) * 1000);
+      const walkDuration = Math.max(2000, (diff / speed) * 1000);
       const totalDuration = pauseStart + walkDuration + pauseEnd;
 
       const p1 = pauseStart / totalDuration;
@@ -2441,7 +2441,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         if (tickerWrap && tickerText) {
           const parentWrap = document.getElementById('ticker-wrap');
           if (parentWrap && parentWrap.style.display !== 'none') {
-            applyMarquee(tickerText, tickerWrap, 25, 2500, 2000);
+            applyMarquee(tickerText, tickerWrap, 28, 1500, 1500);
           }
         }
 
@@ -2451,7 +2451,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           if (wrap) {
             const txt = (wrap.innerText || '').trim();
             if (txt && txt !== '-' && txt !== 'Menunggu...') {
-              applyMarquee(wrap, container, 25, 2500, 2000);
+              applyMarquee(wrap, container, 28, 1500, 1500);
             } else {
               if (wrap._marqueeAnim) {
                 try { wrap._marqueeAnim.cancel(); } catch (e) { }
@@ -2470,21 +2470,79 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           const nameContainer = card.querySelector('.q-name-marquee-container');
           const nameWrap = card.querySelector('.q-name-marquee-content');
           if (nameContainer && nameWrap) {
-            applyMarquee(nameWrap, nameContainer, 25, 2500, 2000);
+            applyMarquee(nameWrap, nameContainer, 28, 1500, 1500);
           }
 
           const charContainer = card.querySelector('.q-char-marquee-container');
           const charWrap = card.querySelector('.q-char-marquee-content');
           if (charContainer && charWrap) {
-            applyMarquee(charWrap, charContainer, 25, 2500, 2000);
+            applyMarquee(charWrap, charContainer, 28, 1500, 1500);
           }
         });
       });
     }
 
-    window.addEventListener('resize', () => triggerMarquees());
+    // ==========================================
+    // AUTO-SCROLL VERTIKAL DAFTAR ANTREAN (SEPERTI DI OVERLAY)
+    // Scroll ke bawah pelan -> Berhenti 3 dtk -> Langsung JUMP kembali ke paling atas
+    // ==========================================
+    let autoScrollTimer = null;
+    let isUserInteracting = false;
+
+    function startSmartAutoScroll() {
+      const container = document.getElementById('queue-items-container') || document.querySelector('.queue-list-wrap');
+      if (!container) return;
+
+      if (autoScrollTimer) return;
+
+      let stateMode = 'paused_at_top'; // 'paused_at_top', 'scrolling', 'paused_at_bottom'
+      let pauseTicks = 60; // 3 detik awal di posisi atas (60 * 50ms = 3000ms)
+      let currentScrollY = container.scrollTop || 0;
+
+      autoScrollTimer = setInterval(() => {
+        if (isUserInteracting) return;
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        if (maxScroll <= 4) return;
+
+        if (pauseTicks > 0) {
+          pauseTicks--;
+          if (pauseTicks === 0) {
+            if (stateMode === 'paused_at_top') {
+              stateMode = 'scrolling';
+            } else if (stateMode === 'paused_at_bottom') {
+              currentScrollY = 0;
+              container.scrollTop = 0;
+              stateMode = 'paused_at_top';
+              pauseTicks = 60; // Tahan 3 detik di paling atas
+            }
+          }
+          return;
+        }
+
+        if (stateMode === 'scrolling') {
+          currentScrollY += 1;
+          container.scrollTop = Math.round(currentScrollY);
+
+          if (container.scrollTop >= maxScroll - 1 || currentScrollY >= maxScroll) {
+            stateMode = 'paused_at_bottom';
+            pauseTicks = 60; // Tahan 3 detik di bawah
+          }
+        }
+      }, 50);
+
+      container.onmouseenter = () => { isUserInteracting = true; };
+      container.onmouseleave = () => { isUserInteracting = false; currentScrollY = container.scrollTop; };
+      container.ontouchstart = () => { isUserInteracting = true; };
+      container.ontouchend = () => { setTimeout(() => { isUserInteracting = false; currentScrollY = container.scrollTop; }, 2000); };
+    }
+
+    window.addEventListener('resize', () => {
+      triggerMarquees();
+    });
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') triggerMarquees();
+      if (document.visibilityState === 'visible') {
+        triggerMarquees();
+      }
     });
 
     function renderAll() {
@@ -2492,6 +2550,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       renderTierButtons();
       renderQueueList();
       triggerMarquees();
+      startSmartAutoScroll();
     }
 
     // ==========================================
@@ -3464,11 +3523,14 @@ ${freeCheck.reason}`);
 
           cloudMqttClient.on('message', (topic, payload) => {
             try {
-              const remote = JSON.parse(payload.toString());
+              const raw = payload.toString();
+              if (raw === _lastServerJson) return;
+              _lastServerJson = raw;
+              const remote = JSON.parse(raw);
               if (remote && remote._clientId === LOCAL_CLIENT_ID) return;
               state = remote;
               sanitizeState(state);
-              try { localStorage.setItem('koth_naruto_state', JSON.stringify(state)); } catch (e) { }
+              try { localStorage.setItem('koth_naruto_state', raw); } catch (e) { }
               renderAll();
             } catch (e) { }
           });
@@ -3490,9 +3552,12 @@ ${freeCheck.reason}`);
             if (!data || typeof data !== 'object') return;
             if (pendingSaves > 0 || fetchStartedAt < lastLocalSaveAt) return;
             if (data._clientId === LOCAL_CLIENT_ID) return;
+            const raw = JSON.stringify(data);
+            if (raw === _lastServerJson) return;
+            _lastServerJson = raw;
             state = data;
             sanitizeState(state);
-            try { localStorage.setItem('koth_naruto_state', JSON.stringify(state)); } catch (e) { }
+            try { localStorage.setItem('koth_naruto_state', raw); } catch (e) { }
             renderAll();
           })
           .catch(() => { });
@@ -3506,6 +3571,8 @@ ${freeCheck.reason}`);
       window.addEventListener('storage', (e) => {
         if (e.key === 'koth_naruto_state' && e.newValue) {
           try {
+            if (e.newValue === _lastServerJson) return;
+            _lastServerJson = e.newValue;
             const parsed = JSON.parse(e.newValue);
             if (parsed && typeof parsed === 'object') {
               if (parsed._clientId === LOCAL_CLIENT_ID) return;

@@ -3380,6 +3380,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           Nama yang masuk ke antrean adalah <b>Nama Akun TikTok (Display Name/Nickname)</b>, bukan username @... (Contoh: "Hervandi", bukan @herzg1209).
         </div>
 
+        <!-- Fitur Balasan Chat Otomatis -->
+        <div style="background: rgba(168, 85, 247, 0.1); border: 1.5px solid rgba(168, 85, 247, 0.35); border-radius: 8px; padding: 10px 12px; font-size: 0.78rem; line-height: 1.45; color: #e9d5ff;">
+          <b style="color: #c084fc;">💬 Fitur Balasan Chat Otomatis (Auto-Reply):</b><br>
+          Bot otomatis membalas komentar viewer di chat TikTok dengan <b>tag @username</b> penonton, memberikan konfirmasi status antrean (FREE, VIP, SROBOT, menunggu persetujuan, atau alasan penolakan).
+        </div>
+
         <!-- Format Komentar Viewer -->
         <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; font-size: 0.78rem; color: var(--text-light); line-height: 1.45;">
           <div style="font-weight: 800; color: var(--accent-gold); margin-bottom: 6px;">💬 Format Komentar Viewer di Live Chat:</div>

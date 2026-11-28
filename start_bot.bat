@@ -9,6 +9,7 @@ echo ================================================================
 echo   Host Default  : @herzg1209
 echo   API Server    : http://localhost/naruto-koth/api/live-request.php
 echo   Room Key      : hervandisipada
+echo   Auto-Reply    : Aktif (Dimulai @username penonton)
 echo ================================================================
 echo.
 

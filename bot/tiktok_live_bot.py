@@ -71,6 +71,61 @@ def log_error(msg: str):
     t = time.strftime("%H:%M:%S")
     print(f"{CLR_RED}[{t}] [DITOLAK]{CLR_RESET} {msg}")
 
+def build_reply_message(unique_id: str, resp: dict) -> Optional[str]:
+    """Membangun pesan balasan live chat TikTok yang selalu diawali @username."""
+    if not resp or not isinstance(resp, dict):
+        return None
+
+    status = resp.get("status")
+    tag = f"@{unique_id}" if unique_id else "@viewer"
+
+    if status == "ok":
+        action = resp.get("action")
+        player = resp.get("player", {})
+        p_name = player.get("name", "")
+        p_char = player.get("char", "-")
+        p_tier = player.get("type", "FREE")
+        p_pos = player.get("queuePos", "?")
+
+        if action == "enqueued":
+            return f"{tag} Kamu masuk antrean #{p_pos} ({p_char}) - FREE. Siap-siap ya!"
+        elif action == "enqueued_paid":
+            return f"{tag} {p_tier} APPROVED! Kamu masuk antrean #{p_pos} ({p_char}). Makasih gift-nya!"
+        elif action == "pending_approval":
+            cost = 30 if p_tier == "SROBOT" else 5
+            return f"{tag} Req {p_tier} ({p_char}) dicatat! Kirim gift {cost} koin atau tunggu admin setujui ya."
+        elif action == "auto_approved_from_pending":
+            return f"{tag} Makasih gift-nya! Req {p_tier} ({p_char}) disetujui otomatis & masuk antrean #{p_pos}!"
+        elif action == "upgraded":
+            return f"{tag} Selamat! Kamu di antrean di-upgrade ke {p_tier} ({p_char})!"
+
+    elif status == "rejected":
+        reason = resp.get("reason", "Ditolak sistem")
+        return f"{tag} Request belum bisa diproses: {reason}"
+
+    return None
+
+async def send_chat_reply(client: TikTokLiveClient, session_id: Optional[str], message: str):
+    """Mengirim pesan balasan ke room chat live stream TikTok."""
+    if not message:
+        return
+
+    # Batasi panjang pesan TikTok Live (maks ~100 karakter agar aman dan tidak terpotong)
+    if len(message) > 100:
+        message = message[:97] + "..."
+
+    t = time.strftime("%H:%M:%S")
+
+    if not session_id:
+        print(f"{CLR_MAGENTA}[{t}] [💬 BALASAN CHAT]{CLR_RESET} {CLR_BOLD}{message}{CLR_RESET}")
+        return
+
+    try:
+        await client.send_room_chat(content=message)
+        print(f"{CLR_MAGENTA}{CLR_BOLD}[{t}] [💬 BALASAN TERKIRIM KE TIKTOK]{CLR_RESET} {message}")
+    except Exception as e:
+        log_warn(f"Gagal mengirim balasan chat ke TikTok ({message}): {e}")
+
 def send_to_backend(api_url: str, room: str, payload: dict) -> Optional[dict]:
     try:
         url = f"{api_url}?room={room}"
@@ -82,8 +137,13 @@ def send_to_backend(api_url: str, room: str, payload: dict) -> Optional[dict]:
         log_warn(f"Gagal mengirim request ke backend: {e}")
     return None
 
-async def run_bot(host: str, api_url: str, room: str):
+async def run_bot(host: str, api_url: str, room: str, session_id: Optional[str] = None):
     client = TikTokLiveClient(unique_id=host)
+    if session_id:
+        client._web.cookies.set("sessionid", session_id)
+        log_success("Sesi Akun TikTok (SessionID) terpasang: Bot siap membalas pesan di room live chat!")
+    else:
+        log_info("Mode Balasan: Simulasi Terminal (Untuk membalas langsung ke live TikTok, masukkan session_id).")
 
     @client.on(ConnectEvent)
     async def on_connect(event: ConnectEvent):
@@ -157,6 +217,11 @@ async def run_bot(host: str, api_url: str, room: str):
             if reason:
                 log_info(f"Diabaikan: {reason}")
 
+        # Balas komentar di live stream TikTok (diawali @username)
+        reply_msg = build_reply_message(unique_id, resp)
+        if reply_msg:
+            await send_chat_reply(client, session_id, reply_msg)
+
     @client.on(GiftEvent)
     async def on_gift(event: GiftEvent):
         nickname = (event.user.nickname or "").strip()
@@ -190,8 +255,14 @@ async def run_bot(host: str, api_url: str, room: str):
             msg = resp.get("message", "")
             if action == "auto_approved_from_pending":
                 log_success(f"🎉 {msg}")
+                reply_msg = build_reply_message(unique_id, resp)
+                if reply_msg:
+                    await send_chat_reply(client, session_id, reply_msg)
             elif action == "upgraded":
                 log_success(f"⭐ {msg}")
+                reply_msg = build_reply_message(unique_id, resp)
+                if reply_msg:
+                    await send_chat_reply(client, session_id, reply_msg)
             elif msg:
                 log_info(msg)
 
@@ -216,19 +287,42 @@ async def run_bot(host: str, api_url: str, room: str):
             await asyncio.sleep(10)
 
 def main():
+    import os
+    import json
+    import re
+
     parser = argparse.ArgumentParser(description="Naruto Storm KotH - TikTok Live Auto-Queue Bot")
     parser.add_argument("--host", default="herzg1209", help="Username host TikTok (tanpa @)")
     parser.add_argument("--room", default="hervandisipada", help="Room key KotH")
     parser.add_argument("--api-url", default="http://localhost/naruto-koth/api/live-request.php", help="URL endpoint live request")
+    parser.add_argument("--session-id", default=None, help="Cookie sessionid akun TikTok untuk membalas chat live")
     parser.add_argument("--test-comment", default=None, help="Kirim komentar tes ke backend langsung")
     parser.add_argument("--test-gift", type=int, default=None, help="Simulasi kirim gift sejumlah koin")
     parser.add_argument("--test-name", default="Penonton Setia (Nama TikTok)", help="Nama display untuk tes")
     args = parser.parse_args()
 
-    host_clean = args.host.lstrip("@").strip()
-    print_banner(host_clean, args.api_url, args.room)
+    # Load dari bot/config.json jika ada
+    config_file = os.path.join(os.path.dirname(__file__), "config.json")
+    file_cfg = {}
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, "r", encoding="utf-8") as f:
+                file_cfg = json.load(f)
+        except Exception:
+            pass
 
-    import re
+    session_id = args.session_id or file_cfg.get("session_id") or None
+    host_clean = (args.host if args.host != "herzg1209" else file_cfg.get("host", args.host)).lstrip("@").strip()
+    room_key = args.room if args.room != "hervandisipada" else file_cfg.get("room", args.room)
+    api_url = args.api_url if args.api_url != "http://localhost/naruto-koth/api/live-request.php" else file_cfg.get("api_url", args.api_url)
+
+    print_banner(host_clean, api_url, room_key)
+
+    if session_id:
+        log_success("SessionID TikTok terdeteksi. Fitur auto-reply chat TikTok AKTIF!")
+    else:
+        log_info("SessionID tidak diisi. Balasan chat berjalan dalam mode simulasi.")
+
     test_uid = "u_" + re.sub(r'[^a-zA-Z0-9_]', '', args.test_name.lower())[:20]
 
     # Mode Tes Simulasi Gift
@@ -247,8 +341,11 @@ def main():
                 "repeatCount": 1
             }
         }
-        res = send_to_backend(args.api_url, args.room, payload)
+        res = send_to_backend(api_url, room_key, payload)
         print("Response Gift:", res)
+        reply = build_reply_message(test_uid, res)
+        if reply:
+            print(f"\n{CLR_MAGENTA}{CLR_BOLD}[💬 CONTOH BALASAN LIVE CHAT]:{CLR_RESET} {reply}\n")
         return
 
     # Mode Tes Langsung Komentar
@@ -263,13 +360,16 @@ def main():
             },
             "comment": args.test_comment
         }
-        res = send_to_backend(args.api_url, args.room, payload)
+        res = send_to_backend(api_url, room_key, payload)
         print("Response Komentar:", res)
+        reply = build_reply_message(test_uid, res)
+        if reply:
+            print(f"\n{CLR_MAGENTA}{CLR_BOLD}[💬 CONTOH BALASAN LIVE CHAT]:{CLR_RESET} {reply}\n")
         return
 
     # Jalankan bot
     try:
-        asyncio.run(run_bot(host_clean, args.api_url, args.room))
+        asyncio.run(run_bot(host_clean, api_url, room_key, session_id))
     except KeyboardInterrupt:
         print(f"\n{CLR_YELLOW}Bot dimatikan oleh pengguna. Sampai jumpa!{CLR_RESET}")
 

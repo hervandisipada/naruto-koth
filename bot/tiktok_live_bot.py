@@ -104,7 +104,10 @@ async def run_bot(host: str, api_url: str, room: str):
         display_name = nickname if nickname else unique_id
 
         # Cek apakah komentar merupakan perintah request
-        prefixes = ("!req", "!daftar", "!main", "!play", "req ", "daftar ")
+        prefixes = (
+            "!req", "!daftar", "!main", "!play", "req ", "daftar ",
+            "!vip", "!srobot", "!sb", "!free", "vip ", "srobot ", "sb "
+        )
         low = raw_comment.lower()
         is_command = any(low.startswith(p) for p in prefixes) or low.startswith("req:") or low.startswith("req-")
 
@@ -133,14 +136,26 @@ async def run_bot(host: str, api_url: str, room: str):
             player = resp.get("player", {})
             p_name = player.get("name", display_name)
             p_char = player.get("char", "-")
+            p_tier = player.get("type", "FREE")
             p_pos = player.get("queuePos", "?")
             total = resp.get("queueTotal", "?")
-            log_success(f"MASUK ANTREAN #{p_pos}: {CLR_BOLD}{p_name}{CLR_RESET} | Karakter: {CLR_CYAN}{p_char}{CLR_RESET} (Total: {total} pemain)")
+
+            if action == "enqueued":
+                log_success(f"[✅ FREE] MASUK ANTREAN #{p_pos}: {CLR_BOLD}{p_name}{CLR_RESET} | Karakter: {CLR_CYAN}{p_char}{CLR_RESET} (Total Antrean: {total} pemain)")
+            elif action == "enqueued_paid":
+                log_success(f"[🌟 {p_tier} - AUTO GIFT] MASUK ANTREAN #{p_pos}: {CLR_BOLD}{p_name}{CLR_RESET} | Karakter: {CLR_CYAN}{p_char}{CLR_RESET} (Total Antrean: {total} pemain)")
+            elif action == "pending_approval":
+                pend_pos = player.get("pendingPos", "?")
+                log_warn(f"[⏳ {p_tier} - MENUNGGU ADMIN/GIFT] {CLR_BOLD}{p_name}{CLR_RESET} | Karakter: {CLR_CYAN}{p_char}{CLR_RESET} masuk daftar persetujuan Admin (#{pend_pos}). (Viewer belum kirim gift atau menunggu persetujuan admin).")
+            else:
+                log_success(resp.get("message", "Request diproses."))
         elif status == "rejected":
             reason = resp.get("reason", "Ditolak sistem")
             log_error(f"{display_name} ditolak: {reason}")
         elif status == "ignored":
-            pass
+            reason = resp.get("reason", "")
+            if reason:
+                log_info(f"Diabaikan: {reason}")
 
     @client.on(GiftEvent)
     async def on_gift(event: GiftEvent):
@@ -171,9 +186,14 @@ async def run_bot(host: str, api_url: str, room: str):
 
         resp = send_to_backend(api_url, room, payload)
         if resp and resp.get("status") == "ok":
+            action = resp.get("action")
             msg = resp.get("message", "")
-            if msg:
-                log_success(msg)
+            if action == "auto_approved_from_pending":
+                log_success(f"🎉 {msg}")
+            elif action == "upgraded":
+                log_success(f"⭐ {msg}")
+            elif msg:
+                log_info(msg)
 
     # Main loop dengan auto-reconnect
     while True:
@@ -201,26 +221,50 @@ def main():
     parser.add_argument("--room", default="hervandisipada", help="Room key KotH")
     parser.add_argument("--api-url", default="http://localhost/naruto-koth/api/live-request.php", help="URL endpoint live request")
     parser.add_argument("--test-comment", default=None, help="Kirim komentar tes ke backend langsung")
+    parser.add_argument("--test-gift", type=int, default=None, help="Simulasi kirim gift sejumlah koin")
     parser.add_argument("--test-name", default="Penonton Setia (Nama TikTok)", help="Nama display untuk tes")
     args = parser.parse_args()
 
     host_clean = args.host.lstrip("@").strip()
     print_banner(host_clean, args.api_url, args.room)
 
-    # Mode Tes Langsung
+    import re
+    test_uid = "u_" + re.sub(r'[^a-zA-Z0-9_]', '', args.test_name.lower())[:20]
+
+    # Mode Tes Simulasi Gift
+    if args.test_gift is not None:
+        log_info(f"Menjalankan TES Gift ({args.test_gift} koin) untuk '{args.test_name}'...")
+        payload = {
+            "event": "gift",
+            "user": {
+                "nickname": args.test_name,
+                "uniqueId": test_uid,
+                "userId": "999999"
+            },
+            "gift": {
+                "name": "Test Gift",
+                "diamondCount": args.test_gift,
+                "repeatCount": 1
+            }
+        }
+        res = send_to_backend(args.api_url, args.room, payload)
+        print("Response Gift:", res)
+        return
+
+    # Mode Tes Langsung Komentar
     if args.test_comment:
         log_info(f"Menjalankan TES komentar dari terminal...")
         payload = {
             "event": "comment",
             "user": {
                 "nickname": args.test_name,
-                "uniqueId": "tester_username",
+                "uniqueId": test_uid,
                 "userId": "999999"
             },
             "comment": args.test_comment
         }
         res = send_to_backend(args.api_url, args.room, payload)
-        print("Response:", res)
+        print("Response Komentar:", res)
         return
 
     # Jalankan bot

@@ -109,14 +109,18 @@ if ($method === 'POST') {
             }
         }
 
+        // Deteksi Tier dari komentar (FREE / VIP / SROBOT)
+        $tier = $parsed['tier'] ?? 'FREE';
+
         // Validasi Karakter Khusus VIP (Jalur Free tidak boleh pakai)
-        $tier = 'FREE';
-        foreach ($selectedChars as $c) {
-            if (isVipExclusiveCharacter($c)) {
-                sendJson([
-                    'status' => 'rejected',
-                    'reason' => "Karakter '{$c['name']}' khusus untuk peserta VIP/SROBOT. Kirim gift untuk mendaftar jalur VIP!"
-                ], 200);
+        if ($tier === 'FREE') {
+            foreach ($selectedChars as $c) {
+                if (isVipExclusiveCharacter($c)) {
+                    sendJson([
+                        'status' => 'rejected',
+                        'reason' => "Karakter '{$c['name']}' khusus untuk peserta VIP/SROBOT. Gunakan '!req vip {$c['name']}' atau kirim gift untuk bermain karakter ini!"
+                    ], 200);
+                }
             }
         }
 
@@ -145,6 +149,15 @@ if ($method === 'POST') {
             ], 200);
         }
 
+        // Cek apakah pemain sudah ada di Pending Approvals
+        $pendingReason = checkDuplicateInPending($displayName, $state);
+        if ($pendingReason !== null) {
+            sendJson([
+                'status' => 'rejected',
+                'reason' => "{$displayName}: {$pendingReason}."
+            ], 200);
+        }
+
         // Format nama karakter & ulti bawaan
         $charNames = array_map(fn($c) => $c['name'], $selectedChars);
         $fullChar = implode(' / ', $charNames);
@@ -154,117 +167,392 @@ if ($method === 'POST') {
         }, $selectedChars);
         $fullUlti = implode(' / ', $ultiNames);
 
-        // Buat objek pemain baru
-        $newPlayer = [
-            'id' => 'pl_tt_' . time() . '_' . substr(md5($displayName . microtime()), 0, 6),
-            'name' => $displayName, // NAMA TIKTOK (Display Name / Nickname)
-            'tiktokUsername' => $uniqueId, // @username asli tersimpan untuk referensi
-            'char' => $fullChar,
-            'ulti' => $fullUlti,
-            'matchesLeft' => 1,
-            'ws' => 0,
-            'type' => 'FREE',
-            'ticketMode' => $activeMode,
-            'registeredAt' => round(microtime(true) * 1000),
-            'status' => 'APPROVED',
-            'source' => 'TIKTOK_LIVE'
-        ];
+        // Cek Live Gift Ledger (Apakah viewer SUDAH KIRIM GIFT?)
+        $userKeyUnique = ($uniqueId !== '') ? mb_strtolower($uniqueId, 'UTF-8') : '';
+        $userKeyNick = ($displayName !== '') ? mb_strtolower($displayName, 'UTF-8') : '';
 
-        if (!isset($state['queue']) || !is_array($state['queue'])) {
-            $state['queue'] = [];
-        }
-        $state['queue'][] = $newPlayer;
-        sortQueuePhp($state);
+        $giftInfo = null;
+        $userKeyToUse = $userKeyUnique !== '' ? $userKeyUnique : $userKeyNick;
 
-        if (!isset($state['registeredUsers']) || !is_array($state['registeredUsers'])) {
-            $state['registeredUsers'] = [];
-        }
-        if (!in_array($displayName, $state['registeredUsers'], true)) {
-            $state['registeredUsers'][] = $displayName;
-        }
-
-        // Timestamp & client tracking
-        $state['_clientId'] = 'tt_bot_' . time();
-        $state['_ts'] = round(microtime(true) * 1000);
-
-        // Simpan ke MySQL
-        $version = syncStateToMySql($pdo, $roomKey, $state);
-
-        // Cari posisi antrean
-        $qIdx = 0;
-        foreach ($state['queue'] as $i => $p) {
-            if ($p['id'] === $newPlayer['id']) {
-                $qIdx = $i + 1;
-                break;
+        if (!empty($state['liveGiftLedger']) && is_array($state['liveGiftLedger'])) {
+            if ($userKeyUnique !== '' && isset($state['liveGiftLedger'][$userKeyUnique])) {
+                $giftInfo = $state['liveGiftLedger'][$userKeyUnique];
+                $userKeyToUse = $userKeyUnique;
+            } elseif ($userKeyNick !== '' && isset($state['liveGiftLedger'][$userKeyNick])) {
+                $giftInfo = $state['liveGiftLedger'][$userKeyNick];
+                $userKeyToUse = $userKeyNick;
             }
         }
 
-        sendJson([
-            'status' => 'ok',
-            'action' => 'enqueued',
-            'player' => [
-                'name' => $displayName,
+        $totalCoins = (int)($giftInfo['totalCoins'] ?? 0);
+        $usedCoins = (int)($giftInfo['usedCoins'] ?? 0);
+        $availableCoins = max(0, $totalCoins - $usedCoins);
+
+        $requiredCoins = ($tier === 'SROBOT') ? 30 : (($tier === 'VIP') ? 5 : 0);
+
+        // ========================================================
+        // KASUS 1: FREE REQUEST -> LANGSUNG MASUK KE ANTREAN
+        // ========================================================
+        if ($tier === 'FREE') {
+            $newPlayer = [
+                'id' => 'pl_tt_' . time() . '_' . substr(md5($displayName . microtime()), 0, 6),
+                'name' => $displayName, // NAMA TIKTOK DISPLAY NAME
+                'tiktokUsername' => $uniqueId,
                 'char' => $fullChar,
                 'ulti' => $fullUlti,
+                'matchesLeft' => 1,
+                'ws' => 0,
                 'type' => 'FREE',
-                'queuePos' => $qIdx
-            ],
-            'queueTotal' => count($state['queue']),
-            'version' => $version
-        ], 200);
-    }
+                'ticketMode' => $activeMode,
+                'registeredAt' => round(microtime(true) * 1000),
+                'status' => 'APPROVED',
+                'source' => 'TIKTOK_LIVE_BOT'
+            ];
 
-    // Event Gift (Auto Upgrade / Auto Add VIP / SROBOT)
-    if ($event === 'gift') {
-        $giftObj = $payload['gift'] ?? [];
-        $giftName = trim((string)($giftObj['name'] ?? 'Gift'));
-        $diamondCount = (int)($giftObj['diamondCount'] ?? 1);
-        $repeatCount = (int)($giftObj['repeatCount'] ?? 1);
-        $totalCoins = $diamondCount * $repeatCount;
+            if (!isset($state['queue']) || !is_array($state['queue'])) {
+                $state['queue'] = [];
+            }
+            $state['queue'][] = $newPlayer;
+            sortQueuePhp($state);
 
-        // Tentukan Tier berdasarkan jumlah koin gift
-        $tier = 'FREE';
-        if ($totalCoins >= 30) {
-            $tier = 'SROBOT';
-            $matches = ($activeMode === '1v1') ? 2 : 1;
-        } elseif ($totalCoins >= 5) {
-            $tier = 'VIP';
-            $matches = 1;
-        } else {
-            sendJson(['status' => 'ignored', 'reason' => "Koin gift ({$totalCoins}) di bawah batas VIP (5 koin)."], 200);
-        }
+            if (!isset($state['registeredUsers']) || !is_array($state['registeredUsers'])) {
+                $state['registeredUsers'] = [];
+            }
+            if (!in_array($displayName, $state['registeredUsers'], true)) {
+                $state['registeredUsers'][] = $displayName;
+            }
 
-        // Cek jika pemain sudah ada di antrean -> Upgrade tier-nya!
-        $upgraded = false;
-        if (!empty($state['queue']) && is_array($state['queue'])) {
-            foreach ($state['queue'] as &$p) {
-                if (mb_strtolower(trim($p['name']), 'UTF-8') === mb_strtolower($displayName, 'UTF-8')) {
-                    $p['type'] = $tier;
-                    $p['matchesLeft'] = max((int)($p['matchesLeft'] ?? 1), $matches);
-                    $upgraded = true;
+            $state['_clientId'] = 'tt_bot_' . time();
+            $state['_ts'] = round(microtime(true) * 1000);
+            $version = syncStateToMySql($pdo, $roomKey, $state);
+
+            $qIdx = 1;
+            foreach ($state['queue'] as $i => $p) {
+                if ($p['id'] === $newPlayer['id']) {
+                    $qIdx = $i + 1;
                     break;
                 }
             }
-            unset($p);
-        }
 
-        if ($upgraded) {
-            sortQueuePhp($state);
-            $state['_clientId'] = 'tt_bot_' . time();
-            $state['_ts'] = round(microtime(true) * 1000);
-            syncStateToMySql($pdo, $roomKey, $state);
             sendJson([
                 'status' => 'ok',
-                'action' => 'upgraded',
-                'player' => ['name' => $displayName, 'type' => $tier],
-                'message' => "Pemain {$displayName} di-upgrade ke tier {$tier} berkat Gift {$giftName} ({$totalCoins} Koin)!"
+                'action' => 'enqueued',
+                'tier' => 'FREE',
+                'player' => [
+                    'name' => $displayName,
+                    'char' => $fullChar,
+                    'ulti' => $fullUlti,
+                    'type' => 'FREE',
+                    'queuePos' => $qIdx
+                ],
+                'queueTotal' => count($state['queue']),
+                'version' => $version,
+                'message' => "Pemain {$displayName} berhasil masuk antrean FREE (#{$qIdx})!"
             ], 200);
         }
 
+        // ========================================================
+        // KASUS 2: VIP / SROBOT -> CEK APAKAH SUDAH GIFT?
+        // ========================================================
+        $isGiftSatisfied = ($availableCoins >= $requiredCoins && $requiredCoins > 0);
+
+        if ($isGiftSatisfied) {
+            // VIEWER SUDAH GIFT -> AUTO MASUK KE ANTREAN LANGSUNG!
+            if (!isset($state['liveGiftLedger']) || !is_array($state['liveGiftLedger'])) {
+                $state['liveGiftLedger'] = [];
+            }
+            if (!isset($state['liveGiftLedger'][$userKeyToUse])) {
+                $state['liveGiftLedger'][$userKeyToUse] = [
+                    'nickname' => $displayName,
+                    'uniqueId' => $uniqueId,
+                    'totalCoins' => $totalCoins,
+                    'usedCoins' => 0
+                ];
+            }
+            $state['liveGiftLedger'][$userKeyToUse]['usedCoins'] = $usedCoins + $requiredCoins;
+
+            $matches = ($tier === 'SROBOT') ? (($activeMode === '1v1') ? 2 : 1) : 1;
+
+            $newPlayer = [
+                'id' => 'pl_tt_' . time() . '_' . substr(md5($displayName . microtime()), 0, 6),
+                'name' => $displayName, // NAMA TIKTOK DISPLAY NAME
+                'tiktokUsername' => $uniqueId,
+                'char' => $fullChar,
+                'ulti' => $fullUlti,
+                'matchesLeft' => $matches,
+                'ws' => 0,
+                'type' => $tier,
+                'ticketMode' => $activeMode,
+                'registeredAt' => round(microtime(true) * 1000),
+                'status' => 'APPROVED',
+                'source' => 'TIKTOK_LIVE_BOT'
+            ];
+
+            if (!isset($state['queue']) || !is_array($state['queue'])) {
+                $state['queue'] = [];
+            }
+            $state['queue'][] = $newPlayer;
+            sortQueuePhp($state);
+
+            if (!isset($state['registeredUsers']) || !is_array($state['registeredUsers'])) {
+                $state['registeredUsers'] = [];
+            }
+            if (!in_array($displayName, $state['registeredUsers'], true)) {
+                $state['registeredUsers'][] = $displayName;
+            }
+
+            $state['_clientId'] = 'tt_bot_' . time();
+            $state['_ts'] = round(microtime(true) * 1000);
+            $version = syncStateToMySql($pdo, $roomKey, $state);
+
+            $qIdx = 1;
+            foreach ($state['queue'] as $i => $p) {
+                if ($p['id'] === $newPlayer['id']) {
+                    $qIdx = $i + 1;
+                    break;
+                }
+            }
+
+            sendJson([
+                'status' => 'ok',
+                'action' => 'enqueued_paid',
+                'tier' => $tier,
+                'player' => [
+                    'name' => $displayName,
+                    'char' => $fullChar,
+                    'ulti' => $fullUlti,
+                    'type' => $tier,
+                    'queuePos' => $qIdx
+                ],
+                'queueTotal' => count($state['queue']),
+                'version' => $version,
+                'message' => "✅ [AUTO GIFT] Pemain {$displayName} langsung otomatis masuk antrean {$tier} (#{$qIdx}) karena sudah mengirim gift ({$availableCoins} koin)!"
+            ], 200);
+
+        } else {
+            // VIEWER BELUM GIFT -> MASUK KE PENDING APPROVAL (ATAS PERSETUJUAN ADMIN ATAU GIFT)
+            $matches = ($tier === 'SROBOT') ? (($activeMode === '1v1') ? 2 : 1) : 1;
+
+            $pendingPlayer = [
+                'id' => 'pend_tt_' . time() . '_' . substr(md5($displayName . microtime()), 0, 6),
+                'name' => $displayName, // NAMA TIKTOK DISPLAY NAME
+                'tiktokUsername' => $uniqueId,
+                'char' => $fullChar,
+                'ulti' => $fullUlti,
+                'matchesLeft' => $matches,
+                'ws' => 0,
+                'type' => $tier,
+                'ticketMode' => $activeMode,
+                'registeredAt' => round(microtime(true) * 1000),
+                'status' => 'PENDING',
+                'source' => 'TIKTOK_LIVE_BOT',
+                'note' => "Menunggu persetujuan admin atau gift viewer ({$requiredCoins} Koin)"
+            ];
+
+            if (!isset($state['pendingApprovals']) || !is_array($state['pendingApprovals'])) {
+                $state['pendingApprovals'] = [];
+            }
+            $state['pendingApprovals'][] = $pendingPlayer;
+
+            $state['_clientId'] = 'tt_bot_' . time();
+            $state['_ts'] = round(microtime(true) * 1000);
+            $version = syncStateToMySql($pdo, $roomKey, $state);
+
+            sendJson([
+                'status' => 'ok',
+                'action' => 'pending_approval',
+                'tier' => $tier,
+                'player' => [
+                    'name' => $displayName,
+                    'char' => $fullChar,
+                    'ulti' => $fullUlti,
+                    'type' => $tier,
+                    'pendingPos' => count($state['pendingApprovals'])
+                ],
+                'pendingTotal' => count($state['pendingApprovals']),
+                'version' => $version,
+                'message' => "⏳ [MENUNGGU PERSETUJUAN ADMIN] Permintaan {$tier} dari {$displayName} masuk daftar persetujuan Admin (Viewer belum kirim gift {$requiredCoins} koin, menunggu persetujuan admin atau gift)."
+            ], 200);
+        }
+    }
+
+    // Event Gift (Auto Upgrade / Auto Approve Pending VIP / SROBOT)
+    if ($event === 'gift') {
+        $giftObj = $payload['gift'] ?? [];
+        $giftName = trim((string)($giftObj['name'] ?? 'Gift'));
+        $diamondCount = max(1, (int)($giftObj['diamondCount'] ?? 1));
+        $repeatCount = max(1, (int)($giftObj['repeatCount'] ?? 1));
+        $coinsReceived = $diamondCount * $repeatCount;
+
+        $userKeyUnique = ($uniqueId !== '') ? mb_strtolower($uniqueId, 'UTF-8') : '';
+        $userKeyNick = ($displayName !== '') ? mb_strtolower($displayName, 'UTF-8') : '';
+        $userKeyToUse = $userKeyUnique !== '' ? $userKeyUnique : $userKeyNick;
+
+        if (!isset($state['liveGiftLedger']) || !is_array($state['liveGiftLedger'])) {
+            $state['liveGiftLedger'] = [];
+        }
+
+        // Cari record yang cocok di ledger
+        if ($userKeyUnique !== '' && isset($state['liveGiftLedger'][$userKeyUnique])) {
+            $userKeyToUse = $userKeyUnique;
+        } elseif ($userKeyNick !== '' && isset($state['liveGiftLedger'][$userKeyNick])) {
+            $userKeyToUse = $userKeyNick;
+        }
+
+        if (!isset($state['liveGiftLedger'][$userKeyToUse])) {
+            $state['liveGiftLedger'][$userKeyToUse] = [
+                'nickname' => $displayName,
+                'uniqueId' => $uniqueId,
+                'totalCoins' => 0,
+                'usedCoins' => 0
+            ];
+        }
+
+        $state['liveGiftLedger'][$userKeyToUse]['totalCoins'] += $coinsReceived;
+        $state['liveGiftLedger'][$userKeyToUse]['nickname'] = $displayName;
+        if ($uniqueId !== '') {
+            $state['liveGiftLedger'][$userKeyToUse]['uniqueId'] = $uniqueId;
+        }
+
+        $totCoins = (int)$state['liveGiftLedger'][$userKeyToUse]['totalCoins'];
+        $usdCoins = (int)$state['liveGiftLedger'][$userKeyToUse]['usedCoins'];
+        $availCoins = max(0, $totCoins - $usdCoins);
+
+        // ========================================================
+        // 1. CEK APAKAH VIEWER MEMILIKI REQUEST DI PENDING APPROVALS?
+        // ========================================================
+        $pendingIndex = -1;
+        $pendingPlayer = null;
+        if (!empty($state['pendingApprovals']) && is_array($state['pendingApprovals'])) {
+            foreach ($state['pendingApprovals'] as $idx => $pend) {
+                $pNick = mb_strtolower(trim($pend['name'] ?? ''), 'UTF-8');
+                $pUser = mb_strtolower(trim($pend['tiktokUsername'] ?? ''), 'UTF-8');
+                if (($userKeyNick !== '' && $pNick === $userKeyNick) ||
+                    ($userKeyUnique !== '' && $pUser === $userKeyUnique)) {
+                    $pendingIndex = $idx;
+                    $pendingPlayer = $pend;
+                    break;
+                }
+            }
+        }
+
+        if ($pendingPlayer !== null && $pendingIndex !== -1) {
+            $pTier = strtoupper($pendingPlayer['type'] ?? 'VIP');
+            $cost = ($pTier === 'SROBOT') ? 30 : 5;
+
+            if ($availCoins >= $cost) {
+                // AUTO-APPROVE DARI PENDING KE ANTREAN!
+                $state['liveGiftLedger'][$userKeyToUse]['usedCoins'] += $cost;
+                array_splice($state['pendingApprovals'], $pendingIndex, 1);
+
+                $pendingPlayer['status'] = 'APPROVED';
+                $pendingPlayer['source'] = 'TIKTOK_LIVE_BOT_GIFT_AUTO';
+                if (!isset($state['queue']) || !is_array($state['queue'])) {
+                    $state['queue'] = [];
+                }
+                $state['queue'][] = $pendingPlayer;
+                sortQueuePhp($state);
+
+                if (!isset($state['registeredUsers']) || !is_array($state['registeredUsers'])) {
+                    $state['registeredUsers'] = [];
+                }
+                if (!in_array($displayName, $state['registeredUsers'], true)) {
+                    $state['registeredUsers'][] = $displayName;
+                }
+
+                $state['_clientId'] = 'tt_bot_' . time();
+                $state['_ts'] = round(microtime(true) * 1000);
+                $version = syncStateToMySql($pdo, $roomKey, $state);
+
+                $qIdx = 1;
+                foreach ($state['queue'] as $i => $q) {
+                    if ($q['id'] === $pendingPlayer['id']) {
+                        $qIdx = $i + 1;
+                        break;
+                    }
+                }
+
+                sendJson([
+                    'status' => 'ok',
+                    'action' => 'auto_approved_from_pending',
+                    'tier' => $pTier,
+                    'player' => [
+                        'name' => $displayName,
+                        'char' => $pendingPlayer['char'] ?? '-',
+                        'type' => $pTier,
+                        'queuePos' => $qIdx
+                    ],
+                    'queueTotal' => count($state['queue']),
+                    'version' => $version,
+                    'message' => "✅ [AUTO APPROVAL] Viewer {$displayName} kirim Gift {$giftName} (+{$coinsReceived} koin). Permintaan {$pTier} disetujui otomatis dan langsung masuk antrean (#{$qIdx})!"
+                ], 200);
+            }
+        }
+
+        // ========================================================
+        // 2. CEK APAKAH VIEWER SUDAH ADA DI ANTREAN (UPGRADE KE VIP/SROBOT)
+        // ========================================================
+        $queueIndex = -1;
+        if (!empty($state['queue']) && is_array($state['queue'])) {
+            foreach ($state['queue'] as $idx => $qPlayer) {
+                $qNick = mb_strtolower(trim($qPlayer['name'] ?? ''), 'UTF-8');
+                $qUser = mb_strtolower(trim($qPlayer['tiktokUsername'] ?? ''), 'UTF-8');
+                if (($userKeyNick !== '' && $qNick === $userKeyNick) ||
+                    ($userKeyUnique !== '' && $qUser === $userKeyUnique)) {
+                    $queueIndex = $idx;
+                    break;
+                }
+            }
+        }
+
+        if ($queueIndex !== -1) {
+            $currType = strtoupper($state['queue'][$queueIndex]['type'] ?? 'FREE');
+            if ($availCoins >= 30 && $currType !== 'SROBOT') {
+                $state['liveGiftLedger'][$userKeyToUse]['usedCoins'] += 30;
+                $state['queue'][$queueIndex]['type'] = 'SROBOT';
+                $state['queue'][$queueIndex]['matchesLeft'] = ($activeMode === '1v1') ? 2 : 1;
+                sortQueuePhp($state);
+                $state['_clientId'] = 'tt_bot_' . time();
+                $state['_ts'] = round(microtime(true) * 1000);
+                syncStateToMySql($pdo, $roomKey, $state);
+
+                sendJson([
+                    'status' => 'ok',
+                    'action' => 'upgraded',
+                    'tier' => 'SROBOT',
+                    'player' => $state['queue'][$queueIndex],
+                    'message' => "⭐ [UPGRADE SROBOT] Pemain {$displayName} di antrean di-upgrade ke SROBOT karena kirim Gift {$giftName} (+{$coinsReceived} koin)!"
+                ], 200);
+            } elseif ($availCoins >= 5 && $currType === 'FREE') {
+                $state['liveGiftLedger'][$userKeyToUse]['usedCoins'] += 5;
+                $state['queue'][$queueIndex]['type'] = 'VIP';
+                sortQueuePhp($state);
+                $state['_clientId'] = 'tt_bot_' . time();
+                $state['_ts'] = round(microtime(true) * 1000);
+                syncStateToMySql($pdo, $roomKey, $state);
+
+                sendJson([
+                    'status' => 'ok',
+                    'action' => 'upgraded',
+                    'tier' => 'VIP',
+                    'player' => $state['queue'][$queueIndex],
+                    'message' => "⭐ [UPGRADE VIP] Pemain {$displayName} di antrean di-upgrade ke VIP karena kirim Gift {$giftName} (+{$coinsReceived} koin)!"
+                ], 200);
+            }
+        }
+
+        // ========================================================
+        // 3. CATAT GIFT BIASA KE LEDGER
+        // ========================================================
+        $state['_clientId'] = 'tt_bot_' . time();
+        $state['_ts'] = round(microtime(true) * 1000);
+        syncStateToMySql($pdo, $roomKey, $state);
+
         sendJson([
             'status' => 'ok',
-            'action' => 'gift_received',
-            'message' => "Gift {$giftName} dari {$displayName} diterima. Viewer dapat mengetik !req <karakter> untuk masuk jalur {$tier}!"
+            'action' => 'gift_recorded',
+            'availableCoins' => $availCoins,
+            'message' => "🎁 Gift {$giftName} (+{$coinsReceived} koin) dari {$displayName} berhasil dicatat (Saldo Koin: {$availCoins}). Viewer bisa mengetik '!req vip <char>' atau '!req srobot <char>' untuk auto masuk antrean!"
         ], 200);
     }
 

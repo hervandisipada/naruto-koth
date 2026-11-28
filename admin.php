@@ -3383,22 +3383,46 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         <!-- Format Komentar Viewer -->
         <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; font-size: 0.78rem; color: var(--text-light); line-height: 1.45;">
           <div style="font-weight: 800; color: var(--accent-gold); margin-bottom: 6px;">💬 Format Komentar Viewer di Live Chat:</div>
-          <div style="display: flex; flex-direction: column; gap: 4px; font-family: monospace; font-size: 0.82rem;">
-            <div>• Mode 1v1: <b style="color: #4ade80;">!req &lt;karakter&gt;</b> (misal: <code>!req Minato</code> atau <code>req sasuke</code>)</div>
-            <div>• Mode DUO/TIM: <b style="color: #38bdf8;">!req &lt;char 1&gt; / &lt;char 2&gt;</b> (misal: <code>!req Sasuke / Naruto</code>)</div>
+          <div style="display: flex; flex-direction: column; gap: 5px; font-family: monospace; font-size: 0.8rem;">
+            <div>• <b style="color: #4ade80;">FREE</b>: <code>!req &lt;karakter&gt;</code> atau <code>!free &lt;karakter&gt;</code> <span style="color: #86efac;">(Langsung masuk antrean)</span></div>
+            <div>• <b style="color: #f59e0b;">VIP</b>: <code>!req vip &lt;karakter&gt;</code> atau <code>!vip &lt;karakter&gt;</code> <span style="color: #fde68a;">(Auto jika gift 5 koin, atau persetujuan admin)</span></div>
+            <div>• <b style="color: #a855f7;">SROBOT</b>: <code>!req srobot &lt;karakter&gt;</code> atau <code>!sb &lt;karakter&gt;</code> <span style="color: #e9d5ff;">(Auto jika gift 30 koin, atau persetujuan admin)</span></div>
+            <div style="color: #94a3b8; font-size: 0.74rem; margin-top: 3px;">• Mode DUO/TIM gunakan garis miring, misal: <code>!req vip Sasuke / Naruto</code></div>
           </div>
         </div>
 
         <!-- Test Form Langsung dari Admin -->
         <div style="background: rgba(236, 72, 153, 0.08); border: 1.5px solid rgba(236, 72, 153, 0.35); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-          <div style="font-size: 0.82rem; font-weight: 800; color: #f472b6;">🧪 Simulasi Tes Komentar Live:</div>
+          <div style="font-size: 0.82rem; font-weight: 800; color: #f472b6;">🧪 Simulasi Tes Komentar & Gift Live:</div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <input type="text" id="admin-bot-test-name" class="form-control" placeholder="Nama TikTok (Display Name)" value="Penonton TikTok" style="flex: 1; min-width: 140px; padding: 6px 10px; font-size: 0.82rem;">
             <input type="text" id="admin-bot-test-comment" class="form-control" placeholder="Komentar (misal: !req Minato)" value="!req Naruto Sage" style="flex: 1.5; min-width: 180px; padding: 6px 10px; font-size: 0.82rem;">
           </div>
-          <button type="button" class="btn btn-sm" onclick="submitAdminBotTest()" style="background: #ec4899; color: #fff; font-weight: 800; padding: 7px 12px; border-radius: 6px; border: none; cursor: pointer;">
-            🚀 Kirim Tes Komentar ke Antrean
-          </button>
+
+          <!-- Quick Presets -->
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px;">
+            <button type="button" class="btn btn-sm" onclick="document.getElementById('admin-bot-test-comment').value='!req Naruto Sage'" style="background: rgba(74, 222, 128, 0.2); border: 1px solid #4ade80; color: #86efac; font-size: 0.72rem; padding: 3px 8px;">
+              Tes Free
+            </button>
+            <button type="button" class="btn btn-sm" onclick="document.getElementById('admin-bot-test-comment').value='!req vip Sasuke PDS'" style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fde68a; font-size: 0.72rem; padding: 3px 8px;">
+              Tes VIP
+            </button>
+            <button type="button" class="btn btn-sm" onclick="document.getElementById('admin-bot-test-comment').value='!req srobot Minato Reanimated'" style="background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; color: #e9d5ff; font-size: 0.72rem; padding: 3px 8px;">
+              Tes Srobot
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+            <button type="button" class="btn btn-sm" onclick="submitAdminBotTest()" style="flex: 1; background: #ec4899; color: #fff; font-weight: 800; padding: 7px 12px; border-radius: 6px; border: none; cursor: pointer;">
+              🚀 Kirim Tes Komentar
+            </button>
+            <button type="button" class="btn btn-sm" onclick="submitAdminBotGiftTest(5)" style="background: rgba(245, 158, 11, 0.25); border: 1px solid #f59e0b; color: #fbbf24; font-weight: 800; padding: 7px 10px; border-radius: 6px; cursor: pointer;">
+              🎁 Tes Gift 5 Koin
+            </button>
+            <button type="button" class="btn btn-sm" onclick="submitAdminBotGiftTest(30)" style="background: rgba(168, 85, 247, 0.25); border: 1px solid #a855f7; color: #d8b4fe; font-weight: 800; padding: 7px 10px; border-radius: 6px; cursor: pointer;">
+              💎 Tes Gift 30 Koin
+            </button>
+          </div>
         </div>
 
         <!-- Cara Menjalankan Bot di PC -->
@@ -5467,7 +5491,11 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
         const data = await res.json();
         if (data.status === 'ok') {
-          alert(`✅ BERHASIL!\n\nPemain "${data.player.name}" berhasil masuk ke antrean #${data.player.queuePos}!\nKarakter: ${data.player.char}\nTier: ${data.player.type}`);
+          if (data.action === 'pending_approval') {
+            alert(`⏳ MENUNGGU PERSETUJUAN ADMIN / GIFT!\n\nPemain "${data.player.name}" masuk ke daftar persetujuan ${data.player.type} (#${data.player.pendingPos})!\nKarakter: ${data.player.char}\nSilakan setujui di panel admin atau tunggu viewer kirim gift.`);
+          } else {
+            alert(`✅ BERHASIL MASUK ANTREAN!\n\nPemain "${data.player.name}" berhasil masuk ke antrean #${data.player.queuePos}!\nKarakter: ${data.player.char}\nTier: ${data.player.type}`);
+          }
           loadState();
         } else if (data.status === 'rejected') {
           alert(`❌ DITOLAK!\n\nAlasan: ${data.reason}`);
@@ -5478,6 +5506,41 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         }
       } catch (e) {
         alert(`Gagal mengirim tes komentar: ${e.message}`);
+      }
+    }
+
+    async function submitAdminBotGiftTest(coins = 5) {
+      const nameInput = document.getElementById('admin-bot-test-name');
+      const nameVal = (nameInput ? nameInput.value : '').trim() || 'Viewer TikTok';
+      const url = `${getAppBaseUrl()}api/live-request.php?room=${encodeURIComponent(streamKey)}`;
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'gift',
+            user: {
+              nickname: nameVal,
+              uniqueId: 'tester_user',
+              userId: '123456'
+            },
+            gift: {
+              name: coins >= 30 ? 'Paus / Singa' : 'Mawar x5',
+              diamondCount: coins,
+              repeatCount: 1
+            }
+          })
+        });
+
+        const data = await res.json();
+        if (data.status === 'ok') {
+          alert(`🎁 TES GIFT BERHASIL!\n\n${data.message}`);
+          loadState();
+        } else {
+          alert(`Respon Server: ${JSON.stringify(data)}`);
+        }
+      } catch (e) {
+        alert(`Gagal mengirim tes gift: ${e.message}`);
       }
     }
 

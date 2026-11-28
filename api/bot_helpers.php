@@ -113,6 +113,11 @@ function matchNarutoCharacter(string $input): ?array
     }
 
     $clean = mb_strtolower($raw, 'UTF-8');
+    // Normalisasi sinonim umum
+    $clean = str_replace(['reanimated', 'reanimation', 'reanimasi'], 'edo', $clean);
+    $clean = str_replace(['kid', 'bocil', 'anak'], 'kecil', $clean);
+    $clean = str_replace(['sage mode', 'petapa mode', 'sennin mode'], 'sage', $clean);
+    $clean = str_replace(['pds', 'war', 'perang dunia'], 'perang', $clean);
     $normInput = normalizeCharString($clean);
 
     // 1. Direct exact match
@@ -280,21 +285,34 @@ function matchNarutoCharacter(string $input): ?array
 }
 
 /**
- * Parsing teks komentar live stream untuk mengekstrak permintaan karakter
+ * Parsing teks komentar live stream untuk mengekstrak permintaan karakter dan tier (FREE / VIP / SROBOT)
  */
 function parseLiveComment(string $rawComment, string $activeMode): ?array
 {
     $trim = trim($rawComment);
     if ($trim === '') return null;
 
-    // Deteksi prefix perintah: !req, !daftar, !main, !play, req, daftar
-    $pattern = '/^(?:[!#\/]?(?:req(?:uest)?|daftar|main|play|pilih)|req\s*[:\-])\s*(.+)$/i';
-    if (!preg_match($pattern, $trim, $matches)) {
-        return null;
+    $tier = 'FREE';
+    $charQuery = '';
+
+    // 1. Cek pola dengan Tier eksplisit (misal: !req srobot ..., !req sb ..., !srobot ..., !sb ..., !req vip ..., !vip ..., !req free ...)
+    $patternTier = '/^(?:[!#\/]?(?:req(?:uest)?|daftar|main|play|pilih)|req\s*[:\-])?\s*(?:[!#\/]?(srobot|\bsb\b|vip|free))\s+(.+)$/i';
+    if (preg_match($patternTier, $trim, $matches)) {
+        $rawTier = strtoupper($matches[1]);
+        $tier = in_array($rawTier, ['SROBOT', 'SB'], true) ? 'SROBOT' : ($rawTier === 'VIP' ? 'VIP' : 'FREE');
+        $charQuery = trim($matches[2]);
+    } else {
+        // 2. Pola normal tanpa tier eksplisit (default: FREE)
+        $patternNormal = '/^(?:[!#\/]?(?:req(?:uest)?|daftar|main|play|pilih)|req\s*[:\-])\s*(.+)$/i';
+        if (preg_match($patternNormal, $trim, $matches)) {
+            $tier = 'FREE';
+            $charQuery = trim($matches[1]);
+        }
     }
 
-    $charQuery = trim($matches[1]);
-    if ($charQuery === '') return null;
+    if ($charQuery === '') {
+        return null;
+    }
 
     // Pisahkan jika mode DUO / TIM (pemisah: /, +, &, atau "dan")
     $activeModeUpper = strtoupper($activeMode);
@@ -325,15 +343,30 @@ function parseLiveComment(string $rawComment, string $activeMode): ?array
         }
     }
 
-    if (empty($matchedChars)) {
-        return null;
-    }
-
     return [
         'mode' => $activeModeUpper,
+        'tier' => $tier,
         'characters' => $matchedChars,
         'rawQuery' => $charQuery
     ];
+}
+
+function checkDuplicateInPending(string $playerName, array $state): ?string
+{
+    $clean = mb_strtolower(trim($playerName), 'UTF-8');
+    if ($clean === '' || $clean === '-' || $clean === 'menunggu...') {
+        return null;
+    }
+    if (!empty($state['pendingApprovals']) && is_array($state['pendingApprovals'])) {
+        foreach ($state['pendingApprovals'] as $idx => $p) {
+            if (!empty($p['name']) && mb_strtolower(trim($p['name']), 'UTF-8') === $clean) {
+                $pos = $idx + 1;
+                $t = $p['type'] ?? 'VIP';
+                return "Pemain sudah ada di daftar persetujuan {$t} (#{$pos})";
+            }
+        }
+    }
+    return null;
 }
 
 function checkDuplicateInQueue(string $playerName, array $state): ?string

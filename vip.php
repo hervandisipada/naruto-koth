@@ -862,7 +862,10 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
   <div class="app-wrapper">
 
     <!-- TOP HEADER BAR -->
-    <?php include __DIR__ . '/includes/header.php'; ?>
+    <?php
+    $headerSubtitle = 'VIP & SROBOT';
+    include __DIR__ . '/includes/header.php';
+    ?>
 
     <!-- TICKER NOTE MARQUEE -->
     <div class="overlay-ticker" id="ticker-wrap" style="display: none;">

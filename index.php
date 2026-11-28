@@ -740,7 +740,10 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
   <div class="app-wrapper">
 
     <!-- TOP HEADER BAR -->
-    <?php include __DIR__ . '/includes/header.php'; ?>
+    <?php
+    $headerSubtitle = 'FREE VIEWER';
+    include __DIR__ . '/includes/header.php';
+    ?>
 
     <!-- TICKER NOTE MARQUEE -->
     <div class="overlay-ticker" id="ticker-wrap" style="display: none;">
@@ -752,51 +755,60 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
     <!-- MAIN REGISTRATION HUB CARD -->
     <main class="hub-card">
-      <div class="hub-header-icon">🎮</div>
-      <h1 class="hub-title">PENDAFTARAN MATCH NARUTO</h1>
+      <div class="hub-header-icon" style="font-size: 42px; margin-bottom: 4px;">🍃</div>
+      <h1 class="hub-title" style="color: #4ade80;">PENDAFTARAN VIEWER FREE</h1>
       <p class="hub-subtitle">
-        Pilih jalur pendaftaran di bawah ini untuk bertanding di Live Stream TikTok!
+        Pendaftaran gratis untuk bertanding di Live Stream TikTok! Antrian normal, 1 match per giliran.
       </p>
 
-      <div class="hub-mode-pill" id="hub-mode-pill">
+      <div class="hub-mode-pill" id="hub-mode-pill" style="margin-bottom: 16px;">
         <span>Mode Pertandingan:</span> <b id="hub-mode-text">1vs1 (SOLO)</b>
       </div>
 
-      <!-- 3 TOMBOL UTAMA -->
-      <div class="hub-buttons-grid">
-        <!-- 1. DAFTAR FREE REQUEST -->
-        <button type="button" class="btn-hub-option opt-free" onclick="openFreeModal()">
-          <div class="btn-hub-icon">🍃</div>
-          <div class="btn-hub-body">
-            <div class="btn-hub-title">DAFTAR FREE REQUEST</div>
-            <div class="btn-hub-desc">1 Match • Syarat Follow Host @herzg1209 • Antrian Normal</div>
-          </div>
-          <div class="btn-hub-tag tag-free">GRATIS</div>
-        </button>
-
-        <!-- 2. DAFTAR VIP -->
-        <a href="vip.php?tier=VIP" class="btn-hub-option opt-vip">
-          <div class="btn-hub-icon">⭐</div>
-          <div class="btn-hub-body">
-            <div class="btn-hub-title">DAFTAR VIP</div>
-            <div class="btn-hub-desc">Prioritas Match • Bebas Pilih Match • 5 Koin / Rp 1K</div>
-          </div>
-          <div class="btn-hub-tag tag-vip">PRIORITAS</div>
-        </a>
-
-        <!-- 3. DAFTAR SROBOT -->
-        <a href="vip.php?tier=SROBOT" class="btn-hub-option opt-srobot">
-          <div class="btn-hub-icon">⚡</div>
-          <div class="btn-hub-body">
-            <div class="btn-hub-title">DAFTAR SROBOT</div>
-            <div class="btn-hub-desc">Potong Antrian Paling Depan • Super Cepat • 30 Koin / Rp 5K</div>
-          </div>
-          <div class="btn-hub-tag tag-srobot">SUPER FAST</div>
-        </a>
+      <!-- KARTU INFORMASI PERSYARATAN FREE -->
+      <div style="background: rgba(34, 197, 94, 0.08); border: 1.5px solid rgba(34, 197, 94, 0.35); border-radius: 10px; padding: 12px 16px; margin: 0 auto 16px; text-align: left; display: flex; flex-direction: column; gap: 8px; max-width: 480px;">
+        <div style="font-size: 0.8rem; font-weight: 900; color: #4ade80; text-transform: uppercase; letter-spacing: 0.5px;">
+          📋 Ketentuan Pendaftaran Free:
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #e2e8f0;">
+          <span>✅</span>
+          <span><b>Wajib Follow</b> Host TikTok <b>@herzg1209</b></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #e2e8f0;">
+          <span>🎮</span>
+          <span>Mendapatkan <b>1 Match</b> per pendaftaran</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #e2e8f0;">
+          <span>⏳</span>
+          <span>Masuk ke <b>Antrian Normal (Free)</b></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #e2e8f0;">
+          <span>🚫</span>
+          <span>Karakter Banned &amp; Eksklusif VIP tidak bisa dipilih</span>
+        </div>
       </div>
 
-      <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">
-        💡 Pendaftaran berbayar (VIP & SROBOT) dipisahkan ke <a href="vip.php" style="color: #fde047; font-weight:800; text-decoration: underline;">Halaman VIP & SROBOT</a>
+      <!-- 1 TOMBOL UTAMA FREE -->
+      <div class="hub-buttons-grid" style="grid-template-columns: 1fr; max-width: 480px; margin: 0 auto;">
+        <button type="button" class="btn-hub-option opt-free" onclick="openFreeModal()" style="border: 2px solid #22c55e; background: linear-gradient(135deg, rgba(34, 197, 94, 0.28), rgba(16, 185, 129, 0.16)); padding: 16px 20px; box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3); width: 100%;">
+          <div class="btn-hub-icon" style="font-size: 34px;">🍃</div>
+          <div class="btn-hub-body" style="text-align: left;">
+            <div class="btn-hub-title" style="font-size: 1.15rem; color: #4ade80; font-weight: 900;">
+              DAFTAR FREE REQUEST SEKARANG
+            </div>
+            <div class="btn-hub-desc" style="font-size: 0.78rem; color: #cbd5e1;">
+              Klik di sini untuk mengisi nama TikTok dan memilih karakter Naruto!
+            </div>
+          </div>
+          <div class="btn-hub-tag tag-free" style="font-size: 0.8rem; padding: 4px 10px;">GRATIS</div>
+        </button>
+      </div>
+
+      <div style="margin-top: 20px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.82rem; color: #94a3b8; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
+        <span>⭐ Ingin jalur prioritas tanpa antri lama?</span>
+        <a href="vip.php" style="color: #fde047; font-weight: 800; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
+          <span>Ke Halaman Khusus VIP &amp; SROBOT ➜</span>
+        </a>
       </div>
     </main>
   </div>

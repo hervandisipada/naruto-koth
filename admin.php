@@ -2543,6 +2543,12 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     </div>
     <div style="margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
       <button type="button" class="tab-btn"
+        style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.25)); color: #f472b6; border: 1.5px solid #ec4899; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;"
+        onclick="openTikTokBotModal()" title="Pengaturan & Status Bot Auto-Queue TikTok Live">
+        <span>🤖 Bot TikTok Live</span>
+        <span id="admin-bot-status-pill" style="font-size: 0.68rem; padding: 1px 6px; border-radius: 4px; background: rgba(34, 197, 94, 0.25); color: #86efac; border: 1px solid #22c55e;">ON</span>
+      </button>
+      <button type="button" class="tab-btn"
         style="background: rgba(234, 179, 8, 0.18); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.4);"
         onclick="changeAdminPin()" title="Ubah PIN Admin di database MySQL">🔑 Ubah PIN</button>
       <button type="button" class="tab-btn"
@@ -3333,6 +3339,86 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL TIKTOK LIVE AUTO-QUEUE BOT CONTROLS -->
+  <div id="modal-tiktok-bot" class="modal-overlay" onclick="if(event.target === this) closeTikTokBotModal()">
+    <div class="modal-box"
+      style="max-width: 540px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; padding: 18px 20px; border: 2px solid #ec4899; box-shadow: 0 16px 40px rgba(0,0,0,0.85); border-radius: 12px; color: var(--text-light); background: var(--panel-bg);">
+      
+      <!-- Modal Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-shrink: 0;">
+        <h3 style="margin: 0; color: #f472b6; font-size: 1.15rem; font-weight: 900; display: flex; align-items: center; gap: 8px;">
+          <span>🤖</span> <span>Bot TikTok Live Auto-Queue</span>
+        </h3>
+        <button type="button" class="btn btn-sm btn-danger" onclick="closeTikTokBotModal()"
+          style="padding: 2px 8px; font-weight: 900; font-size: 1rem; border-radius: 4px;">✕</button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div style="overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 12px;">
+        
+        <!-- Status & Host Card -->
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Target Host Live:</div>
+            <div style="font-size: 1.05rem; font-weight: 900; color: #38bdf8;">@herzg1209</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="bot-toggle-label" style="font-size: 0.8rem; font-weight: 800; color: #86efac;">Status: AKTIF</span>
+            <button type="button" id="btn-toggle-bot" class="btn btn-sm" onclick="toggleBotStatus()"
+              style="padding: 6px 14px; font-weight: 800; border-radius: 6px; background: rgba(34, 197, 94, 0.2); border: 1.5px solid #22c55e; color: #86efac;">
+              Jeda Bot
+            </button>
+          </div>
+        </div>
+
+        <!-- Aturan Pengambilan Nama -->
+        <div style="background: rgba(56, 189, 248, 0.1); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 8px; padding: 10px 12px; font-size: 0.78rem; line-height: 1.45; color: #bae6fd;">
+          <b style="color: #38bdf8;">📌 Ketentuan Nama Pemain:</b><br>
+          Nama yang masuk ke antrean adalah <b>Nama Akun TikTok (Display Name/Nickname)</b>, bukan username @... (Contoh: "Hervandi", bukan @herzg1209).
+        </div>
+
+        <!-- Format Komentar Viewer -->
+        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; font-size: 0.78rem; color: var(--text-light); line-height: 1.45;">
+          <div style="font-weight: 800; color: var(--accent-gold); margin-bottom: 6px;">💬 Format Komentar Viewer di Live Chat:</div>
+          <div style="display: flex; flex-direction: column; gap: 4px; font-family: monospace; font-size: 0.82rem;">
+            <div>• Mode 1v1: <b style="color: #4ade80;">!req &lt;karakter&gt;</b> (misal: <code>!req Minato</code> atau <code>req sasuke</code>)</div>
+            <div>• Mode DUO/TIM: <b style="color: #38bdf8;">!req &lt;char 1&gt; / &lt;char 2&gt;</b> (misal: <code>!req Sasuke / Naruto</code>)</div>
+          </div>
+        </div>
+
+        <!-- Test Form Langsung dari Admin -->
+        <div style="background: rgba(236, 72, 153, 0.08); border: 1.5px solid rgba(236, 72, 153, 0.35); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size: 0.82rem; font-weight: 800; color: #f472b6;">🧪 Simulasi Tes Komentar Live:</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <input type="text" id="admin-bot-test-name" class="form-control" placeholder="Nama TikTok (Display Name)" value="Penonton TikTok" style="flex: 1; min-width: 140px; padding: 6px 10px; font-size: 0.82rem;">
+            <input type="text" id="admin-bot-test-comment" class="form-control" placeholder="Komentar (misal: !req Minato)" value="!req Naruto Sage" style="flex: 1.5; min-width: 180px; padding: 6px 10px; font-size: 0.82rem;">
+          </div>
+          <button type="button" class="btn btn-sm" onclick="submitAdminBotTest()" style="background: #ec4899; color: #fff; font-weight: 800; padding: 7px 12px; border-radius: 6px; border: none; cursor: pointer;">
+            🚀 Kirim Tes Komentar ke Antrean
+          </button>
+        </div>
+
+        <!-- Cara Menjalankan Bot di PC -->
+        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; font-size: 0.76rem; color: var(--text-muted); line-height: 1.45;">
+          <div style="font-weight: 800; color: var(--c-white); margin-bottom: 4px;">⚡ Cara Menjalankan Bot Penghubung Live:</div>
+          <div>Cukup double-click file <b>start_bot.bat</b> di folder Naruto KotH saat kamu mulai live streaming di TikTok!</div>
+          <div style="margin-top: 4px; font-family: monospace; background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 4px; color: #4ade80;">
+            python bot/tiktok_live_bot.py
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 10px; text-align: right;">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="closeTikTokBotModal()" style="padding: 6px 16px; font-weight: 800;">
+          Tutup
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -5301,6 +5387,100 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       });
     }
 
+    // ==========================================
+    // TIKTOK LIVE AUTO-QUEUE BOT MODAL & CONTROLS
+    // ==========================================
+    function openTikTokBotModal() {
+      const modal = document.getElementById('modal-tiktok-bot');
+      if (modal) modal.style.display = 'flex';
+      renderTikTokBotStatus();
+    }
+
+    function closeTikTokBotModal() {
+      const modal = document.getElementById('modal-tiktok-bot');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function renderTikTokBotStatus() {
+      if (!state.botConfig) {
+        state.botConfig = { enabled: true, host: 'herzg1209', autoVipGift: true };
+      }
+      const isEnabled = state.botConfig.enabled !== false;
+      const pill = document.getElementById('admin-bot-status-pill');
+      const label = document.getElementById('bot-toggle-label');
+      const btn = document.getElementById('btn-toggle-bot');
+
+      if (pill) {
+        pill.innerText = isEnabled ? 'ON' : 'OFF';
+        pill.style.background = isEnabled ? 'rgba(34, 197, 94, 0.25)' : 'rgba(239, 68, 68, 0.25)';
+        pill.style.color = isEnabled ? '#86efac' : '#fca5a5';
+        pill.style.borderColor = isEnabled ? '#22c55e' : '#ef4444';
+      }
+      if (label) {
+        label.innerText = isEnabled ? 'Status: AKTIF' : 'Status: NONAKTIF';
+        label.style.color = isEnabled ? '#86efac' : '#fca5a5';
+      }
+      if (btn) {
+        btn.innerText = isEnabled ? 'Jeda Bot' : 'Aktifkan Bot';
+        btn.style.background = isEnabled ? 'rgba(239, 68, 68, 0.2)' : 'rgba(34, 197, 94, 0.2)';
+        btn.style.borderColor = isEnabled ? '#ef4444' : '#22c55e';
+        btn.style.color = isEnabled ? '#fca5a5' : '#86efac';
+      }
+    }
+
+    function toggleBotStatus() {
+      if (!state.botConfig) {
+        state.botConfig = { enabled: true, host: 'herzg1209', autoVipGift: true };
+      }
+      state.botConfig.enabled = !(state.botConfig.enabled !== false);
+      saveState();
+      renderTikTokBotStatus();
+      alert(`Bot TikTok Live sekarang berstatus: ${state.botConfig.enabled ? 'AKTIF (Menerima antrean otomatis)' : 'NONAKTIF (Dijeda)'}`);
+    }
+
+    async function submitAdminBotTest() {
+      const nameInput = document.getElementById('admin-bot-test-name');
+      const commentInput = document.getElementById('admin-bot-test-comment');
+      const nameVal = (nameInput ? nameInput.value : '').trim() || 'Viewer TikTok';
+      const commentVal = (commentInput ? commentInput.value : '').trim();
+
+      if (!commentVal) {
+        alert('Komentar tes tidak boleh kosong! Contoh: !req Minato');
+        return;
+      }
+
+      const url = `${getAppBaseUrl()}api/live-request.php?room=${encodeURIComponent(streamKey)}`;
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'comment',
+            user: {
+              nickname: nameVal,
+              uniqueId: 'tester_user',
+              userId: '123456'
+            },
+            comment: commentVal
+          })
+        });
+
+        const data = await res.json();
+        if (data.status === 'ok') {
+          alert(`✅ BERHASIL!\n\nPemain "${data.player.name}" berhasil masuk ke antrean #${data.player.queuePos}!\nKarakter: ${data.player.char}\nTier: ${data.player.type}`);
+          loadState();
+        } else if (data.status === 'rejected') {
+          alert(`❌ DITOLAK!\n\nAlasan: ${data.reason}`);
+        } else if (data.status === 'ignored') {
+          alert(`⚠️ DIABAIKAN!\n\nAlasan: ${data.reason}`);
+        } else {
+          alert(`Respon Server: ${JSON.stringify(data)}`);
+        }
+      } catch (e) {
+        alert(`Gagal mengirim tes komentar: ${e.message}`);
+      }
+    }
+
     // Switch View Tab
     function switchTab(tabName) {
       const adminV = document.getElementById('admin-view');
@@ -7266,6 +7446,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       renderQueue();
       renderSaved();
       renderPendingApprovals();
+      renderTikTokBotStatus();
       renderOverlay();
       updateModeButtons();
       renderCharacterDatalist();

@@ -2046,7 +2046,7 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
 
       try {
         if (typeof BroadcastChannel !== 'undefined') {
-          kothSyncChannel = new BroadcastChannel('koth_naruto_bus_' + streamKey);
+          kothSyncChannel = new BroadcastChannel('koth_broadcast_' + streamKey);
           kothSyncChannel.onmessage = (event) => {
             const data = event.data;
             if (data && data.state && data.clientId !== LOCAL_CLIENT_ID) {

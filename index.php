@@ -775,6 +775,10 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           <span><b>Wajib Follow</b> Host TikTok <b>@herzg1209</b></span>
         </div>
         <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #e2e8f0;">
+          <span>👆</span>
+          <span><b>Wajib Tap-tap Layar</b> Live Stream</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #e2e8f0;">
           <span>🎮</span>
           <span>Mendapatkan <b>1 Match</b> per pendaftaran</span>
         </div>
@@ -797,7 +801,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
               DAFTAR FREE REQUEST SEKARANG
             </div>
             <div class="btn-hub-desc" style="font-size: 0.78rem; color: #cbd5e1;">
-              Klik di sini untuk mengisi nama TikTok dan memilih karakter Naruto!
+              Syarat: Wajib Follow @herzg1209 &amp; Tap-tap Layar Live Stream!
             </div>
           </div>
           <div class="btn-hub-tag tag-free" style="font-size: 0.8rem; padding: 4px 10px;">GRATIS</div>
@@ -859,6 +863,18 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
             <p style="font-size:0.74rem; color:var(--c-slate); margin-top:6px; line-height:1.4;">
               *Pastikan nama sesuai dengan akun TikTok yang dipakai saat menonton live stream.
             </p>
+
+            <!-- KOTAK SYARAT FREE REQUEST -->
+            <div style="margin-top: 10px; background: rgba(34, 197, 94, 0.12); border: 1.5px solid rgba(34, 197, 94, 0.4); border-radius: 8px; padding: 10px 14px; font-size: 0.78rem; color: #86efac; line-height: 1.5;">
+              <div style="font-weight: 900; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; color: #4ade80;">
+                <span>👆</span> <span>Syarat Mengikuti Jalur Free:</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 4px; color: #e2e8f0; font-size: 0.76rem;">
+                <div>1. ✅ <b>Wajib Follow</b> TikTok Host <b>@herzg1209</b></div>
+                <div>2. 👆 <b>Wajib Tap-tap Layar</b> Live Stream Host</div>
+                <div>3. 📺 <b>Stay di Live Stream</b> agar antrian tidak terlewat saat giliranmu dipanggil!</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -943,7 +959,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           </div>
 
           <div style="background: rgba(34, 197, 94, 0.1); border:1px solid rgba(34, 197, 94, 0.3); border-radius:6px; padding:8px 12px; font-size:0.74rem; color:#86efac; line-height:1.4;">
-            ✅ <b>Syarat Free:</b> Wajib follow akun TikTok Host <b>@herzg1209</b> dan stay di live stream!
+            ✅ <b>Syarat Free:</b> Wajib follow akun TikTok Host <b>@herzg1209</b>, <b>tap-tap layar live stream</b>, dan stay di live!
           </div>
         </div>
 
@@ -994,8 +1010,8 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         </div>
       </div>
 
-      <div style="font-size: 0.76rem; color: #fde047; margin-bottom: 16px; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px;">
-        ⚠️ Wajib follow TikTok <b>@herzg1209</b> & jangan tinggalkan live stream agar tidak terlewat!
+      <div style="font-size: 0.76rem; color: #fde047; margin-bottom: 16px; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px; line-height: 1.45;">
+        ⚠️ <b>Wajib follow TikTok @herzg1209 &amp; tap-tap layar live stream</b> agar kamu tidak dilewati saat giliran bertanding tiba!
       </div>
 
       <button type="button" class="btn-step-submit" style="width: 100%; margin: 0;" onclick="closeFreeSuccessModal()">
@@ -1021,10 +1037,17 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
     let lastLocalSaveAt = 0;
     let pendingSaves = 0;
 
+    const APP_BASE_URL = <?= json_encode($appBaseUrl) ?>;
+
     function getAppBaseUrl() {
-      let b = <?= json_encode($appBaseUrl) ?>;
-      if (!b.endsWith('/')) b += '/';
-      return b;
+      if (typeof APP_BASE_URL === 'string' && APP_BASE_URL.startsWith('/')) {
+        return `${window.location.origin}${APP_BASE_URL.replace(/\\/g, '/')}`;
+      }
+      let basePath = window.location.pathname;
+      basePath = basePath.replace(/\/(index|admin|vip|overlay)(\.(html|php))?$/i, '/');
+      basePath = basePath.replace(/\/admin\/?$/i, '/');
+      if (!basePath.endsWith('/')) basePath += '/';
+      return `${window.location.origin}${basePath}`;
     }
 
     function getStateApiUrl() {
@@ -1395,7 +1418,6 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       freeSelectedChar = freeSlots[0].char;
       freeSelectedUlti = freeSlots[0].ulti;
 
-      const activeMode = (state.masterMode || '1v1').toUpperCase();
       const totalSlots = (activeMode === '1v1') ? 1 : (activeMode === 'DUO' ? 2 : freeTimCount);
 
       // Auto advance to next slot if empty
@@ -1638,7 +1660,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       if (!Array.isArray(state.registeredUsers)) state.registeredUsers = [];
       if (!state.registeredUsers.includes(name)) state.registeredUsers.push(name);
 
-      saveAndBroadcastState();
+      await saveAndBroadcastState();
 
       closeFreeModal();
 
@@ -1767,7 +1789,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       // safe no-op
     }
 
-    function saveAndBroadcastState() {
+    async function saveAndBroadcastState() {
       state._clientId = LOCAL_CLIENT_ID;
       state._ts = Date.now();
       const stateJson = JSON.stringify(state);
@@ -1785,13 +1807,20 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
       if (window.location.protocol.startsWith('http')) {
         pendingSaves++;
-        fetch(getStateApiUrl(), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: stateJson
-        })
-          .catch(() => { })
-          .finally(() => { pendingSaves = Math.max(0, pendingSaves - 1); });
+        try {
+          const res = await fetch(getStateApiUrl(), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: stateJson
+          });
+          if (!res.ok) {
+            console.error('Save to MySQL returned status:', res.status);
+          }
+        } catch (err) {
+          console.error('Gagal menyimpan state ke database:', err);
+        } finally {
+          pendingSaves = Math.max(0, pendingSaves - 1);
+        }
       }
 
       renderHubMode();
@@ -1842,7 +1871,7 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
       try {
         if (typeof BroadcastChannel !== 'undefined') {
-          kothSyncChannel = new BroadcastChannel('koth_naruto_bus_' + streamKey);
+          kothSyncChannel = new BroadcastChannel('koth_broadcast_' + streamKey);
           kothSyncChannel.onmessage = (event) => {
             const data = event.data;
             if (data && data.state && data.clientId !== LOCAL_CLIENT_ID) {

@@ -539,6 +539,22 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       padding: 1px 5px;
       border-radius: 3px;
     }
+    .char-card-item.duplicate-team {
+      border-color: rgba(239, 68, 68, 0.45) !important;
+      background: rgba(239, 68, 68, 0.12) !important;
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .badge-status-duplicate {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      padding: 1px 5px;
+      border-radius: 3px;
+      display: inline-block;
+    }
 
     /* ULTI CARDS */
     .ulti-options-grid {
@@ -1280,7 +1296,8 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
 
       container.innerHTML = list.map(c => {
         const isSel = curSlotChar && curSlotChar.id === c.id;
-        const otherSlotIdx = freeSlots.findIndex((s, idx) => idx !== freeActiveSlot && s.char && s.char.id === c.id);
+        const isTeamOrDuo = (activeMode === 'DUO' || activeMode === 'TIM' || activeMode === 'TRIO');
+        const dupSlotIdx = isTeamOrDuo ? freeSlots.findIndex((s, idx) => idx !== freeActiveSlot && s.char && isSameBaseCharacter(s.char, c)) : -1;
         const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
         const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
         const matchTagHtml = c._matchedUlti ? `
@@ -1304,6 +1321,11 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           cardClass += ' disabled vip-only';
           clickAttr = `onclick="showVipOnlyAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
           statusBadgeHtml = `<span class="badge-status-vip">🔒 KHUSUS VIP</span>`;
+        } else if (dupSlotIdx !== -1) {
+          cardClass += ' disabled duplicate-team';
+          const dupSlotName = (freeSlots[dupSlotIdx] && freeSlots[dupSlotIdx].char) ? freeSlots[dupSlotIdx].char.name : '';
+          clickAttr = `onclick="showDuplicateTeamAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}', ${dupSlotIdx + 1}, '${escapeHtml(dupSlotName).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-duplicate">👥 DUPLIKAT (Slot ${dupSlotIdx + 1})</span>`;
         } else if (isSel) {
           cardClass += ' selected';
         }
@@ -1311,8 +1333,6 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
         let metaRight = statusBadgeHtml;
         if (isSel) {
           metaRight = `<span style="color:#4ade80; font-weight:800;">✅ Slot ${freeActiveSlot + 1}</span>`;
-        } else if (otherSlotIdx !== -1) {
-          metaRight = `<span style="color:#38bdf8; font-weight:700; font-size:0.65rem;">Slot ${otherSlotIdx + 1}</span>`;
         }
 
         return `
@@ -1338,6 +1358,17 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
       if (typeof isCharVipExclusive === 'function' && isCharVipExclusive(c)) {
         showVipOnlyAlert(c.name);
         return;
+      }
+
+      const activeMode = (state.masterMode || '1v1').toUpperCase();
+      const isTeamOrDuo = (activeMode === 'DUO' || activeMode === 'TIM' || activeMode === 'TRIO');
+      if (isTeamOrDuo) {
+        const dupIdx = freeSlots.findIndex((s, idx) => idx !== freeActiveSlot && s.char && isSameBaseCharacter(s.char, c));
+        if (dupIdx !== -1) {
+          const dupName = (freeSlots[dupIdx] && freeSlots[dupIdx].char) ? freeSlots[dupIdx].char.name : '';
+          showDuplicateTeamAlert(c.name, dupIdx + 1, dupName);
+          return;
+        }
       }
 
       let chosenUlti = preselectedUlti;
@@ -1520,6 +1551,19 @@ $appBaseUrl = ($appDir === '' || $appDir === '.') ? '/' : $appDir . '/';
           showVipOnlyAlert(s.char.name);
           goToFreeStep(2);
           return;
+        }
+      }
+
+      // Validasi anti-duplikat karakter dalam 1 tim (semua versi)
+      if (activeMode === 'DUO' || activeMode === 'TIM' || activeMode === 'TRIO') {
+        for (let i = 0; i < activeSlots.length; i++) {
+          for (let j = i + 1; j < activeSlots.length; j++) {
+            if (typeof isSameBaseCharacter === 'function' && isSameBaseCharacter(activeSlots[i].char, activeSlots[j].char)) {
+              alert(`❌ PENDAFTARAN DITOLAK!\n\nSlot ${i + 1} (${activeSlots[i].char.name}) dan Slot ${j + 1} (${activeSlots[j].char.name}) menggunakan karakter yang sama (${getCharBaseName(activeSlots[i].char)}).\n\nMode TIM/DUO tidak mengizinkan karakter yang sama (semua versi).`);
+              goToFreeStep(2);
+              return;
+            }
+          }
         }
       }
 

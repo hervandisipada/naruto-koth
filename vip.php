@@ -555,6 +555,22 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       padding: 1px 5px;
       border-radius: 3px;
     }
+    .char-card-item.duplicate-team {
+      border-color: rgba(239, 68, 68, 0.45) !important;
+      background: rgba(239, 68, 68, 0.12) !important;
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .badge-status-duplicate {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      padding: 1px 5px;
+      border-radius: 3px;
+      display: inline-block;
+    }
 
     /* ULTI CARDS */
     .ulti-options-grid {
@@ -1593,6 +1609,9 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       container.innerHTML = list.map(c => {
         const curSlotChar = paidSlots[paidActiveSlot] ? paidSlots[paidActiveSlot].char : null;
         const isSel = curSlotChar && curSlotChar.id === c.id;
+        const activeMode = (state.masterMode || '1v1').toUpperCase();
+        const isTeamOrDuo = (activeMode === 'DUO' || activeMode === 'TIM' || activeMode === 'TRIO');
+        const dupSlotIdx = isTeamOrDuo ? paidSlots.findIndex((s, idx) => idx !== paidActiveSlot && s.char && isSameBaseCharacter(s.char, c)) : -1;
         const ultiCount = (c.ultis && c.ultis.length > 0) ? c.ultis.length : 1;
         const safeUltiArg = c._matchedUlti ? escapeHtml(c._matchedUlti).replace(/'/g, "\\'") : '';
         const matchTagHtml = c._matchedUlti ? `
@@ -1612,6 +1631,11 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
           cardClass += ' disabled banned';
           clickAttr = `onclick="showBannedAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}')"`;
           statusBadgeHtml = `<span class="badge-status-banned">🚫 BANNED</span>`;
+        } else if (dupSlotIdx !== -1) {
+          cardClass += ' disabled duplicate-team';
+          const dupSlotName = (paidSlots[dupSlotIdx] && paidSlots[dupSlotIdx].char) ? paidSlots[dupSlotIdx].char.name : '';
+          clickAttr = `onclick="showDuplicateTeamAlert('${escapeHtml(c.name).replace(/'/g, "\\'")}', ${dupSlotIdx + 1}, '${escapeHtml(dupSlotName).replace(/'/g, "\\'")}')"`;
+          statusBadgeHtml = `<span class="badge-status-duplicate">👥 DUPLIKAT (Slot ${dupSlotIdx + 1})</span>`;
         } else {
           if (isVipEx) {
             statusBadgeHtml = `<span class="badge-status-vip-unlocked">⭐ VIP EXCLUSIVE</span>`;
@@ -1621,9 +1645,10 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
           }
         }
 
-        const metaRight = isSel
-          ? `<span>✅ Terpilih</span>`
-          : statusBadgeHtml;
+        let metaRight = statusBadgeHtml;
+        if (isSel) {
+          metaRight = `<span style="color:#4ade80; font-weight:800;">✅ Slot ${paidActiveSlot + 1}</span>`;
+        }
 
         return `
           <div class="${cardClass}" ${clickAttr}>
@@ -1644,6 +1669,17 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
       if (typeof isCharBanned === 'function' && isCharBanned(c)) {
         showBannedAlert(c.name);
         return;
+      }
+
+      const activeMode = (state.masterMode || '1v1').toUpperCase();
+      const isTeamOrDuo = (activeMode === 'DUO' || activeMode === 'TIM' || activeMode === 'TRIO');
+      if (isTeamOrDuo) {
+        const dupIdx = paidSlots.findIndex((s, idx) => idx !== paidActiveSlot && s.char && isSameBaseCharacter(s.char, c));
+        if (dupIdx !== -1) {
+          const dupName = (paidSlots[dupIdx] && paidSlots[dupIdx].char) ? paidSlots[dupIdx].char.name : '';
+          showDuplicateTeamAlert(c.name, dupIdx + 1, dupName);
+          return;
+        }
       }
 
       let chosenUlti = preselectedUlti;
@@ -1794,6 +1830,20 @@ if ($urlTier !== 'VIP' && $urlTier !== 'SROBOT') {
           goToPaidStep(2);
           selectPaidSlot(i);
           return;
+        }
+      }
+
+      // Validasi anti-duplikat karakter dalam 1 tim (semua versi)
+      const activeModeCheck = (state.masterMode || '1v1').toUpperCase();
+      if (activeModeCheck === 'DUO' || activeModeCheck === 'TIM' || activeModeCheck === 'TRIO') {
+        for (let i = 0; i < count; i++) {
+          for (let j = i + 1; j < count; j++) {
+            if (typeof isSameBaseCharacter === 'function' && isSameBaseCharacter(paidSlots[i].char, paidSlots[j].char)) {
+              alert(`❌ PENDAFTARAN DITOLAK!\n\nSlot ${i + 1} (${paidSlots[i].char.name}) dan Slot ${j + 1} (${paidSlots[j].char.name}) menggunakan karakter yang sama (${getCharBaseName(paidSlots[i].char)}).\n\nMode TIM/DUO tidak mengizinkan karakter yang sama (semua versi).`);
+              goToPaidStep(2);
+              return;
+            }
+          }
         }
       }
 

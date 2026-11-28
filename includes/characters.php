@@ -223,6 +223,44 @@ declare(strict_types=1);
     return false;
   }
 
+  // ==========================================
+  // HELPER BASE CHARACTER & ANTI-DUPLIKAT TIM
+  // ==========================================
+  function getCharBaseName(c) {
+    if (!c) return '';
+    const raw = (typeof c === 'object' ? (c.name || '') : (typeof c === 'string' ? c : '')).trim();
+    if (!raw) return '';
+    const low = raw.toLowerCase();
+    if (low.startsWith('tobi ') || low === 'tobi' || low === 'pria bertopeng' || low.includes('obito')) {
+      return 'Obito Uchiha';
+    }
+    if (low.includes('robot naruto')) {
+      return 'Naruto Uzumaki';
+    }
+    if (low.startsWith('sai ') || low === 'sai') {
+      return 'Sai';
+    }
+    if (low.startsWith('temari')) {
+      return 'Temari';
+    }
+    let clean = raw.replace(/\(.*?\)/g, '').replace(/\".*?\"/g, '').trim();
+    clean = clean.replace(/\s+/g, ' ');
+    return clean;
+  }
+
+  function isSameBaseCharacter(c1, c2) {
+    if (!c1 || !c2) return false;
+    const b1 = getCharBaseName(c1).toLowerCase();
+    const b2 = getCharBaseName(c2).toLowerCase();
+    return Boolean(b1 && b2 && b1 === b2);
+  }
+
+  function showDuplicateTeamAlert(charName, slotNum, existingCharName = '') {
+    const base = getCharBaseName(charName) || charName;
+    const existingMsg = existingCharName ? `\n(Slot ${slotNum}: ${existingCharName})` : `\n(Sudah dipakai di Slot ${slotNum})`;
+    alert(`⚠️ KARAKTER SUDAH DIPILIH!\n\nKarakter versi "${base}" sudah dipilih di Slot ${slotNum}.${existingMsg}\n\nDalam Mode DUO dan Mode TIM, kamu tidak boleh memilih karakter yang sama dalam 1 tim (semua versi karakter).`);
+  }
+
   function normCharName(str) {
     if (!str) return '';
     return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
